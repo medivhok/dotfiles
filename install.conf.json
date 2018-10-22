@@ -1,0 +1,29 @@
+[
+  {
+    "defaults": {
+      "link": {
+        "create": true,
+        "relink": true
+      }
+    }
+  },
+  {
+    "clean": ["~"]
+  },
+  {
+    "link": {
+      "~/.dotfiles": "",
+      "~/.config/awesome": "config/awesome",
+      "~/.config/termite": "config/termite",
+      "~/.spacemacs.d": "spacemacs.d",
+      "~/.vim": "vim",
+      "~/.vimrc": "vimrc",
+      "~/.xresources": "xresources"
+    }
+  },
+  {
+    "shell": [
+      ["git submodule update --init --recursive", "Installing submodules"]
+    ]
+  }
+]
