@@ -12,8 +12,8 @@
   },
   {
     "link": {
-      "~/.dotfiles": "",
       "~/.config/awesome": "config/awesome",
+      "~/.config/compton.conf": "config/compton.conf",
       "~/.config/termite": "config/termite",
       "~/.spacemacs.d": "spacemacs.d",
       "~/.vim": "vim",

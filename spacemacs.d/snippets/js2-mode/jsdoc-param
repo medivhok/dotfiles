@@ -1,0 +1,8 @@
+# -*- mode: snippet -*- 
+# key: jsdoc-param
+# name: jsdoc param 
+# group: jsdoc
+# contributor: medivhok <medivhok@zoho.com>
+# --
+ * @param {${1:type}} ${2:name} - ${3:description}
+$0
