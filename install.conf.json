@@ -18,7 +18,8 @@
       "~/.spacemacs.d": "spacemacs.d",
       "~/.vim": "vim",
       "~/.vimrc": "vimrc",
-      "~/.xresources": "xresources"
+      "~/.xresources": "xresources",
+      "~/.zshrc": "zshrc"
     }
   },
   {
