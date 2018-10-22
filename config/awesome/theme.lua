@@ -47,7 +47,7 @@ theme.bg_systray = theme.bg_normal
 
 -- {{{ Borders
 theme.useless_gap   = dpi(4)
-theme.border_width  = 2
+theme.border_width  = dpi(4)
 theme.border_normal = theme.bg_normal
 -- }}}
 
