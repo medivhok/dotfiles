@@ -40,9 +40,3 @@
 [submodule "config/awesome/freedesktop"]
 	path = config/awesome/freedesktop
 	url = https://github.com/lcpz/awesome-freedesktop.git
-[submodule "oh-my-zsh"]
-	path = oh-my-zsh
-	url = https://github.com/robbyrussell/oh-my-zsh.git
-[submodule "spacemacs.d/packages/js-align"]
-	path = spacemacs.d/packages/js-align
-	url = https://github.com/johnhooks/js-align.git
