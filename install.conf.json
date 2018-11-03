@@ -15,12 +15,12 @@
       "~/.config/awesome": "config/awesome",
       "~/.config/compton.conf": "config/compton.conf",
       "~/.config/termite": "config/termite",
+      "~/.local/share/nvm": "local/share/nvm",
+      "~/.local/share/oh-my-zsh": "local/share/oh-my-zsh",
       "~/.local/share/zsh-custom": "local/share/zsh-custom",
-      "~/.oh-my-zsh": "oh-my-zsh",
-      "~/.spacemacs.d": "spacemacs.d",
       "~/.vim": "vim",
       "~/.vimrc": "vimrc",
-      "~/.xresources": "xresources",
+      "~/.Xresources": "Xresources",
       "~/.zshrc": "zshrc"
     }
   },
