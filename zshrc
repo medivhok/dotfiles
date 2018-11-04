@@ -5,7 +5,7 @@ export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.local/share/oh-my-zsh"
-export NVM_DIR="$HOME/.local/share/nvm"
+export NVM_DIR="$HOME/.nvm"
 
 # yarn executables
 if [ -d ~/.yarn/bin ]; then

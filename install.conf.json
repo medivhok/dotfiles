@@ -15,7 +15,6 @@
       "~/.config/awesome": "config/awesome",
       "~/.config/compton.conf": "config/compton.conf",
       "~/.config/termite": "config/termite",
-      "~/.local/share/nvm": "local/share/nvm",
       "~/.local/share/oh-my-zsh": "local/share/oh-my-zsh",
       "~/.local/share/zsh-custom": "local/share/zsh-custom",
       "~/.vim": "vim",
