@@ -7,6 +7,7 @@ require('awful.hotkeys_popup.keys')
 
 local freedesktop = require('freedesktop')
 local AwesomeWrapper = require('AwesomeWrapper')
+local TagList = require('TagList')
 
 -- Awesome API
 local awesomeApi = AwesomeWrapper({
@@ -31,27 +32,6 @@ local type = type
 
 _ENV = nil
 
-
--- Standard awesome library
--- local gears = awesomeWrapper.gears
--- local awful = awesomeWrapper.awful
-
--- Widget and layout library
--- local wibox = awesomeWrapper.wibox
-
--- Theme handling library
--- local beautiful = awesomeWrapper.beautiful
-
--- Notification library
--- local awesomeApi.naughty. = awesomeWrapper.awesomeApi.naughty.
-
--- Enable hotkeys help widget for VIM and other apps
--- when client with a matching name is opened:
-
-
-local rounded_rect = function(cr, width, height)
-  awesomeApi.gears.shape.rounded_rect(cr, width, height, 6)
-end
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -149,7 +129,7 @@ local mymainmenu = freedesktop.menu.build({
 local mylauncher = awesomeApi.awful.widget.launcher({
     image = awesomeApi.beautiful.awesome_icon,
     menu = mymainmenu,
-    shape = rounded_rect,
+    shape = awesomeApi.gears.shape.rounded_rect,
     shape_clip = true,
 })
 
@@ -162,22 +142,22 @@ local mykeyboardlayout = awesomeApi.awful.widget.keyboardlayout()
 local mytextclock = awesomeApi.wibox.widget.textclock()
 
 -- Create a wibox for each screen and add it
-local taglist_buttons = awesomeApi.gears.table.join(
-                    awesomeApi.awful.button({ }, 1, function(t) t:view_only() end),
-                    awesomeApi.awful.button({ modkey }, 1, function(t)
-                                              if client.focus then
-                                                  client.focus:move_to_tag(t)
-                                              end
-                                          end),
-                    awesomeApi.awful.button({ }, 3, awesomeApi.awful.tag.viewtoggle),
-                    awesomeApi.awful.button({ modkey }, 3, function(t)
-                                              if client.focus then
-                                                  client.focus:toggle_tag(t)
-                                              end
-                                          end),
-                    awesomeApi.awful.button({ }, 4, function(t) awesomeApi.awful.tag.viewnext(t.screen) end),
-                    awesomeApi.awful.button({ }, 5, function(t) awesomeApi.awful.tag.viewprev(t.screen) end)
-                )
+-- local taglist_buttons = awesomeApi.gears.table.join(
+--     awesomeApi.awful.button({ }, 1, function(t) t:view_only() end),
+--     awesomeApi.awful.button({ modkey }, 1, function(t)
+--             if awesomeApi.clients.focus then
+--                 awesomeApi.clients.focus:move_to_tag(t)
+--             end
+--     end),
+--     awesomeApi.awful.button({ }, 3, awesomeApi.awful.tag.viewtoggle),
+--     awesomeApi.awful.button({ modkey }, 3, function(t)
+--             if awesomeApi.clients.focus then
+--                 awesomeApi.clients.focus:toggle_tag(t)
+--             end
+--     end),
+--     awesomeApi.awful.button({ }, 4, function(t) awesomeApi.awful.tag.viewnext(t.screen) end),
+--     awesomeApi.awful.button({ }, 5, function(t) awesomeApi.awful.tag.viewprev(t.screen) end)
+-- )
 
 local tasklist_buttons = awesomeApi.gears.table.join(
                      awesomeApi.awful.button({ }, 1, function (c)
@@ -231,11 +211,13 @@ awesomeApi.awful.screen.connect_for_each_screen(function(s)
                            awesomeApi.awful.button({ }, 4, function () awesomeApi.awful.layout.inc( 1) end),
                            awesomeApi.awful.button({ }, 5, function () awesomeApi.awful.layout.inc(-1) end)))
     -- Create a taglist widget
-    s.mytaglist = awesomeApi.awful.widget.taglist {
-        screen  = s,
-        filter  = awesomeApi.awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
-    }
+    -- s.mytaglist = awesomeApi.awful.widget.taglist {
+    --     screen  = s,
+    --     filter  = awesomeApi.awful.widget.taglist.filter.all,
+    --     buttons = taglist_buttons
+    -- }
+
+    s.mytaglist = TagList(s, awesomeApi, { modkey = modkey })
 
     -- Create a tasklist widget
     s.mytasklist = awesomeApi.awful.widget.tasklist {
@@ -269,7 +251,7 @@ awesomeApi.awful.screen.connect_for_each_screen(function(s)
         },
         widget = awesomeApi.wibox.container.background,
         bg = awesomeApi.beautiful.bg_normal,
-        shape = rounded_rect,
+        shape = awesomeApi.gears.shape.rounded_rect,
         shape_clip = true,
       },
       widget = awesomeApi.wibox.container.margin,
@@ -559,8 +541,8 @@ awesomeApi.awful.rules.rules = {
     },
 
     -- Set Firefox to always map on the tag named '2' on screen 1.
-    -- { rule = { class = 'Firefox' },
-    --   properties = { screen = 1, tag = '2' } },
+    { rule = { class = 'Emacs' },
+      properties = { tag = 'CODE' } },
 }
 -- }}}
 
@@ -579,7 +561,7 @@ awesomeApi.clients.connect_signal('manage', function (c)
         awesomeApi.awful.placement.no_offscreen(c)
     end
 
-    c.shape = rounded_rect
+    c.shape = awesomeApi.gears.shape.rounded_rect
 end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
