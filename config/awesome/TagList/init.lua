@@ -13,7 +13,7 @@ function TagList:new(screen, awesomeApi, options)
    return awesomeApi.awful.widget.taglist {
       screen = screen,
       filter = awesomeApi.awful.widget.taglist.filter.all,
-      buttons = TagListButtons(awesomeApi, options)
+      buttons = TagListButtons(awesomeApi, options):buttons(),
    }
 end
 

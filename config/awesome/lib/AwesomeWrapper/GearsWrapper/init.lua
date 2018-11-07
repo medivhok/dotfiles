@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 -- @classmod AwesomeWrapper.GearsWrapper
--- @author Jean Gregory Verret
+-- @author Jean Gregory Verret <gregory.verret@gmail.com>
 -- @copyright 2018 Jean Gregory Verret
 -- @license MIT
 ---------------------------------------------------------------------------------------------------

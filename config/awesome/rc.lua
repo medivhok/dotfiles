@@ -2,73 +2,42 @@
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, 'luarocks.loader')
 
+-- set the package paths
+local gfs = require('gears.filesystem')
+package.path = gfs.get_configuration_dir() .. '/lib/?.lua;' .. package.path
+package.path = gfs.get_configuration_dir() .. '/lib/?/init.lua;' .. package.path
+
 require('awful.autofocus')
 require('awful.hotkeys_popup.keys')
 
 local freedesktop = require('freedesktop')
-local AwesomeWrapper = require('AwesomeWrapper')
+local AwesomeApi = require('AwesomeApi')
 local TagList = require('TagList')
+local configs = require('config')
+
 
 -- Awesome API
-local awesomeApi = AwesomeWrapper({
-    -- globals
-    awesome = awesome,
-    client  = client,
-    screen  = screen,
-    root    = root,
+local awesomeApi = AwesomeApi(_ENV)
 
-    -- modules
-    awful        = require('awful'),
-    beautiful    = require('beautiful'),
-    gears        = require('gears'),
-    hotkeysPopup = require('awful.hotkeys_popup').widget,
-    naughty      = require('naughty'),
-    wibox        = require('wibox'),
-})
+awesomeApi:configure()
 
--- system libraries
+-- Globals to locals
 local os = os
 local type = type
 
+-- from now on, no globals
 _ENV = nil
 
+-- This is used later as the default terminal and editor to run.
+local terminal   = configs.terminal or 'xterm'
+local editor     = configs.editor or os.getenv('EDITOR') or 'vim'
+local editor_cmd = configs.editorCmd or terminal .. ' -e ' .. editor
+local gui_editor = configs.editorGui or 'gvim'
+local browser    = configs.browser or 'firefox'
+local modkey     = configs.modkey or 'Mod4'
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesomeApi.startup_errors then
-    awesomeApi.naughty.notify({ preset = awesomeApi.naughty..config.presets.critical,
-                     title = 'Oops, there were errors during startup!',
-                     text = awesomeApi.startup_errors })
-end
-
--- Handle runtime errors after startup
-do
-    local in_error = false
-    awesomeApi.connect_signal('debug::error', function (err)
-        -- Make sure we don't go into an endless error loop
-        if in_error then return end
-        in_error = true
-
-        awesomeApi.naughty.notify({ preset = awesomeApi.naughty..config.presets.critical,
-                         title = 'Oops, an error happened!',
-                         text = tostring(err) })
-        in_error = false
-    end)
-end
--- }}}
-
--- {{{ Variable definitions
--- Themes define colours, icons, font and wallpapers.
 awesomeApi.beautiful.init(awesomeApi.gears.filesystem.get_configuration_dir() .. '/theme.lua')
 
--- This is used later as the default terminal and editor to run.
-local terminal = 'termite'
-local editor = os.getenv('EDITOR') or 'vim'
-local editor_cmd = terminal .. ' -e ' .. editor
-local gui_editor = 'emacs'
-local browser = 'chromium'
-local modkey = 'Mod4'
 
 -- Table of layouts to cover with awesomeApi.awful.layout.inc, order matters.
 awesomeApi.awful.layout.layouts = {
@@ -85,9 +54,6 @@ awesomeApi.awful.layout.layouts = {
     awesomeApi.awful.layout.suit.max.fullscreen,
     awesomeApi.awful.layout.suit.magnifier,
     awesomeApi.awful.layout.suit.corner.nw,
-    -- awesomeApi.awful.layout.suit.corner.ne,
-    -- awesomeApi.awful.layout.suit.corner.sw,
-    -- awesomeApi.awful.layout.suit.corner.se,
 }
 -- }}}
 
@@ -141,23 +107,6 @@ local mykeyboardlayout = awesomeApi.awful.widget.keyboardlayout()
 -- Create a textclock widget
 local mytextclock = awesomeApi.wibox.widget.textclock()
 
--- Create a wibox for each screen and add it
--- local taglist_buttons = awesomeApi.gears.table.join(
---     awesomeApi.awful.button({ }, 1, function(t) t:view_only() end),
---     awesomeApi.awful.button({ modkey }, 1, function(t)
---             if awesomeApi.clients.focus then
---                 awesomeApi.clients.focus:move_to_tag(t)
---             end
---     end),
---     awesomeApi.awful.button({ }, 3, awesomeApi.awful.tag.viewtoggle),
---     awesomeApi.awful.button({ modkey }, 3, function(t)
---             if awesomeApi.clients.focus then
---                 awesomeApi.clients.focus:toggle_tag(t)
---             end
---     end),
---     awesomeApi.awful.button({ }, 4, function(t) awesomeApi.awful.tag.viewnext(t.screen) end),
---     awesomeApi.awful.button({ }, 5, function(t) awesomeApi.awful.tag.viewprev(t.screen) end)
--- )
 
 local tasklist_buttons = awesomeApi.gears.table.join(
                      awesomeApi.awful.button({ }, 1, function (c)
@@ -217,7 +166,7 @@ awesomeApi.awful.screen.connect_for_each_screen(function(s)
     --     buttons = taglist_buttons
     -- }
 
-    s.mytaglist = TagList(s, awesomeApi, { modkey = modkey })
+    s.mytaglist = TagList(s, awesomeApi, configs)
 
     -- Create a tasklist widget
     s.mytasklist = awesomeApi.awful.widget.tasklist {

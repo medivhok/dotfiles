@@ -17,16 +17,23 @@ local Button = {
     Middle = 3,
 }
 
-local function onLeftClick(tag)
-    if type(tag.onClick) == 'function' then
-        tag.onClick()
-    else
+
+local TagListButtons = { mt = {} }
+
+
+function TagListButtons:buttons()
+    return self._buttons
+end
+
+
+function TagListButtons:showTag()
+    return function(tag)
         tag:view_only()
     end
 end
 
 
-local function onLeftClickWithModKey(clients)
+function TagListButtons:moveFocusedClientToTag(clients)
     return function(tag)
         if clients.focus then
             clients.focus:move_to_tag(tag)
@@ -34,7 +41,8 @@ local function onLeftClickWithModKey(clients)
     end
 end
 
-local function onMiddleClickWithModKey(clients)
+
+function TagListButtons:toggleFocusedClientTag(clients)
     return function(tag)
         if clients.focus then
             clients.focus:toggle_tag(tag)
@@ -43,24 +51,26 @@ local function onMiddleClickWithModKey(clients)
 end
 
 
-local TagListButtons = { mt = {} }
-
-
 function TagListButtons:new(awesomeApi, options)
-    local buttons = {}
-    local clients = awesomeApi.clients
     local awfulButton = awesomeApi.awful.button
     local awfulTag = awesomeApi.awful.tag
     local modkey  = options.modkey
 
-    return awesomeApi.gears.table.join(
-        awfulButton({}, Button.Left, function(tag) tag:view_only() end),
-        awfulButton({ modkey }, Button.Left, onLeftClickWithModKey(clients)),
+    local tagListButtons = {}
+
+    tagListButtons._buttons = awesomeApi.gears.table.join(
+        awfulButton({}, Button.Left, self:showTag()),
+        awfulButton({ modkey }, Button.Left, self:moveFocusedClientToTag(awesomeApi.clients)),
         awfulButton({}, Button.Middle, awfulTag.viewtoggle),
-        awfulButton({ modkey }, Button.Middle, onMiddleClickWithModKey(clients)),
+        awfulButton({ modkey }, Button.Middle, self:toggleFocusedClientTag(awesomeApi.clients)),
         awfulButton({}, 4, function(tag) awfulTag.viewnext(tag.screen) end),
         awfulButton({}, 5, function(tag) awfulTag.viewprev(tag.screen) end)
     )
+
+    self.__index = self
+    setmetatable(tagListButtons, self)
+
+    return tagListButtons
 end
 
 
