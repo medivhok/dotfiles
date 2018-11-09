@@ -1,16 +1,24 @@
 ---------------------------------------------------------------------------------------------------
--- @classmod wrappers.Gears.Shape
+-- @classmod AwesomeApi.wrappers.Gears.Shape
 -- @author Jean Gregory Verret <gregory.verret@gmail.com>
 -- @copyright 2018 Jean Gregory Verret
--- @licence MIT
+-- @license MIT
 ---------------------------------------------------------------------------------------------------
 
 -- Globals to locals
 local assert       = assert
+local pairs        = pairs
 local setmetatable = setmetatable
+local type         = type
 
 -- from now on, no globals
 _ENV = nil
+
+
+-- Default values
+local Defaults = {
+    roundedRectRadius = 10,
+}
 
 
 -- The class
@@ -36,9 +44,21 @@ function Shape:initialize(shape)
     if not self._super then
         self._super = assert(shape, 'The \'shape\' argument is mandatory.')
 
-        self.roundedRectRadius = 10
+        -- Insert default values
+        for k, v in pairs(Defaults) do
+            self[k] = v
+        end
 
-        setmetatable(self, { __index = shape })
+        setmetatable(self, {
+            __index = shape,
+            __newindex = function(table, key, value)
+                if table[key] and value == nil and Defaults[key] ~= nil then
+                    table[key] = Defaults[key]
+                else
+                    table[key] = value
+                end
+            end,
+        })
     end
 
     return self

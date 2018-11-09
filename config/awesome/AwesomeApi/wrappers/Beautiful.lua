@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
--- @classmod wrappers.Beautiful
+-- @classmod AwesomeApi.wrappers.Beautiful
 -- @author Jean Gregory Verret <gregory.verret@gmail.com>
 -- @copyright 2018 Jean Gregory Verret
 -- @license MIT
@@ -17,7 +17,8 @@ _ENV = nil
 local Beautiful = { _mt = {} }
 
 
-function Beautiful:setTheme(theme)
+function Beautiful:configure(config)
+    config = config or {}
     return self
 end
 

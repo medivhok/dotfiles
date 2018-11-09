@@ -1,10 +1,10 @@
 ---------------------------------------------------------------------------------------------------
--- @classmod wrappers.Gears
+-- @classmod AwesomeApi.wrappers.Gears
 -- @author Jean Gregory Verret <gregory.verret@gmail.com>
 -- @copyright 2018 Jean Gregory Verret
 -- @license MIT
 ---------------------------------------------------------------------------------------------------
-local Shape = require('wrappers.Gears.Shape')
+local Shape = require('AwesomeApi.wrappers.Gears.Shape')
 
 -- Globals to locals
 local assert = assert
@@ -16,6 +16,13 @@ _ENV = nil
 
 -- the class
 local Gears = {}
+
+
+---
+--
+function Gears:configure(options)
+    options = options or {}
+end
 
 
 ---
