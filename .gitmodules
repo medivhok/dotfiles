@@ -37,9 +37,6 @@
 [submodule "vim/pack/medivhok/start/vim-gitgutter"]
 	path = vim/pack/medivhok/start/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter.git
-[submodule "config/awesome/freedesktop"]
-	path = config/awesome/freedesktop
-	url = https://github.com/lcpz/awesome-freedesktop.git
 [submodule "local/share/oh-my-zsh"]
 	path = local/share/oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh.git
