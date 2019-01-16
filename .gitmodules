@@ -43,3 +43,6 @@
 [submodule "config/awesome"]
 	path = config/awesome
 	url = https://github.com/lcpz/awesome-copycats.git
+[submodule "spacemacs.d/packages/js-align"]
+	path = spacemacs.d/packages/js-align
+	url = https://github.com/johnhooks/js-align.git
