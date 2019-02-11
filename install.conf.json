@@ -16,12 +16,15 @@
       "~/.config/compton.conf": "config/compton.conf",
       "~/.config/gtk-3.0": "config/gtk-3.0",
       "~/.config/termite": "config/termite",
+      "~/.config/xmobar": "config/xmobar",
       "~/.local/share/oh-my-zsh": "local/share/oh-my-zsh",
       "~/.local/share/zsh-custom": "local/share/zsh-custom",
       "~/.spacemacs.d": "spacemacs.d",
+      "~/.stalonetrayrc": "stalonetrayrc",
       "~/.vim": "vim",
       "~/.vimrc": "vimrc",
       "~/.Xresources": "Xresources",
+      "~/.xmonad": "xmonad",
       "~/.zshrc": "zshrc"
     }
   },

@@ -1,142 +1,161 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# #############################################################################
+# zsh configurations
+#
+autoload -U add-zsh-hook
+setopt extendedglob
+setopt no_bg_nice
+
+# #############################################################################
+# PATH additions
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.local/share/oh-my-zsh"
+# cabal, npm and yarn executables
+export PATH=$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$PATH
+
+
+# #############################################################################
+# nvm setup
 export NVM_DIR="$HOME/.nvm"
 
-# yarn executables
-if [ -d ~/.yarn/bin ]; then
-  PATH=$HOME/.yarn/bin:$PATH
-fi
-
-# npm executables
-if [ -d ~/.npm/bin ]; then
-  PATH=$HOME/.npm/bin:$PATH
-fi
-
-export PATH=$PATH
-
-# nvm
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
-autoload -U add-zsh-hook
 load-nvmrc() {
-  local node_version="$(nvm version)"
-  local nvmrc_path="$(nvm_find_nvmrc)"
+    local node_version="$(nvm version)"
+    local nvmrc_path="$(nvm_find_nvmrc)"
 
-  if [ -n "$nvmrc_path" ]; then
-    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+    if [ -n "$nvmrc_path" ]; then
+        local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
 
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-      nvm install
-    elif [ "$nvmrc_node_version" != "$node_version" ]; then
-      nvm use
+        if [ "$nvmrc_node_version" = "N/A" ]; then
+            nvm install
+        elif [ "$nvmrc_node_version" != "$node_version" ]; then
+            nvm use
+        fi
+    elif [ "$node_version" != "$(nvm version default)" ]; then
+        echo "Reverting to nvm default version"
+        nvm use default
     fi
-  elif [ "$node_version" != "$(nvm version default)" ]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
 }
+
 add-zsh-hook chpwd load-nvmrc
+
 load-nvmrc
 
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# #############################################################################
+# oh-my-zsh setup if we are in a x session
+if [ -z ${DISPLAY+x} ]; then
+	  fg_bold=%{$'\e[1m'%}
+	  fg_yellow=%{$'\e[33m'%}
+	  fg_light_blue=%{$'\e[94m'%}
+	  fg_reset=%{$'\e[0m'%}
+	  new_line=$'\n'
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+	  export PROMPT="${new_line}${fg_bold}%n@${fg_yellow}%m${fg_reset}:%~${new_line}$ "
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+else
+	  # Path to your oh-my-zsh installation.
+	  export ZSH="$HOME/.local/share/oh-my-zsh"
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+	  # Set name of the theme to load --- if set to "random", it will
+	  # load a random theme each time oh-my-zsh is loaded, in which case,
+    # to know which specific one was loaded, run: echo $RANDOM_THEME
+    # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+    ZSH_THEME="robbyrussell"
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+    # Set list of themes to pick from when loading at random
+    # Setting this variable when ZSH_THEME=random will cause zsh to load
+    # a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
+    # If set to an empty array, this variable will have no effect.
+    # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+    # Uncomment the following line to use case-sensitive completion.
+    # CASE_SENSITIVE="true"
 
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+    # Uncomment the following line to use hyphen-insensitive completion.
+    # Case-sensitive completion must be off. _ and - will be interchangeable.
+    # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+    # Uncomment the following line to disable bi-weekly auto-update checks.
+    # DISABLE_AUTO_UPDATE="true"
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+    # Uncomment the following line to change how often to auto-update (in days).
+    # export UPDATE_ZSH_DAYS=13
 
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
+    # Uncomment the following line to disable colors in ls.
+    # DISABLE_LS_COLORS="true"
 
-# Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM=$HOME/.local/share/zsh-custom
+    # Uncomment the following line to disable auto-setting terminal title.
+    # DISABLE_AUTO_TITLE="true"
 
-# Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  archlinux
-  git
-  node
-  rubi
-  yarn
-)
+    # Uncomment the following line to enable command auto-correction.
+    # ENABLE_CORRECTION="true"
 
-source $ZSH/oh-my-zsh.sh
+    # Uncomment the following line to display red dots whilst waiting for completion.
+    # COMPLETION_WAITING_DOTS="true"
 
-# User configuration
+    # Uncomment the following line if you want to disable marking untracked files
+    # under VCS as dirty. This makes repository status check for large repositories
+    # much, much faster.
+    # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# export MANPATH="/usr/local/man:$MANPATH"
+    # Uncomment the following line if you want to change the command execution time
+    # stamp shown in the history command output.
+    # You can set one of the optional three formats:
+    # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+    # or set a custom format using the strftime function format specifications,
+    # see 'man strftime' for details.
+    # HIST_STAMPS="mm/dd/yyyy"
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+    # Would you like to use another custom folder than $ZSH/custom?
+    ZSH_CUSTOM=$HOME/.local/share/zsh-custom
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+    # Which plugins would you like to load?
+    # Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+    # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+    # Example format: plugins=(rails git textmate ruby lighthouse)
+    # Add wisely, as too many plugins slow down shell startup.
+    plugins=(
+        archlinux
+        git
+        node
+        rubi
+        yarn
+    )
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+    source $ZSH/oh-my-zsh.sh
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
+    # User configuration
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+    # export MANPATH="/usr/local/man:$MANPATH"
+
+    # You may need to manually set your language environment
+    # export LANG=en_US.UTF-8
+
+    # Preferred editor for local and remote sessions
+    # if [[ -n $SSH_CONNECTION ]]; then
+    #   export EDITOR='vim'
+    # else
+    #   export EDITOR='mvim'
+    # fi
+
+    # Compilation flags
+    # export ARCHFLAGS="-arch x86_64"
+
+    # ssh
+    # export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+    # Set personal aliases, overriding those provided by oh-my-zsh libs,
+    # plugins, and themes. Aliases can be placed here, though oh-my-zsh
+    # users are encouraged to define aliases within the ZSH_CUSTOM folder.
+    # For a full list of active aliases, run `alias`.
+    #
+    # Example aliases
+    # alias zshconfig="mate ~/.zshrc"
+    # alias ohmyzsh="mate ~/.oh-my-zsh"
+fi

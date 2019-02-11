@@ -20,7 +20,7 @@ theme.wallpaper = function(s)
 
   if s.index == 3 then
     filename = '/usr/share/wallpapers/cloud_01.jpg'
-  elseif s.index == 1 then
+  elseif s.index == 2 then
       filename = '/usr/share/wallpapers/cloud_02.jpg'
   else
     filename = '/usr/share/wallpapers/cloud_03.jpg'
