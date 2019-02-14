@@ -46,3 +46,6 @@
 [submodule "spacemacs.d/packages/js-align"]
 	path = spacemacs.d/packages/js-align
 	url = https://github.com/johnhooks/js-align.git
+[submodule "vim/pack/medivhok/start/haskellmode-vim"]
+	path = vim/pack/medivhok/start/haskellmode-vim
+	url = https://github.com/lukerandall/haskellmode-vim.git

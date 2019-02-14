@@ -7,7 +7,6 @@ import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.SpawnOnce
 import System.IO
 
-
 main = do
   xmproc <- spawnPipe "xmobar"
   xmonad $ def
