@@ -12,8 +12,8 @@ main = do
   xmonad $ def
     { terminal        = "termite"
     , modMask         = mod4Mask
-    , workspaces      = ["1:Code", "2:Shell", "3:Web", "4:Files", "5:Graphics", "6:FTP", "7:Office", "8:Profit", "9:Misc."]
-    , manageHook      = manageDocks <+> manageSpawn <+> manageHook def
+    , workspaces      = ["1:Code", "2:Shell", "3:Web", "4:Files", "5:Graphics", "6:FTP", "7:Office", "8:System", "9:Misc"]
+    , manageHook      = manageDocks <> manageSpawn <> manageHook def
     , layoutHook      = avoidStruts  $  layoutHook def
     , handleEventHook = def <+> docksEventHook
     , logHook         = dynamicLogWithPP xmobarPP
@@ -23,12 +23,13 @@ main = do
         }
     , startupHook = do
         spawnOnce "compton"
+        -- spawnOnce "conky"
         spawnOnce "xcape -t 300 -e \"Control_L=Escape;Control_R=Return\""
-        spawnOnce "light-locker"
-        spawnOn "3" "chromium"
+        spawnOnce "xscreensaver -no-splash"
+        spawnOnce "/home/medivhok/.fehbg"
         spawnOnce "stalonetray"
     } `additionalKeys`
-    [ ((mod4Mask .|. shiftMask, xK_z), spawn "light-locker-command --lock")
+    [ ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -activate")
     , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
     , ((0, xK_Print), spawn "scrot")
     ]
