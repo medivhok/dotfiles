@@ -49,3 +49,9 @@
 [submodule "vim/pack/medivhok/start/haskellmode-vim"]
 	path = vim/pack/medivhok/start/haskellmode-vim
 	url = https://github.com/lukerandall/haskellmode-vim.git
+[submodule "vim/pack/medivhok/start/vim-javascript"]
+	path = vim/pack/medivhok/start/vim-javascript
+	url = https://github.com/pangloss/vim-javascript.git
+[submodule "vim/pack/medivhok/start/nerdtree-git-plugin"]
+	path = vim/pack/medivhok/start/nerdtree-git-plugin
+	url = https://github.com/Xuyuanp/nerdtree-git-plugin.git
