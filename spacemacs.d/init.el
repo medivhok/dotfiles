@@ -31,39 +31,51 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     (haskell :variables
-              haskell-enable-hindent-style "fundamental")
-     html
-     yaml
-     javascript
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     helm
      auto-completion
      better-defaults
-     emacs-lisp
+     helm
      git
-     (markdown :variables
-               markdown-live-preview-engine 'vmd)
      org
-     lua
-     csharp
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      (spell-checking :variables
                      spell-checking-enable-by-default nil)
      syntax-checking
-     ;; version-control
-     )
+
+     ;;
+     ;; Languages
+     ;;
+     csharp
+     emacs-lisp
+     javascript
+     (haskell :variables
+              haskell-enable-hindent-style "fundamental")
+     html
+     lua
+     (markdown :variables
+               markdown-live-preview-engine 'vmd)
+     yaml)
+
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(editorconfig vue-mode excorporate)
+   dotspacemacs-additional-packages '(
+                                      ;; https://github.com/emacs-dashboard/emacs-dashboard
+                                      dashboard
+
+                                      editorconfig
+
+                                      ;; https://elpa.gnu.org/packages/excorporate.html
+                                      excorporate
+
+                                      ;; https://github.com/purcell/page-break-lines
+                                      page-break-lines
+
+                                      ;; https://github.com/Alexander-Miller/treemacs
+                                      treemacs)
+
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -336,6 +348,15 @@ you should place your code here."
   (editorconfig-mode 1)
   (indent-guide-global-mode)
 
+  ;;
+  ;; Dashboard settings
+  ;;
+  (use-package dashboard
+    :ensure t
+    :config(dashboard-setup-startup-hook))
+
+  (add-to-list 'dashboard-items '(agenda) t)
+
 
   ;; Use eslint config from project's root if any.
   (defun my/use-eslint-from-node-modules ()
@@ -362,9 +383,28 @@ you should place your code here."
   ;; org-mode configurations
   ;;
   (with-eval-after-load 'org
-    (setq org-agenda-files (list "~/pCloudDrive/My Documents/Agenda/Intelia.org"
-                                 "~/pCloudDrive/My Documents/Agenda/Personal.org"))
-    )
+    (setq org-agenda-include-diary t
+          org-agenda-files (list "~/pCloudDrive/My Documents/Agenda/Intelia.org"
+                                 "~/pCloudDrive/My Documents/Agenda/Personal.org")))
+
+  ;;
+  ;; Diary configurations
+  ;;
+  (setq diary-file "~/pCloudDrive/My Documents/Agenda/diary")
+
+  ;;
+  ;; Calendar configurations
+  ;;
+  (setq view-diary-entries-initialy t
+        calendar-holidays holiday-local-holidays)
+        ;; Removes unwanted holidays.
+        ;; calendar-bahai-all-holidays-flag nil
+        ;; bahai-holidays nil
+        ;; chinese-holidays nil
+        ;; hebrew-holidays nil
+        ;; islamic-holidays nil
+        ;; oriental-holidays nil
+        ;; solar-holidays nil)
 
   ;;
   ;; excorporate
@@ -379,26 +419,21 @@ you should place your code here."
 
   (setq-default
    ;; configure email address and office 365 exchange server adddress for exchange web services
-   excorporate-configuration
-   (quote
-    ("gregory.verret@intelia.com" . "https://outlook.office365.com/EWS/Exchange.asmx"))
-   ;; integrate emacs diary entries into org agenda
-   org-agenda-include-diary t
-   )
+   excorporate-configuration '("gregory.verret@intelia.com" . "https://outlook.office365.com/EWS/Exchange.asmx"))
 
   ;; activate excorporate and request user/password to start connection
   (excorporate)
 
   ;; enable the diary integration (i.e. write exchange calendar to emacs diary file -> ~/.emacs.d/diary must exist)
   (excorporate-diary-enable)
+
   (defun ab/agenda-update-diary ()
     "call excorporate to update the diary for today"
-    (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "diary updated")
-    )
+    (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "diary updated"))
 
   ;; update the diary every time the org agenda is refreshed
-  (add-hook 'org-agenda-cleanup-fancy-diary-hook 'ab/agenda-update-diary )
-  )
+  (add-hook 'org-agenda-cleanup-fancy-diary-hook 'ab/agenda-update-diary))
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -409,7 +444,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (excorporate nadvice url-http-ntlm soap-client fsm vmd-mode vue-mode edit-indirect ssass-mode vue-html-mode visual-fill-column transient lv flyspell-correct-helm flyspell-correct auto-dictionary intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data yaml-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download omnisharp mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow lua-mode htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help editorconfig csharp-mode company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (dashboard page-break-lines treemacs ht pfuture excorporate nadvice url-http-ntlm soap-client fsm vmd-mode vue-mode edit-indirect ssass-mode vue-html-mode visual-fill-column transient lv flyspell-correct-helm flyspell-correct auto-dictionary intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data yaml-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download omnisharp mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow lua-mode htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help editorconfig csharp-mode company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
