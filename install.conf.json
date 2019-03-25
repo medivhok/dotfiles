@@ -14,6 +14,7 @@
     "link": {
       "~/.config/awesome": "config/awesome",
       "~/.config/compton.conf": "config/compton.conf",
+      "~/.config/doom": "config/doom",
       "~/.config/gtk-3.0": "config/gtk-3.0",
       "~/.config/systemd": "config/systemd",
       "~/.config/termite": "config/termite",
