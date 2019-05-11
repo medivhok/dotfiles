@@ -124,7 +124,6 @@ else
         archlinux
         git
         node
-        rubi
         yarn
     )
 

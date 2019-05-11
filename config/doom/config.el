@@ -5,13 +5,13 @@
   (setq diary-file "~/pCloudDrive/My Documents/Agenda/diary"
         view-diary-entries-initialy t
         calendar-holidays holiday-local-holidays
+        org-agenda-include-diary t
         org-agenda-files (list "~/pCloudDrive/My Documents/Agenda/Intelia.org"
                                "~/pCloudDrive/My Documents/Agenda/Personal.org")))
 
 (def-package! excorporate
   :config
-  (setq-default excorporate-configuration '("gregory.verret@intelia.com" . "https://outlook.office365.com/EWS/Exchange.asmx")
-                org-agenda-include-diary t)
+  (setq-default excorporate-configuration '("gregory.verret@intelia.com" . "https://outlook.office365.com/EWS/Exchange.asmx"))
   (excorporate)
   (excorporate-diary-enable)
 
