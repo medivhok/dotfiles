@@ -13,7 +13,7 @@ setopt no_bg_nice
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
 # cabal, npm and yarn executables
-export PATH=$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$PATH
+export PATH=$HOME/.dotnet/tools:$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$PATH
 
 
 # #############################################################################
