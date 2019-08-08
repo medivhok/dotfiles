@@ -3,7 +3,7 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
        , bgColor      = "black"
        , fgColor      = "grey"
        , lowerOnStart = False
-       , position     = Static { xpos = 1920, ypos = 0, width = 1830, height = 18 }
+       , position     = Static { xpos = 0, ypos = 0, width = 1830, height = 18 }
        , sepChar      = "%"
        , alignSep     = "}{"
        , template     = "%StdinReader% }{ | %multicpu% | %memory% | %battery% | <fc=#ee9a00>%date%</fc>|  "

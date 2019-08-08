@@ -1,24 +1,17 @@
 ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
-(def-package! org
-  :config
-  (setq diary-file "~/pCloudDrive/My Documents/Agenda/diary"
-        view-diary-entries-initialy t
-        calendar-holidays holiday-local-holidays
-        org-agenda-include-diary t
-        org-agenda-files (list "~/pCloudDrive/My Documents/Agenda/Intelia.org"
-                               "~/pCloudDrive/My Documents/Agenda/Personal.org")))
+(set-email-account! "gregory.verret@gmail.com"
+                    '((mu4e-sent-folder . "/gregory.verret@gmail.com/[Gmail]/Sent Mail")
+                      (mu4e-maildir . "~/.mail")
+                      (mu4e-drafts-folder . "/gregory.verret@gmail.com/[Gmail]/Drafts")
+                      (mu4e-trash-folder . "/gregory.verret@gmail.com/[Gmail]/Trash")
+                      (mu4e-refile-folder . "/gregory.verret@gmail.com/[Gmail]/All Mail")
+                      (smtpmail-smtp-user . "gregory.verret@gmail.com")
+                      (user-mail-address . "gregory.verret@gmail.com")
+                      ))
 
-(def-package! excorporate
-  :config
-  (setq-default excorporate-configuration '("gregory.verret@intelia.com" . "https://outlook.office365.com/EWS/Exchange.asmx"))
-  (excorporate)
-  (excorporate-diary-enable)
-
-  (defun ab/agenda-update-diary ()
-    "call excorporate to update the diary for today"
-    (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "diary updated"))
-
-  (add-hook 'org-agenda-cleanup-fancy-diary-hook 'ab/agenda-update-diary))
+(after! org
+  (setq org-directory "~/pCloudDrive/My Agenda")
+  (setq org-agenda-files (list org-directory)))
 
 ;; Place your private configuration here

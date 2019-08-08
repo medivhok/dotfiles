@@ -31,13 +31,19 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     python
+     csv
      windows-scripts
      auto-completion
      better-defaults
      helm
      git
+     finance
+     (mu4e :variables
+           mu4e-installation-path "/usr/share/emacs/site-lisp")
      org
      (shell :variables
+            shell-default-shell 'ansi-term
             shell-default-height 30
             shell-default-position 'bottom)
      (spell-checking :variables
@@ -49,6 +55,7 @@ values."
      ;;
      csharp
      emacs-lisp
+     extra-langs
      javascript
      (haskell :variables
               haskell-enable-hindent-style "fundamental")
@@ -64,17 +71,9 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
-                                      ;; https://github.com/emacs-dashboard/emacs-dashboard
-                                      dashboard
-
                                       editorconfig
-
-                                      ;; https://elpa.gnu.org/packages/excorporate.html
-                                      excorporate
-
                                       ;; https://github.com/purcell/page-break-lines
                                       page-break-lines
-
                                       ;; https://github.com/Alexander-Miller/treemacs
                                       treemacs
                                       stylus-mode
@@ -325,6 +324,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
   )
 
 (defun dotspacemacs/user-config ()
@@ -348,28 +348,28 @@ you should place your code here."
    c-basic-offset 4
    indent-tabs-mode nil
    evil-shift-width 2
-   omnisharp-server-executable-path "/opt/omnisharp-roslyn/OmniSharp.exe")
+   omnisharp-server-executable-path "/opt/omnisharp-roslyn/run")
 
   (editorconfig-mode 1)
   (indent-guide-global-mode)
+
+  (add-hook 'csharp-mode-hook #'flycheck-mode)
+
+  ;;
+  ;; notmuch configurations
+  ;;
+  (setq message-kill-buffer-on-exit t)
 
   ;;
   ;; dotnet core
   ;;
   (add-to-list 'auto-mode-alist '("\\.props$" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.targets$" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.csproj$" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.nuspec$" . xml-mode))
 
-
-  ;;
-  ;; Dashboard settings
-  ;;
-  (use-package dashboard
-    :ensure t
-    :config(dashboard-setup-startup-hook))
-
-  (add-to-list 'dashboard-items '(agenda) t)
-
+  ;; Associate cake files with the csharp mode.
+  (add-to-list 'auto-mode-alist '("\\.cake$" . csharp-mode))
 
   ;; Use eslint config from project's root if any.
   (defun my/use-eslint-from-node-modules ()
@@ -396,9 +396,16 @@ you should place your code here."
   ;; org-mode configurations
   ;;
   (with-eval-after-load 'org
-    (setq org-agenda-include-diary t
-          org-agenda-files (list "~/pCloudDrive/My Documents/Agenda/Intelia.org"
-                                 "~/pCloudDrive/My Documents/Agenda/Personal.org")))
+    (setq org-directory "~/pCloudDrive/My Agenda")
+    (setq org-default-notes-file (concat org-directory "/Notes.org"))
+    (setq org-agenda-files
+          (quote
+           ((concat org-directory "/Appointments.org")
+            (concat org-directory "/Contacts.org")
+            (concat org-directory "/Events.org")
+            (concat org-directory "/Notes.org")
+            (concat org-directory "/Personal.org")
+            (concat org-directory "/Todo.org")))))
 
   ;;
   ;; Diary configurations
@@ -457,7 +464,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (powershell stylus-mode sws-mode sql-indent dashboard page-break-lines treemacs ht pfuture excorporate nadvice url-http-ntlm soap-client fsm vmd-mode vue-mode edit-indirect ssass-mode vue-html-mode visual-fill-column transient lv flyspell-correct-helm flyspell-correct auto-dictionary intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data yaml-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download omnisharp mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow lua-mode htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help editorconfig csharp-mode company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (ledger-mode flycheck-ledger thrift stan-mode scad-mode qml-mode mu4e-maildirs-extension mu4e-alert matlab-mode julia-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic notmuch gnus-alias arduino-mode csv-mode powershell stylus-mode sws-mode sql-indent dashboard page-break-lines treemacs ht pfuture excorporate nadvice url-http-ntlm soap-client fsm vmd-mode vue-mode edit-indirect ssass-mode vue-html-mode visual-fill-column transient lv flyspell-correct-helm flyspell-correct auto-dictionary intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data yaml-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download omnisharp mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow lua-mode htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor eshell-z eshell-prompt-extras esh-help editorconfig csharp-mode company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

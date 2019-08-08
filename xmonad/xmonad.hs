@@ -23,8 +23,6 @@ main = do
         }
     , startupHook = do
         spawnOnce "compton"
-        -- spawnOnce "conky"
-        spawnOnce "xcape -t 300 -e \"Control_L=Escape;Control_R=Return\""
         spawnOnce "xscreensaver -no-splash"
         spawnOnce "/home/medivhok/.fehbg"
         spawnOnce "stalonetray"
