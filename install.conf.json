@@ -18,7 +18,6 @@
       "~/.config/gtk-2.0": "config/gtk-2.0",
       "~/.config/gtk-3.0": "config/gtk-3.0",
       "~/.config/gtk-4.0": "config/gtk-4.0",
-      "~/.config/systemd": "config/systemd",
       "~/.config/terminator": "config/terminator",
       "~/.config/xmobar": "config/xmobar",
       "~/.config/zsh": "config/zsh",
