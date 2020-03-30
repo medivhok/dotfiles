@@ -101,12 +101,10 @@ main = do
 ---AUTOSTART
 ------------------------------------------------------------------------
 myStartupHook = do
-          --spawnOnce "emacs --daemon &"
           --spawnOnce "nitrogen --restore &"
           --spawnOnce "compton --config /home/dt/.config/compton/compton.conf &"
           setWMName "LG3D"
           --spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 15 --transparent true --alpha 0 --tint 0x292d3e --height 19 &"
-          --spawnOnce "/home/dt/.xmonad/xmonad.start" -- Sets our wallpaper
 
 
 ------------------------------------------------------------------------
@@ -238,15 +236,6 @@ myKeys =
     --- Open Terminal
         , ("M-<Return>", spawn myTerminal)
 
-    --- Dmenu Scripts (Alt+Ctr+Key)
-        , ("M1-C-<Return>", spawn "dmenu_run -fn 'Hack Nerd Font:size=18' -nb '#292d3e' -nf '#bbc5ff' -sb '#82AAFF' -sf '#292d3e' -p 'dmenu:'")
-        , ("M1-C-e", spawn "./.dmenu/dmenu-edit-configs.sh")
-        , ("M1-C-h", spawn "./.dmenu/dmenu-hugo.sh")
-        , ("M1-C-m", spawn "./.dmenu/dmenu-sysmon.sh")
-        , ("M1-C-p", spawn "passmenu")
-        , ("M1-C-s", spawn "./.dmenu/dmenu-surfraw.sh")
-        , ("M1-C-/", spawn "./.dmenu/dmenu-scrot.sh")
-
     --- My Applications (Super+Alt+Key)
         , ("M-M1-a", spawn (myTerminal ++ " -e ncpamixer"))
         , ("M-M1-b", spawn ("surf www.youtube.com/c/DistroTube/"))
@@ -281,6 +270,9 @@ myKeys =
         , ("<XF86Calculator>", runOrRaise "gcalctool" (resource =? "gcalctool"))
         , ("<XF86Eject>", spawn "toggleeject")
         , ("<Print>", spawn "scrotd 0")
+
+    --- Rofi
+        , ("M-p", spawn "rofi -show run")
         ] where nonNSP          = WSIs (return (\ws -> W.tag ws /= "nsp"))
                 nonEmptyNonNSP  = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "nsp"))
 
