@@ -1,15 +1,21 @@
 -- -*-Haskell-*-
-Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
-       , bgColor      = "black"
-       , fgColor      = "grey"
-       , lowerOnStart = False
-       , position     = Static { xpos = 0, ypos = 0, width = 1830, height = 18 }
+Config { font = "xft:Hack Nerd Font:pixelsize=16:antialias=true:hinting=true"
+       , additionalFonts = [ "xft:FontAwesome:pixelsize=13" ]
+       , bgColor      = "#383c4a"
+       , fgColor      = "#cccccc"
+       , position     = Top
+       , lowerOnStart = True
+       , hideOnStart  = False
+       , allDesktops  = True
+       , persistent    = True
+       , iconRoot     = "/home/medivhok/.xmonad/xpm/"
+       , commands = [ Run Cpu ["-t","<icon=cpu_20.xpm/> cpu <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t", "<icon=memory-icon_20.xpm/> mem <usedratio>%"] 10
+                    , Run Date "%a %b %_d %l:%M" "date" 10
+                    , Run DiskU [("/", "<icon=harddisk-icon_20.xpm/> hdd (<used>/<size>)")] [] 3600
+                    , Run UnsafeStdinReader
+                    ]
        , sepChar      = "%"
        , alignSep     = "}{"
-       , template     = "%StdinReader% }{ | %multicpu% | %memory% | %battery% | <fc=#ee9a00>%date%</fc>|  "
-       , commands = [ Run MultiCpu ["-t","Cpu0:<total0>% | Cpu1:<total1>% | Cpu2:<total2>% | Cpu3:<total3>%","-L","3","-H","50","--normal","green","--high","red"] 10
-                    , Run Memory ["-t","Mem: <usedratio>%"] 10
-                    , Run Date "%a %b %_d %l:%M" "date" 10
-                    , Run StdinReader
-                    ]
+       , template = " <icon=menu.xpm/> %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc> <fc=#d3869b>%memory%</fc> <fc=#83a598>%disku%</fc> <icon=calendar-clock-icon_20.xpm/> <fc=#fe8019>%date%</fc> "
        }

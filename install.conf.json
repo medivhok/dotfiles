@@ -12,22 +12,23 @@
   },
   {
     "link": {
-      "~/.config/awesome": "config/awesome",
       "~/.config/compton.conf": "config/compton.conf",
       "~/.config/doom": "config/doom",
+      "~/.config/goa-1.0": "config/goa-1.0",
+      "~/.config/gtk-2.0": "config/gtk-2.0",
       "~/.config/gtk-3.0": "config/gtk-3.0",
+      "~/.config/gtk-4.0": "config/gtk-4.0",
       "~/.config/systemd": "config/systemd",
-      "~/.config/termite": "config/termite",
+      "~/.config/terminator": "config/terminator",
       "~/.config/xmobar": "config/xmobar",
+      "~/.config/zsh": "config/zsh",
       "~/.local/share/oh-my-zsh": "local/share/oh-my-zsh",
       "~/.local/share/zsh-custom": "local/share/zsh-custom",
-      "~/.spacemacs.d": "spacemacs.d",
-      "~/.stalonetrayrc": "stalonetrayrc",
       "~/.vim": "vim",
       "~/.vimrc": "vimrc",
       "~/.Xresources": "Xresources",
       "~/.xmonad": "xmonad",
-      "~/.zshrc": "zshrc"
+      "~/.zshenv": "zshenv"
     }
   },
   {

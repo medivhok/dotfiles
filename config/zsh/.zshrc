@@ -9,26 +9,7 @@ setopt extendedglob
 setopt no_bg_nice
 
 # #############################################################################
-# PATH additions
-export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
-
-export XDG_DESKTOP_DIR="$HOME/Desktop"
-export XDG_DOCUMENTS_DIR="$HOME/Documents"
-export XDG_DOWNLOAD_DIR="$HOME/Downloads"
-export XDG_MUSIC_DIR="$HOME/Music"
-export XDG_PICTURES_DIR="$HOME/Pictures"
-export XDG_PUBLICSHARE_DIR="$HOME/Public"
-export XDG_TEMPLATES_DIR="$HOME/Templates"
-export XDG_VIDEOS_DIR="$HOME/Videos"
-
-export QT_QPA_PLATFORMTHEME=qt5ct
-# cabal, npm and yarn executables
-export PATH=$HOME/.dotnet/tools:$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$PATH
-
-
-# #############################################################################
 # nvm setup
-export NVM_DIR="$HOME/.nvm"
 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
@@ -53,9 +34,6 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 
 load-nvmrc
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.local/share/oh-my-zsh"
 
 
 # Set name of the theme to load --- if set to "random", it will
@@ -120,6 +98,7 @@ plugins=(
     archlinux
     git
     node
+    vi-mode
     yarn
 )
 
