@@ -1,6 +1,5 @@
 -- -*-Haskell-*-
-Config { font = "xft:Hack Nerd Font:pixelsize=16:antialias=true:hinting=true"
-       , additionalFonts = [ "xft:FontAwesome:pixelsize=13" ]
+Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
        , bgColor      = "#383c4a"
        , fgColor      = "#cccccc"
        , position     = Top
@@ -17,5 +16,5 @@ Config { font = "xft:Hack Nerd Font:pixelsize=16:antialias=true:hinting=true"
                     ]
        , sepChar      = "%"
        , alignSep     = "}{"
-       , template = " <icon=menu.xpm/> %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc> <fc=#d3869b>%memory%</fc> <fc=#83a598>%disku%</fc> <icon=calendar-clock-icon_20.xpm/> <fc=#fe8019>%date%</fc> "
+       , template = " <icon=haskell_20.xpm/> %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc> <fc=#d3869b>%memory%</fc> <fc=#83a598>%disku%</fc> <icon=calendar-clock-icon_20.xpm/> <fc=#fe8019>%date%</fc> "
        }

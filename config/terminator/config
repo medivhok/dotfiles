@@ -3,7 +3,7 @@
   focus = mouse
   inactive_color_offset = 0.705314009662
   tab_position = bottom
-  title_font = Ubuntu Mono derivative Powerline 12
+  title_font = Hack Nerd Font Mono 14
   title_use_system_font = False
 [keybindings]
 [layouts]
@@ -17,27 +17,28 @@
 [plugins]
 [profiles]
   [[default]]
-    background_color = "#282828"
+    background_color = "#1e1e1e"
     background_darkness = 0.82
     background_type = transparent
     copy_on_selection = True
-    cursor_color = "#aaaaaa"
-    font = Hack Nerd Font Mono 14
-    foreground_color = "#ebdbb2"
-    palette = "#282828:#cc241d:#98971a:#d79921:#458588:#b16286:#689d6a:#a89984:#928374:#fb4934:#b8bb26:#fabd2f:#83a598:#d3869b:#8ec07c:#ebdbb2"
-    scrollbar_position = hidden
-    show_titlebar = False
-    use_system_font = False
-  [[Gruvbox Dark]]
-    background_color = "#1e1e1e"
-    background_darkness = 0.9
-    background_type = transparent
-    copy_on_selection = True
-    cursor_color = "#bbbbbb"
+    cursor_color = "#d0d0d0"
+    cursor_color_fg = False
     font = Hack Nerd Font Mono 14
     foreground_color = "#e6d4a3"
-    palette = "#161819:#f73028:#aab01e:#f7b125:#719586:#c77089:#7db669:#faefbb:#7f7061:#be0f17:#868715:#cc881a:#377375:#a04b73:#578e57:#e6d4a3"
+    palette = "#000000:#fd5ff1:#87c38a:#ffd7b1:#85befd:#b9b6fc:#85befd:#e0e0e0:#000000:#fd5ff1:#94fa36:#f5ffa8:#96cbfe:#b9b6fc:#85befd:#e0e0e0"
     scrollbar_position = hidden
     show_titlebar = False
     use_system_font = False
-    use_theme_colors = True
+  [[Atom]]
+    background_color = "#1e1e1e"
+    background_darkness = 0.82
+    background_type = transparent
+    copy_on_selection = True
+    cursor_color = "#d0d0d0"
+    cursor_color_fg = False
+    font = Hack Nerd Font Mono 14
+    foreground_color = "#e6d4a3"
+    palette = "#000000:#fd5ff1:#87c38a:#ffd7b1:#85befd:#b9b6fc:#85befd:#e0e0e0:#000000:#fd5ff1:#94fa36:#f5ffa8:#96cbfe:#b9b6fc:#85befd:#e0e0e0"
+    scrollbar_position = hidden
+    show_titlebar = False
+    use_system_font = False

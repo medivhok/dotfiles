@@ -65,7 +65,7 @@ myFont          = "xft:Mononoki Nerd Font:regular:pixelsize=12"
 myModMask       = mod4Mask  -- Sets modkey to super/windows key
 myTerminal      = "terminator"      -- Sets default terminal
 myTextEditor    = "emacs"     -- Sets default text editor
-myBorderWidth   = 2         -- Sets border width for windows
+myBorderWidth   = 0         -- Sets border width for windows
 windowCount     = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
 main ::IO()
