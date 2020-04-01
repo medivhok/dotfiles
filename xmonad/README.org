@@ -1,0 +1,4 @@
+#+TITLE: Readme
+
+* Todo
+- [ ] Switch to polybar instead of xmobar.

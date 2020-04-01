@@ -38,13 +38,15 @@ import XMonad.Actions.MouseResize
 
     -- Layouts modifiers
 import XMonad.Layout.Renamed (renamed, Rename(Replace))
-import XMonad.Layout.Spacing (spacing)
+import XMonad.Layout.Gaps
+import XMonad.Layout.Spacing
 import XMonad.Layout.NoBorders
 import XMonad.Layout.LimitWindows (limitWindows, increaseLimit, decreaseLimit)
 import XMonad.Layout.WindowArranger (windowArrange, WindowArrangerMsg(..))
 import XMonad.Layout.Reflect (REFLECTX(..), REFLECTY(..))
 import XMonad.Layout.MultiToggle (mkToggle, single, EOT(EOT), Toggle(..), (??))
 import XMonad.Layout.MultiToggle.Instances (StdTransformers(NBFULL, MIRROR, NOBORDERS))
+import XMonad.Layout.SimpleFloat
 import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
 
     -- Layouts
@@ -101,10 +103,11 @@ main = do
 ---AUTOSTART
 ------------------------------------------------------------------------
 myStartupHook = do
-          --spawnOnce "nitrogen --restore &"
-          --spawnOnce "compton --config /home/dt/.config/compton/compton.conf &"
-          setWMName "LG3D"
-          --spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 15 --transparent true --alpha 0 --tint 0x292d3e --height 19 &"
+  -- spawnOnce "xmobar &"
+  --spawnOnce "nitrogen --restore &"
+  --spawnOnce "compton --config /home/dt/.config/compton/compton.conf &"
+  setWMName "LG3D"
+  --spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 15 --transparent true --alpha 0 --tint 0x292d3e --height 19 &"
 
 
 ------------------------------------------------------------------------
@@ -273,13 +276,15 @@ myKeys =
 
     --- Rofi
         , ("M-p", spawn "rofi -show run")
+
+    --- Applications
+        , ("M-d", spawn "dia --integrated")
         ] where nonNSP          = WSIs (return (\ws -> W.tag ws /= "nsp"))
                 nonEmptyNonNSP  = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "nsp"))
 
 ------------------------------------------------------------------------
----WORKSPACES
+-- Workspaces
 ------------------------------------------------------------------------
-
 xmobarEscape = concatMap doubleLts
   where
         doubleLts '<' = "<<"
@@ -307,23 +312,14 @@ myManageHook = composeAll
      ] <+> namedScratchpadManageHook myScratchPads
 
 ------------------------------------------------------------------------
----LAYOUTS
+-- Layouts
 ------------------------------------------------------------------------
-
-myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts floats $
-               mkToggle (NBFULL ?? NOBORDERS ?? EOT) $ myDefaultLayout
+myLayoutHook = avoidStruts $ noBorders $
+               gaps [(U,3), (D,3), (L,3), (R,3)] $
+               spacingRaw True (Border 4 4 4 4) True (Border 4 4 4 4) True $
+               Tall 1 (3/100) (1/2) ||| mirrorTall ||| Full ||| simpleFloat
              where
-                 myDefaultLayout = tall ||| grid ||| threeCol ||| threeRow ||| oneBig ||| noBorders monocle ||| space ||| floats
-
-
-tall       = renamed [Replace "tall"]     $ limitWindows 12 $ spacing 6 $ ResizableTall 1 (3/100) (1/2) []
-grid       = renamed [Replace "grid"]     $ limitWindows 12 $ spacing 6 $ mkToggle (single MIRROR) $ Grid (16/10)
-threeCol   = renamed [Replace "threeCol"] $ limitWindows 3  $ ThreeCol 1 (3/100) (1/2)
-threeRow   = renamed [Replace "threeRow"] $ limitWindows 3  $ Mirror $ mkToggle (single MIRROR) zoomRow
-oneBig     = renamed [Replace "oneBig"]   $ limitWindows 6  $ Mirror $ mkToggle (single MIRROR) $ mkToggle (single REFLECTX) $ mkToggle (single REFLECTY) $ OneBig (5/9) (8/12)
-monocle    = renamed [Replace "monocle"]  $ limitWindows 20 $ Full
-space      = renamed [Replace "space"]    $ limitWindows 4  $ spacing 12 $ Mirror $ mkToggle (single MIRROR) $ mkToggle (single REFLECTX) $ mkToggle (single REFLECTY) $ OneBig (2/3) (2/3)
-floats     = renamed [Replace "floats"]   $ limitWindows 20 $ simplestFloat
+               mirrorTall = Mirror (Tall 1 (3/100) (1/2))
 
 ------------------------------------------------------------------------
 ---SCRATCHPADS
