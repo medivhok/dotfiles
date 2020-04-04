@@ -59,10 +59,20 @@
   ;; https://github.com/raxod502/el-patch
   ;;
 (package! el-patch
-  :recipe (:host github :repo "raxod502/el-patch" :branch "develop"))
+  :recipe (:host github :repo "raxod502/el-patch" :branch "master"))
+
+(package! org-plus-contrib)
+
+(package! org-roam
+  :recipe (:host github :repo "jethrokuan/org-roam"))
+
+(package! company-org-roam
+  :recipe (:host github :repo "jethrokuan/company-org-roam"))
 
 (package! dashboard)
+
 (package! rainbow-mode)
+
 (package! csv-mode)
 
 ;; -----------------------------------------------------------------------------

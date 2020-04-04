@@ -1,0 +1,17 @@
+* My configuration files
+** My applications
+*** The window manager
+- [[xmonad/][xmonad]]
+- [[config/xmobar][xmobar]]
+
+*** Editors
+- [[config/doom][Emacs]]
+- [[vim/][Vim]]
+
+*** Graphics
+- The gimp
+- Inkscape
+- Blender
+
+*** Shells
+- alicritty

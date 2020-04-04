@@ -34,7 +34,6 @@ import XMonad.Actions.WindowGo (runOrRaise)
 import XMonad.Actions.WithAll (sinkAll, killAll)
 import XMonad.Actions.CycleWS (moveTo, shiftTo, WSType(..))
 import XMonad.Actions.GridSelect
-import XMonad.Actions.MouseResize
 
     -- Layouts modifiers
 import XMonad.Layout.Renamed (renamed, Rename(Replace))
@@ -51,11 +50,10 @@ import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(T
 
     -- Layouts
 import XMonad.Layout.GridVariants (Grid(Grid))
-import XMonad.Layout.SimplestFloat
 import XMonad.Layout.OneBig
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ResizableTile
-import XMonad.Layout.ZoomRow (zoomRow, zoomReset, ZoomMessage(ZoomFullToggle))
+import XMonad.Layout.ZoomRow (zoomReset, ZoomMessage(ZoomFullToggle))
 
     -- Prompts
 import XMonad.Prompt (Direction1D(..))
@@ -65,7 +63,7 @@ import XMonad.Prompt (Direction1D(..))
 ------------------------------------------------------------------------
 myFont          = "xft:Mononoki Nerd Font:regular:pixelsize=12"
 myModMask       = mod4Mask  -- Sets modkey to super/windows key
-myTerminal      = "terminator"      -- Sets default terminal
+myTerminal      = "alacritty"      -- Sets default terminal
 myTextEditor    = "emacs"     -- Sets default text editor
 myBorderWidth   = 0         -- Sets border width for windows
 windowCount     = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
@@ -141,146 +139,144 @@ spawnSelected' lst = gridselect conf lst >>= flip whenJust spawn
 ------------------------------------------------------------------------
 myKeys =
     --- Xmonad
-        [ ("M-C-r", spawn "xmonad --recompile")      -- Recompiles xmonad
-        , ("M-S-r", spawn "xmonad --restart")        -- Restarts xmonad
-        , ("M-S-q", io exitSuccess)                  -- Quits xmonad
+  [ ("M-C-r", spawn "xmonad --recompile")      -- Recompiles xmonad
+  , ("M-S-r", spawn "xmonad --restart")        -- Restarts xmonad
+  , ("M-S-q", io exitSuccess)                  -- Quits xmonad
 
     --- Windows
-        , ("M-S-c", kill1)                           -- Kill the currently focused client
-        , ("M-S-a", killAll)                         -- Kill all the windows on current workspace
+  , ("M-S-c", kill1)                           -- Kill the currently focused client
+  , ("M-S-a", killAll)                         -- Kill all the windows on current workspace
 
     --- Floating windows
-        , ("M-<Delete>", withFocused $ windows . W.sink)  -- Push floating window back to tile.
-        , ("M-S-<Delete>", sinkAll)                  -- Push ALL floating windows back to tile.
-
+  , ("M-<Delete>", withFocused $ windows . W.sink)  -- Push floating window back to tile.
+  , ("M-S-<Delete>", sinkAll)                  -- Push ALL floating windows back to tile.
 
     --- Grid Select
-        , (("M-S-t"), spawnSelected'
-          [ ("Audacity", "audacity")
-          , ("Deadbeef", "deadbeef")
-          , ("Emacs", "emacs")
-          , ("Firefox", "firefox")
-          , ("Geany", "geany")
-          , ("Geary", "geary")
-          , ("Gimp", "gimp")
-          , ("Kdenlive", "kdenlive")
-          , ("LibreOffice Impress", "loimpress")
-          , ("LibreOffice Writer", "lowriter")
-          , ("OBS", "obs")
-          , ("PCManFM", "pcmanfm")
-          , ("Simple Terminal", "st")
-          , ("Steam", "steam")
-          , ("Surf Browser",    "surf suckless.org")
-          , ("Xonotic", "xonotic-glx")
-          ])
+  , (("M-S-t"), spawnSelected'
+      [ ("Audacity", "audacity")
+      , ("Deadbeef", "deadbeef")
+      , ("Emacs", "emacs")
+      , ("Firefox", "firefox")
+      , ("Geany", "geany")
+      , ("Geary", "geary")
+      , ("Gimp", "gimp")
+      , ("Kdenlive", "kdenlive")
+      , ("LibreOffice Impress", "loimpress")
+      , ("LibreOffice Writer", "lowriter")
+      , ("OBS", "obs")
+      , ("PCManFM", "pcmanfm")
+      , ("Simple Terminal", "st")
+      , ("Steam", "steam")
+      , ("Surf Browser",    "surf suckless.org")
+      , ("Xonotic", "xonotic-glx")
+      ])
 
-        , ("M-S-g", goToSelected $ mygridConfig myColorizer)
-        , ("M-S-b", bringSelected $ mygridConfig myColorizer)
+  , ("M-S-g", goToSelected $ mygridConfig myColorizer)
+  , ("M-S-b", bringSelected $ mygridConfig myColorizer)
 
     --- Windows navigation
-        , ("M-m", windows W.focusMaster)             -- Move focus to the master window
-        , ("M-j", windows W.focusDown)               -- Move focus to the next window
-        , ("M-k", windows W.focusUp)                 -- Move focus to the prev window
-        , ("M-S-m", windows W.swapMaster)            -- Swap the focused window and the master window
-        , ("M-S-j", windows W.swapDown)              -- Swap the focused window with the next window
-        , ("M-S-k", windows W.swapUp)                -- Swap the focused window with the prev window
-        , ("M-<Backspace>", promote)                 -- Moves focused window to master, all others maintain order
-        , ("M1-S-<Tab>", rotSlavesDown)              -- Rotate all windows except master and keep focus in place
-        , ("M1-C-<Tab>", rotAllDown)                 -- Rotate all the windows in the current stack
-        , ("M-S-s", windows copyToAll)
-        , ("M-C-s", killAllOtherCopies)
+  , ("M-m", windows W.focusMaster)             -- Move focus to the master window
+  , ("M-j", windows W.focusDown)               -- Move focus to the next window
+  , ("M-k", windows W.focusUp)                 -- Move focus to the prev window
+  , ("M-S-m", windows W.swapMaster)            -- Swap the focused window and the master window
+  , ("M-S-j", windows W.swapDown)              -- Swap the focused window with the next window
+  , ("M-S-k", windows W.swapUp)                -- Swap the focused window with the prev window
+  , ("M-<Backspace>", promote)                 -- Moves focused window to master, all others maintain order
+  , ("M1-S-<Tab>", rotSlavesDown)              -- Rotate all windows except master and keep focus in place
+  , ("M1-C-<Tab>", rotAllDown)                 -- Rotate all the windows in the current stack
+  , ("M-S-s", windows copyToAll)
+  , ("M-C-s", killAllOtherCopies)
 
-        , ("M-C-M1-<Up>", sendMessage Arrange)
-        , ("M-C-M1-<Down>", sendMessage DeArrange)
-        , ("M-<Up>", sendMessage (MoveUp 10))             --  Move focused window to up
-        , ("M-<Down>", sendMessage (MoveDown 10))         --  Move focused window to down
-        , ("M-<Right>", sendMessage (MoveRight 10))       --  Move focused window to right
-        , ("M-<Left>", sendMessage (MoveLeft 10))         --  Move focused window to left
-        , ("M-S-<Up>", sendMessage (IncreaseUp 10))       --  Increase size of focused window up
-        , ("M-S-<Down>", sendMessage (IncreaseDown 10))   --  Increase size of focused window down
-        , ("M-S-<Right>", sendMessage (IncreaseRight 10)) --  Increase size of focused window right
-        , ("M-S-<Left>", sendMessage (IncreaseLeft 10))   --  Increase size of focused window left
-        , ("M-C-<Up>", sendMessage (DecreaseUp 10))       --  Decrease size of focused window up
-        , ("M-C-<Down>", sendMessage (DecreaseDown 10))   --  Decrease size of focused window down
-        , ("M-C-<Right>", sendMessage (DecreaseRight 10)) --  Decrease size of focused window right
-        , ("M-C-<Left>", sendMessage (DecreaseLeft 10))   --  Decrease size of focused window left
+  , ("M-C-M1-<Up>", sendMessage Arrange)
+  , ("M-C-M1-<Down>", sendMessage DeArrange)
+  , ("M-<Up>", sendMessage (MoveUp 10))             --  Move focused window to up
+  , ("M-<Down>", sendMessage (MoveDown 10))         --  Move focused window to down
+  , ("M-<Right>", sendMessage (MoveRight 10))       --  Move focused window to right
+  , ("M-<Left>", sendMessage (MoveLeft 10))         --  Move focused window to left
+  , ("M-S-<Up>", sendMessage (IncreaseUp 10))       --  Increase size of focused window up
+  , ("M-S-<Down>", sendMessage (IncreaseDown 10))   --  Increase size of focused window down
+  , ("M-S-<Right>", sendMessage (IncreaseRight 10)) --  Increase size of focused window right
+  , ("M-S-<Left>", sendMessage (IncreaseLeft 10))   --  Increase size of focused window left
+  , ("M-C-<Up>", sendMessage (DecreaseUp 10))       --  Decrease size of focused window up
+  , ("M-C-<Down>", sendMessage (DecreaseDown 10))   --  Decrease size of focused window down
+  , ("M-C-<Right>", sendMessage (DecreaseRight 10)) --  Decrease size of focused window right
+  , ("M-C-<Left>", sendMessage (DecreaseLeft 10))   --  Decrease size of focused window left
 
-    --- Layouts
-        , ("M-<Space>", sendMessage NextLayout)                              -- Switch to next layout
-        , ("M-S-<Space>", sendMessage ToggleStruts)                          -- Toggles struts
-        , ("M-S-n", sendMessage $ Toggle NOBORDERS)                          -- Toggles noborder
-        , ("M-S-=", sendMessage (Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
-        , ("M-S-f", sendMessage (T.Toggle "float"))
-        , ("M-S-x", sendMessage $ Toggle REFLECTX)
-        , ("M-S-y", sendMessage $ Toggle REFLECTY)
-        , ("M-S-m", sendMessage $ Toggle MIRROR)
-        , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in the master pane
-        , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in the master pane
-        , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows that can be shown
-        , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows that can be shown
+   --- Layouts
+  , ("M-<Space>", sendMessage NextLayout)                              -- Switch to next layout
+  , ("M-S-<Space>", sendMessage ToggleStruts)                          -- Toggles struts
+  , ("M-S-n", sendMessage $ Toggle NOBORDERS)                          -- Toggles noborder
+  , ("M-S-=", sendMessage (Toggle NBFULL) >> sendMessage ToggleStruts) -- Toggles noborder/full
+  , ("M-S-f", sendMessage (T.Toggle "float"))
+  , ("M-S-x", sendMessage $ Toggle REFLECTX)
+  , ("M-S-y", sendMessage $ Toggle REFLECTY)
+  , ("M-S-m", sendMessage $ Toggle MIRROR)
+  , ("M-<KP_Multiply>", sendMessage (IncMasterN 1))   -- Increase number of clients in the master pane
+  , ("M-<KP_Divide>", sendMessage (IncMasterN (-1)))  -- Decrease number of clients in the master pane
+  , ("M-S-<KP_Multiply>", increaseLimit)              -- Increase number of windows that can be shown
+  , ("M-S-<KP_Divide>", decreaseLimit)                -- Decrease number of windows that can be shown
 
-        , ("M-C-h", sendMessage Shrink)
-        , ("M-C-l", sendMessage Expand)
-        , ("M-C-j", sendMessage MirrorShrink)
-        , ("M-C-k", sendMessage MirrorExpand)
-        , ("M-S-;", sendMessage zoomReset)
-        , ("M-;", sendMessage ZoomFullToggle)
+  , ("M-C-h", sendMessage Shrink)
+  , ("M-C-l", sendMessage Expand)
+  , ("M-C-j", sendMessage MirrorShrink)
+  , ("M-C-k", sendMessage MirrorExpand)
+  , ("M-S-;", sendMessage zoomReset)
+  , ("M-;", sendMessage ZoomFullToggle)
 
     --- Workspaces
-        , ("M-<KP_Add>", moveTo Next nonNSP)                                -- Go to next workspace
-        , ("M-<KP_Subtract>", moveTo Prev nonNSP)                           -- Go to previous workspace
-        , ("M-S-<KP_Add>", shiftTo Next nonNSP >> moveTo Next nonNSP)       -- Shifts focused window to next workspace
-        , ("M-S-<KP_Subtract>", shiftTo Prev nonNSP >> moveTo Prev nonNSP)  -- Shifts focused window to previous workspace
+  , ("M-<KP_Add>", moveTo Next nonNSP)                                -- Go to next workspace
+  , ("M-<KP_Subtract>", moveTo Prev nonNSP)                           -- Go to previous workspace
+  , ("M-S-<KP_Add>", shiftTo Next nonNSP >> moveTo Next nonNSP)       -- Shifts focused window to next workspace
+  , ("M-S-<KP_Subtract>", shiftTo Prev nonNSP >> moveTo Prev nonNSP)  -- Shifts focused window to previous workspace
 
     --- Scratchpads
-        , ("M-C-<Return>", namedScratchpadAction myScratchPads "terminal")
-        , ("M-C-c", namedScratchpadAction myScratchPads "cmus")
+  , ("M-C-<Return>", namedScratchpadAction myScratchPads "terminal")
+  , ("M-C-c", namedScratchpadAction myScratchPads "cmus")
 
-    --- Open Terminal
-        , ("M-<Return>", spawn myTerminal)
+  -- Applications
+  -- Rofi
+  , ("M-p", spawn "rofi -show run")
+  , ("M-d", spawn "dia --integrated")
+  -- Open Terminal
+  , ("M-<Return>", spawn myTerminal)
 
-    --- My Applications (Super+Alt+Key)
-        , ("M-M1-a", spawn (myTerminal ++ " -e ncpamixer"))
-        , ("M-M1-b", spawn ("surf www.youtube.com/c/DistroTube/"))
-        , ("M-M1-c", spawn (myTerminal ++ " -e cmus"))
-        , ("M-M1-e", spawn (myTerminal ++ " -e neomutt"))
-        , ("M-M1-f", spawn (myTerminal ++ " -e sh ./.config/vifm/scripts/vifmrun"))
-        , ("M-M1-i", spawn (myTerminal ++ " -e irssi"))
-        , ("M-M1-j", spawn (myTerminal ++ " -e joplin"))
-        , ("M-M1-l", spawn (myTerminal ++ " -e lynx -cfg=~/.lynx/lynx.cfg -lss=~/.lynx/lynx.lss gopher://distro.tube"))
-        , ("M-M1-m", spawn (myTerminal ++ " -e toot curses"))
-        , ("M-M1-n", spawn (myTerminal ++ " -e newsboat"))
-        , ("M-M1-p", spawn (myTerminal ++ " -e pianobar"))
-        , ("M-M1-r", spawn (myTerminal ++ " -e rtv"))
-        , ("M-M1-w", spawn (myTerminal ++ " -e wopr report.xml"))
-        , ("M-M1-y", spawn (myTerminal ++ " -e youtube-viewer"))
+  -- My Applications (Super+Alt+Key)
+  , ("M-M1-a", spawn (myTerminal ++ " -e ncpamixer"))
+  , ("M-M1-b", spawn ("surf www.youtube.com/c/DistroTube/"))
+  , ("M-M1-c", spawn (myTerminal ++ " -e cmus"))
+  , ("M-M1-e", spawn (myTerminal ++ " -e neomutt"))
+  , ("M-M1-f", spawn (myTerminal ++ " -e sh ./.config/vifm/scripts/vifmrun"))
+  , ("M-M1-i", spawn (myTerminal ++ " -e irssi"))
+  , ("M-M1-j", spawn (myTerminal ++ " -e joplin"))
+  , ("M-M1-l", spawn (myTerminal ++ " -e lynx -cfg=~/.lynx/lynx.cfg -lss=~/.lynx/lynx.lss gopher://distro.tube"))
+  , ("M-M1-m", spawn (myTerminal ++ " -e toot curses"))
+  , ("M-M1-n", spawn (myTerminal ++ " -e newsboat"))
+  , ("M-M1-p", spawn (myTerminal ++ " -e pianobar"))
+  , ("M-M1-r", spawn (myTerminal ++ " -e rtv"))
+  , ("M-M1-w", spawn (myTerminal ++ " -e wopr report.xml"))
+  , ("M-M1-y", spawn (myTerminal ++ " -e youtube-viewer"))
 
-    --- Monitor brightness
-        , ("<XF86MonBrightnessUp>", spawn ("xbacklight -inc 10"))
-        , ("<XF86MonBrightnessDown>", spawn ("xbacklight -dec 10"))
+  -- Monitor brightness
+  , ("<XF86MonBrightnessUp>", spawn ("xbacklight -inc 10"))
+  , ("<XF86MonBrightnessDown>", spawn ("xbacklight -dec 10"))
 
-    --- Multimedia Keys
-        , ("<XF86AudioPlay>", spawn "cmus toggle")
-        , ("<XF86AudioPrev>", spawn "cmus prev")
-        , ("<XF86AudioNext>", spawn "cmus next")
-        -- , ("<XF86AudioMute>",   spawn "amixer set Master toggle")  -- Bug prevents it from toggling correctly in 12.04.
-        , ("<XF86AudioMute>", spawn "pamixer -m")
-        , ("<XF86AudioLowerVolume>", spawn "pamixer -u -d 5")
-        , ("<XF86AudioRaiseVolume>", spawn "pamixer -u -i 5")
-        , ("<XF86HomePage>", spawn "firefox")
-        , ("<XF86Search>", safeSpawn "firefox" ["https://www.google.com/"])
-        , ("<XF86Mail>", runOrRaise "geary" (resource =? "thunderbird"))
-        , ("<XF86Calculator>", runOrRaise "gcalctool" (resource =? "gcalctool"))
-        , ("<XF86Eject>", spawn "toggleeject")
-        , ("<Print>", spawn "scrotd 0")
+  -- Multimedia Keys
+  , ("<XF86AudioPlay>", spawn "cmus toggle")
+  , ("<XF86AudioPrev>", spawn "cmus prev")
+  , ("<XF86AudioNext>", spawn "cmus next")
+  -- , ("<XF86AudioMute>",   spawn "amixer set Master toggle")  -- Bug prevents it from toggling correctly in 12.04.
 
-    --- Rofi
-        , ("M-p", spawn "rofi -show run")
-
-    --- Applications
-        , ("M-d", spawn "dia --integrated")
-        ] where nonNSP          = WSIs (return (\ws -> W.tag ws /= "nsp"))
-                nonEmptyNonNSP  = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "nsp"))
+  , ("<XF86AudioMute>", spawn "pamixer -m")
+  , ("<XF86AudioLowerVolume>", spawn "pamixer -u -d 5")
+  , ("<XF86AudioRaiseVolume>", spawn "pamixer -u -i 5")
+  , ("<XF86HomePage>", spawn "firefox")
+  , ("<XF86Search>", safeSpawn "firefox" ["https://www.google.com/"])
+  , ("<XF86Mail>", runOrRaise "geary" (resource =? "thunderbird"))
+  , ("<XF86Calculator>", runOrRaise "gcalctool" (resource =? "gcalctool"))
+  , ("<XF86Eject>", spawn "toggleeject")
+  , ("<Print>", spawn "scrotd 0")
+  ] where nonNSP          = WSIs (return (\ws -> W.tag ws /= "nsp"))
+          nonEmptyNonNSP  = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "nsp"))
 
 ------------------------------------------------------------------------
 -- Workspaces
@@ -299,17 +295,14 @@ myWorkspaces = clickable . (map xmobarEscape)
                       let n = i ]
 myManageHook :: Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     [
-        className =? "Firefox"     --> doShift "<action=xdotool key super+2>www</action>"
-      , title =? "Vivaldi"         --> doShift "<action=xdotool key super+2>www</action>"
-      , title =? "irssi"           --> doShift "<action=xdotool key super+6>chat</action>"
-      , className =? "cmus"        --> doShift "<action=xdotool key super+7>media</action>"
-      , className =? "vlc"         --> doShift "<action=xdotool key super+7>media</action>"
-      , className =? "Virtualbox"  --> doFloat
-      , className =? "Gimp"        --> doFloat
-      , className =? "Gimp"        --> doShift "<action=xdotool key super+8>gfx</action>"
-      , (className =? "Firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
-     ] <+> namedScratchpadManageHook myScratchPads
+  [ className =? "Chromium"    --> doShift "<action=xdotool key super+2>web</action>"
+  , (className =? "Chromium" <&&> resource =? "Dialog") --> doFloat
+  , className =? "Blender"     --> doShift "<action=xdotool key super+5>graphics</action>"
+  , (className =? "Blender" <&&> resource =? "Dialog") --> doFloat
+  , className =? "cmus"        --> doShift "<action=xdotool key super+7>mus</action>"
+  , className =? "vlc"         --> doShift "<action=xdotool key super+7>media</action>"
+  , className =? "Gimp"        --> doShift "<action=xdotool key super+8>graphics</action>"
+  ] <+> namedScratchpadManageHook myScratchPads
 
 ------------------------------------------------------------------------
 -- Layouts

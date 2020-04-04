@@ -1,4 +1,4 @@
-#+TITLE: Readme
+* My [[https://xmonad.org][xmonad]] configuration
 
-* Todo
+** Todo [0/1]
 - [ ] Switch to polybar instead of xmobar.

@@ -170,3 +170,10 @@
 
 (use-package! csv-mode
   :mode "\\.csv$")
+
+;; Org configurations.
+(custom-set-variables
+ '(org-directory "~/Documents/org/")
+ '(org-roam-directory "~/Documents/org/roam")
+ '(org-agenda-files '("~/Documents/org/gtd/"))
+ '(org-agenda-diary-file "~/Documents/org/diary.org"))
