@@ -51,46 +51,68 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-;; -----------------------------------------------------------------------------
-;;(use-package el-patch
-  ;;
-  ;; Future-proof your Emacs Lisp customizations!
-  ;;
-  ;; https://github.com/raxod502/el-patch
-  ;;
-(package! el-patch
-  :recipe (:host github :repo "raxod502/el-patch" :branch "master"))
-
-(package! org-plus-contrib)
-
-(package! org-roam
-  :recipe (:host github :repo "jethrokuan/org-roam"))
-
+;; Company completion backend for Org-roam.
+;;   https://github.com/jethrokuan/company-org-roam
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
 
+;; Let company use child frame as its candidate menu.
+;;   https://github.com/tumashu/company-posframe
+(package! company-posframe)
+
+;; An extensible emacs dashboard.
+;;   https://github.com/emacs-dashboard/emacs-dashboard
 (package! dashboard)
 
-(package! rainbow-mode)
+;; Fast, friendly searching with ripgrep and Emacs.
+;;   https://github.com/Wilfred/deadgrep
+(package! deadgrep)
 
-(package! csv-mode)
+;; Collection of useful dired additions (dired-hacks).
+;;   https://github.com/Fuco1/dired-hacks#dired-narrow
+(package! dired-narrow)
 
-;; -----------------------------------------------------------------------------
-;;
-;; A GNU Emacs library to ensure environment variables inside Emacs look the
-;; same as in the user's shell.
-;;
-;;  https://github.com/purcell/exec-path-from-shell
-;;
+;; Kill & Mark Things Easily in Emacs.
+;;   https://github.com/leoliu/easy-kill
+(package! easy-kill)
+
+;; Future-proof your Emacs Lisp customizations!
+;;   https://github.com/raxod502/el-patch
+(package! el-patch
+  :recipe (:host github :repo "raxod502/el-patch" :branch "master"))
+
+;; Language-specific refactoring in Emacs.
+;;   https://github.com/Wilfred/emacs-refactor
+(package! emr)
+
+;; Make Emacs use the $PATH set up by the user's shell.
+;;   https://github.com/purcell/exec-path-from-shell
 (package! exec-path-from-shell)
-;;  :config
-;;  (exec-path-from-shell-initialize))
 
-;; -----------------------------------------------------------------------------
-;;
-;; This library provides a flycheck checker for C/C++ source code using
-;; clang-tidy.
-;;
-;;  https://github.com/ch1bo/flycheck-clang-tidy
-;;
+;; Flycheck syntax checker using clang-tidy.
+;;   https://github.com/ch1bo/flycheck-clang-tidy
 (package! flycheck-clang-tidy)
+
+;; Convenience functions to work with emacs org mode clocking.
+;;   https://github.com/dfeich/org-clock-convenience
+(package! org-clock-convenience)
+
+;; Org sync with Google Calendar.
+;;   https://github.com/kidd/org-gcal.el
+(package! org-gcal)
+
+;; A simple org-mode based journaling mode.
+;;   https://github.com/bastibe/org-journal
+(package! org-journal)
+
+;; https://orgmode.org/worg/org-contrib/
+(package! org-plus-contrib)
+
+;; Rudimentary Roam replica with Org-mode.
+;;   https://github.com/jethrokuan/org-roam
+(package! org-roam
+  :recipe (:host github :repo "jethrokuan/org-roam"))
+
+;; Colorize color names in buffers.
+;;   http://elpa.gnu.org/packages/rainbow-mode.html
+(package! rainbow-mode)
