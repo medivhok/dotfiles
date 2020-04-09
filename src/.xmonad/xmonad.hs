@@ -12,6 +12,7 @@ import Data.Monoid
 import Data.Maybe (isJust)
 import System.IO (hPutStrLn)
 import System.Exit (exitSuccess)
+import System.Directory
 import qualified XMonad.StackSet as W
 
     -- Utilities
@@ -68,10 +69,18 @@ myTextEditor    = "emacs"     -- Sets default text editor
 myBorderWidth   = 0         -- Sets border width for windows
 windowCount     = gets $ Just . show . length . W.integrate' . W.stack . W.workspace . W.current . windowset
 
-main ::IO()
+batteryFilePath :: String
+batteryFilePath = "/sys/class/power_supply/"
+
+main :: IO()
 main = do
-    -- Launching three instances of xmobar on their monitors.
-    xmproc <- spawnPipe "xmobar"
+    hasBattery <- doesDirectoryExist (batteryFilePath ++ "BAT0")
+    xmproc <-
+      if hasBattery
+      then spawnPipe "xmobar ~/.config/xmobar/xmobarrc_with_battery"
+      else spawnPipe "xmobar"
+
+    -- xmproc <- spawnPipe "xmobar"
     -- the xmonad, ya know...what the WM is named after!
     xmonad $ ewmh desktopConfig
         { manageHook = ( isFullscreen --> doFullFloat ) <+> myManageHook <+> manageHook desktopConfig <+> manageDocks
@@ -340,3 +349,7 @@ myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
                  w = 0.9
                  t = 0.95 -h
                  l = 0.95 -w
+
+--------------------------------------------------------------------------------
+-- Utility fonctions
+--------------------------------------------------------------------------------
