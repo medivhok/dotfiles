@@ -10,7 +10,7 @@ Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
        , iconRoot     = "/home/medivhok/.xmonad/xpm/"
        , commands = [ Run Cpu ["-t","<icon=cpu.xpm/> <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
                     , Run Memory ["-t", "<icon=memory.xpm/> <usedratio>%"] 10
-                    , Run Date "%a %b %d %R:%M" "date" 10
+                    , Run Date "%a %b %d %R" "date" 10
                     , Run DiskU [("/", "<icon=hdd.xpm/> <used>/<size>")] [] 3600
                     , Run UnsafeStdinReader
                     ]

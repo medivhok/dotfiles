@@ -17,7 +17,7 @@ Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
                         "--idle-icon-pattern", "<icon=ac_idle.xpm/>"
                     ] 600
                     , Run Memory ["-t", "<icon=memory.xpm/> <usedratio>%"] 10
-                    , Run Date "%a %b %_d %R:%M" "date" 10
+                    , Run Date "%a %b %_d %R" "date" 10
                     , Run DiskU [("/", "<icon=hdd.xpm/> <used>/<size>")] [] 3600
                     , Run UnsafeStdinReader
                     ]
