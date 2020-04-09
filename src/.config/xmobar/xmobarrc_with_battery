@@ -9,7 +9,14 @@ Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
        , persistent    = True
        , iconRoot     = "/home/medivhok/.xmonad/xpm/"
        , commands = [ Run Cpu ["-t","<icon=cpu_20.xpm/> cpu <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
-                    , Run Battery ["-t", "ac:<acstatus> bat:<left>%"] 600
+                    , Run Battery [
+                        "-P"
+                        "--on-icon-pattern" "<icon=battery_charging.xpm/>"
+                        "--idle-icon-pattern" "<icon=battery_charged.xpm/>"
+                        "--lows" "<icon=battery_low.xpm/>"
+                        "--mediums" "<icon=battery_med.xpm/>"
+                        "--high" "<icon=battery_high.xpm/>"
+                        "-t", "<leftipat><left>"] 600
                     , Run Memory ["-t", "<icon=memory-icon_20.xpm/> mem <usedratio>%"] 10
                     , Run Date "%a %b %_d %l:%M" "date" 10
                     , Run DiskU [("/", "<icon=harddisk-icon_20.xpm/> hdd (<used>/<size>)")] [] 3600
