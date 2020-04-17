@@ -51,11 +51,6 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-;; Company completion backend for Org-roam.
-;;   https://github.com/jethrokuan/company-org-roam
-(package! company-org-roam
-  :recipe (:host github :repo "jethrokuan/company-org-roam"))
-
 ;; Let company use child frame as its candidate menu.
 ;;   https://github.com/tumashu/company-posframe
 (package! company-posframe)
@@ -92,26 +87,6 @@
 ;; Flycheck syntax checker using clang-tidy.
 ;;   https://github.com/ch1bo/flycheck-clang-tidy
 (package! flycheck-clang-tidy)
-
-;; Convenience functions to work with emacs org mode clocking.
-;;   https://github.com/dfeich/org-clock-convenience
-(package! org-clock-convenience)
-
-;; Org sync with Google Calendar.
-;;   https://github.com/kidd/org-gcal.el
-(package! org-gcal)
-
-;; A simple org-mode based journaling mode.
-;;   https://github.com/bastibe/org-journal
-(package! org-journal)
-
-;; https://orgmode.org/worg/org-contrib/
-(package! org-plus-contrib)
-
-;; Rudimentary Roam replica with Org-mode.
-;;   https://github.com/jethrokuan/org-roam
-(package! org-roam
-  :recipe (:host github :repo "jethrokuan/org-roam"))
 
 ;; Colorize color names in buffers.
 ;;   http://elpa.gnu.org/packages/rainbow-mode.html

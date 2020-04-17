@@ -180,7 +180,7 @@
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
-       ;gtd
+       gtd
        ;;finances
        ;;literate
        (default +bindings +smartparens))
