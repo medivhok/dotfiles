@@ -85,7 +85,7 @@ myWorkspaces = clickable . map xmobarEscape
 -- Layouts
 --
 myLayoutHook = avoidStruts $ noBorders $
-             gaps [(U,3), (D,3), (L,3), (R,3)] $
+             gaps [(U,4), (D,4), (L,4), (R,4)] $
              spacingRaw True (Border 4 4 4 4) True (Border 4 4 4 4) True $
              Tall 1 (3/100) (1/2) ||| mirrorTall ||| Full ||| simpleFloat
   where
