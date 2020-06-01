@@ -146,6 +146,7 @@
 ;;
 (defconst medivhok-c-style
   '((c-offsets-alist . ((access-label . /)
+                        (innamespace . [0])
                         (member-init-intro . *)))) "Medivhok's programming style")
 
 (defun medivhok/c-mode-common-hook ()

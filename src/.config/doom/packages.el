@@ -76,6 +76,9 @@
 (package! el-patch
   :recipe (:host github :repo "raxod502/el-patch" :branch "master"))
 
+(package! org-pdftools
+  :recipe (:host github :repo "fuxialexander/org-pdftools" :branch "master"))
+
 ;; Language-specific refactoring in Emacs.
 ;;   https://github.com/Wilfred/emacs-refactor
 (package! emr)
