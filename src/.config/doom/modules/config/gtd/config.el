@@ -2,7 +2,8 @@
 
 (setq medivhok/org-directory "~/Documents/org/")
 (setq medivhok/org-agenda-directory (concat medivhok/org-directory "agenda/"))
- 
+(setq reftex-default-bibliography '("~/Documents/org/roam/bibliography/references.bib"))
+
 ;; -----------------------------------------------------------------------------
 ;; org
 ;;
@@ -13,48 +14,36 @@
   (org-directory medivhok/org-directory)
   (org-agenda-files (list medivhok/org-agenda-directory))
   (org-return-follows-link t)
-  (org-babel-load-languages '((emacs-lisp . t)
-                              (R . t)))
-  (org-use-speed-commands t)
   (org-catch-invisible-edits 'show)
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-refile-use-outline-path 'file)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+
+  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+
+  (org-tag-alist '(("@commission" . ?e)
+                   ("@maison" . ?h)
+                   ("@teluq" . ?s)
+                   (:newline)
+                   ("WAITING" . ?w)
+                   ("HOLD" . ?H)
+                   ("CANCELLED" . ?c)))
+
+  (org-refile-targets '(("next.org" :level . 0)
+                        ("someday.org" :level . 0)
+                        ("reading.org" :level . 1)
+                        ("projects.org" :maxlevel . 1)))
 
   :custom-face
   (org-link ((t (:inherit link :underline nil))))
-
-  :init
-  (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'proselint 'org-mode))
 
   :config
   (defun medivhok/org-archive-done-tasks ()
     "Archive all done tasks."
     (interactive)
     (org-map-entries 'org-archive-subtree "/DONE" 'file))
-
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
-
-  (setq org-log-done 'time
-        org-log-into-drawer t
-        org-log-state-notes-insert-after-drawers nil)
-
-  (setq org-tag-alist (quote (("@errand" . ?e)
-                              ("@home" . ?h)
-                              ("@teluq" . ?s)
-                              (:newline)
-                              ("WAITING" . ?w)
-                              ("HOLD" . ?H)
-                              ("CANCELLED" . ?c))))
-
-  (setq org-fast-tag-selection-single-key nil)
-  (setq org-refile-use-outline-path 'file
-        org-outline-path-complete-in-steps nil)
-  (setq org-refile-allow-creating-parent-nodes 'confirm)
-  (setq org-refile-targets '(("next.org" :level . 0)
-                             ("someday.org" :level . 0)
-                             ("reading.org" :level . 1)
-                             ("projects.org" :maxlevel . 1)))
 
   (defun medivhok/set-todo-state-next ()
     "Visit each parent task and change NEXT states to TODO"
@@ -72,30 +61,31 @@
   (org-agenda-diary-file (concat medivhok/org-directory "diary.org"))
   (org-agenda-block-separator nil)
   (org-agenda-start-with-log-mode t)
-  (org-agenda-custom-commands `((" " "Agenda"
-                                 ((agenda ""
-                                          ((org-agenda-span 'week)
-                                           (org-deadline-warning-days 14)))
-                                  (todo "TODO"
-                                        ((org-agenda-overriding-header "To Refile")
-                                         (org-agenda-files '(,(concat medivhok/org-agenda-directory "inbox.org")))))
-                                  (todo "TODO"
-                                        ((org-agenda-overriding-header "Emails")
-                                         (org-agenda-files '(,(concat medivhok/org-agenda-directory "emails.org")))))
-                                  (todo "NEXT"
-                                        ((org-agenda-overriding-header "In Progress")
-                                         (org-agenda-files '(,(concat medivhok/org-agenda-directory "someday.org")
-                                                             ,(concat medivhok/org-agenda-directory "projects.org")
-                                                             ,(concat medivhok/org-agenda-directory "next.org")))
-                                         ))
-                                  (todo "TODO"
-                                        ((org-agenda-overriding-header "Projects")
-                                         (org-agenda-files '(,(concat medivhok/org-agenda-directory "projects.org")))
-                                         ))
-                                  (todo "TODO"
-                                        ((org-agenda-overriding-header "One-off Tasks")
-                                         (org-agenda-files '(,(concat medivhok/org-agenda-directory "next.org")))
-                                         (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))))
+  (org-agenda-custom-commands
+   `((" " "Agenda"
+      ((agenda ""
+               ((org-agenda-span 'week)
+                (org-deadline-warning-days 14)))
+       (todo "TODO"
+             ((org-agenda-overriding-header "To Refile")
+              (org-agenda-files '(,(concat medivhok/org-agenda-directory "inbox.org")))))
+       (todo "TODO"
+             ((org-agenda-overriding-header "Emails")
+              (org-agenda-files '(,(concat medivhok/org-agenda-directory "emails.org")))))
+       (todo "NEXT"
+             ((org-agenda-overriding-header "In Progress")
+              (org-agenda-files '(,(concat medivhok/org-agenda-directory "someday.org")
+                                  ,(concat medivhok/org-agenda-directory "projects.org")
+                                  ,(concat medivhok/org-agenda-directory "next.org")))
+              ))
+       (todo "TODO"
+             ((org-agenda-overriding-header "Projects")
+              (org-agenda-files '(,(concat medivhok/org-agenda-directory "projects.org")))
+              ))
+       (todo "TODO"
+             ((org-agenda-overriding-header "One-off Tasks")
+              (org-agenda-files '(,(concat medivhok/org-agenda-directory "next.org")))
+              (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))))
 
   :config
   (defvar medivhok/org-current-effort "1:00"
@@ -220,7 +210,8 @@
   (setq org-roam-graph-exclude-matcher "private")
 
   :custom
-  (org-roam-directory (concat medivhok/org-directory "notes"))
+  (org-roam-directory (concat medivhok/org-directory "roam"))
+  (org-roam-tag-sources '(prop))
 
   :config
   (require 'org-roam-protocol)
@@ -229,6 +220,12 @@
            "%?"
            :file-name "${slug}"
            :head "#+TITLE: ${title}\n"
+           :unnarrowed t)
+          ("m" "mathématique" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "${slug}"
+           :head
+           "#+SETUPFILE: ./setup/math_setup.org\n#+TITLE: ${title}\n#+ROAM_TAGS: mathématique\n"
            :unnarrowed t)
           ("p" "private" plain (function org-roam-capture--get-point)
            "%?"
@@ -250,26 +247,6 @@
   :after org-roam
   :config
   (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
-
-(after! (org org-roam)
-    (defun my/org-roam--backlinks-list (file)
-      (if (org-roam--org-roam-file-p file)
-          (--reduce-from
-           (concat acc (format "- [[file:%s][%s]]\n"
-                               (file-relative-name (car it) org-roam-directory)
-                               (org-roam--get-title-or-slug (car it))))
-           "" (org-roam-sql [:select [file-from]
-                             :from file-links
-                             :where (= file-to $s1)
-                             :and file-from :not :like $s2] file "%private%"))
-        ""))
-    (defun my/org-export-preprocessor (_backend)
-      (let ((links (my/org-roam--backlinks-list (buffer-file-name))))
-        (unless (string= links "")
-          (save-excursion
-            (goto-char (point-max))
-            (insert (concat "\n* Backlinks\n" links))))))
-    (add-hook 'org-export-before-processing-hook 'my/org-export-preprocessor))
 
 ;; -----------------------------------------------------------------------------
 ;; org-journal
@@ -334,3 +311,6 @@
   (deft-default-extension "org")
   (deft-directory org-roam-directory))
 
+(use-package! bibtex-completion
+  :custom
+  (bibtex-completion-bibliography '("~/Documents/org/roam/bibliography/references.bib")))

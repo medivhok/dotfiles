@@ -94,3 +94,6 @@
 ;; Colorize color names in buffers.
 ;;   http://elpa.gnu.org/packages/rainbow-mode.html
 (package! rainbow-mode)
+
+;; https://github.com/jkitchin/org-ref
+(package! org-ref)

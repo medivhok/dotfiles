@@ -64,9 +64,11 @@
   (dashboard-set-navigator t)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
+  (show-week-agenda-p t)
   (dashboard-items '((recents . 5)
-		     (projects . 3)
-		     (agenda . 5)))
+		                 (projects . 3)
+		                 (agenda . 5)))
+
   :config
   ;; (defun medivhok/dashboard-insert-custom (list-size)
   ;;   "Add the list of LIST-SIZE items of menu."

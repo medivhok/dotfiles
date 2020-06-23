@@ -1,11 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; conf/gtd/packages.el
 
-;; Company completion backend for Org-roam.
-;;   https://github.com/jethrokuan/company-org-roam
-(package! company-org-roam
-  :recipe (:host github :repo "jethrokuan/company-org-roam"))
-
 ;; Convenience functions to work with emacs org mode clocking.
 ;;   https://github.com/dfeich/org-clock-convenience
 (package! org-clock-convenience)
@@ -22,6 +17,17 @@
 (package! org-plus-contrib)
 
 ;; Rudimentary Roam replica with Org-mode.
-;;   https://github.com/jethrokuan/org-roam
+;;   https://github.com/org-roam/org-roam
 (package! org-roam
-  :recipe (:host github :repo "jethrokuan/org-roam"))
+  :recipe (:host github :repo "org-roam/org-roam"))
+
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+
+(package! org-roam-server
+  :recipe (:host github :repo "org-roam/org-roam-server"))
+
+;; Company completion backend for Org-roam.
+;;   https://github.com/jethrokuan/company-org-roam
+(package! company-org-roam
+  :recipe (:host github :repo "org-roam/company-org-roam"))
