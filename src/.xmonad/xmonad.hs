@@ -53,6 +53,11 @@ keybindings = [ ("M-p", spawn "rofi -show run")
               , ("M-d", spawn "dia --integrated")
               -- Open MyTerminal
               , ("M-<Return>", spawn myTerminal)
+              , ("<XF86AudioMute>", spawn "amixer set Master toggle")
+              , ("<XF86AudioLowerVolume>", spawn "amixer set Master 4%- unmute")
+              , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 4%+ unmute")
+              , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 10")
+              , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 10")
               ]
 
 -- -----------------------------------------------------------------------------

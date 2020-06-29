@@ -4,6 +4,14 @@
 (setq medivhok/org-agenda-directory (concat medivhok/org-directory "agenda/"))
 (setq reftex-default-bibliography '("~/Documents/org/roam/bibliography/references.bib"))
 
+(defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+  (unless pub-dir
+    (setq pub-dir "exports")
+    (unless (file-directory-p pub-dir)
+      (make-directory pub-dir)))
+  (apply orig-fun extension subtreep pub-dir nil))
+(advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
+
 ;; -----------------------------------------------------------------------------
 ;; org
 ;;
@@ -225,7 +233,7 @@
            "%?"
            :file-name "${slug}"
            :head
-           "#+SETUPFILE: ./setup/math_setup.org\n#+TITLE: ${title}\n#+ROAM_TAGS: mathématique\n"
+           "#+SETUPFILE: ./setup-files/math_setup.org\n#+TITLE: ${title}\n#+ROAM_TAGS: mathématique\n"
            :unnarrowed t)
           ("p" "private" plain (function org-roam-capture--get-point)
            "%?"
@@ -311,6 +319,13 @@
   (deft-default-extension "org")
   (deft-directory org-roam-directory))
 
-(use-package! bibtex-completion
+;; (use-package! bibtex-completion
+;;   :custom
+;;   (bibtex-completion-bibliography '("~/Documents/org/roam/bibliography/references.bib")))
+
+(use-package! ox-latex
   :custom
-  (bibtex-completion-bibliography '("~/Documents/org/roam/bibliography/references.bib")))
+  (org-latex-pdf-process '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                           "bibtex %b"
+                           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")))

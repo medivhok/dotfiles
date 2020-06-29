@@ -224,3 +224,110 @@
 (use-package! emr
   :bind (:map prog-mode-map
           (("M-RET" . emr-show-refactor-menu))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(dashboard-items '((recents . 5) (projects . 3) (agenda . 5)))
+ '(dashboard-set-file-icons t)
+ '(dashboard-set-heading-icons t)
+ '(dashboard-set-navigator t)
+ '(dashboard-show-shortcuts nil)
+ '(dashboard-startup-banner 'logo)
+ '(deft-default-extension "org" t)
+ '(deft-directory "~/Documents/org/roam")
+ '(deft-recursive t)
+ '(deft-use-filter-string-for-filename t)
+ '(org-agenda-block-separator nil)
+ '(org-agenda-custom-commands
+   '((" " "Agenda"
+      ((agenda ""
+               ((org-agenda-span 'week)
+                (org-deadline-warning-days 14)))
+       (todo "TODO"
+             ((org-agenda-overriding-header "To Refile")
+              (org-agenda-files
+               '("~/Documents/org/agenda/inbox.org"))))
+       (todo "TODO"
+             ((org-agenda-overriding-header "Emails")
+              (org-agenda-files
+               '("~/Documents/org/agenda/emails.org"))))
+       (todo "NEXT"
+             ((org-agenda-overriding-header "In Progress")
+              (org-agenda-files
+               '("~/Documents/org/agenda/someday.org" "~/Documents/org/agenda/projects.org" "~/Documents/org/agenda/next.org"))))
+       (todo "TODO"
+             ((org-agenda-overriding-header "Projects")
+              (org-agenda-files
+               '("~/Documents/org/agenda/projects.org"))))
+       (todo "TODO"
+             ((org-agenda-overriding-header "One-off Tasks")
+              (org-agenda-files
+               '("~/Documents/org/agenda/next.org"))
+              (org-agenda-skip-function
+               '(org-agenda-skip-entry-if 'deadline 'scheduled))))))))
+ '(org-agenda-diary-file "~/Documents/org/diary.org")
+ '(org-agenda-files '("~/Documents/org/agenda/"))
+ '(org-agenda-start-with-log-mode t)
+ '(org-capture-templates
+   '(("i" "inbox" entry
+      (file "~/Documents/org/agenda/inbox.org")
+      "* TODO %?")
+     ("e" "email" entry
+      (file+headline "~/Documents/org/agenda/emails.org" "Emails")
+      "* TODO [#A] Reply: %a :@home:@school:" :immediate-finish t)
+     ("c" "org-protocol-capture" entry
+      (file "~/Documents/org/agenda/inbox.org")
+      "* TODO [[%:link][%:description]]
+
+ %i" :immediate-finish t)
+     ("w" "Weekly Review" entry
+      (file+olp+datetree "~/Documents/org/agenda/reviews.org")
+      (file "~/Documents/org/agenda/templates/weekly_review.org"))
+     ("r" "Reading" todo ""
+      ((org-agenda-files
+        '("~/Documents/org/agenda/reading.org"))))))
+ '(org-catch-invisible-edits 'show)
+ '(org-directory "~/Documents/org/")
+ '(org-journal-date-format "%A, %d %B %Y")
+ '(org-journal-date-prefix "#+TITLE: ")
+ '(org-journal-dir "/home/medivhok/Documents/org/roam")
+ '(org-journal-file-format "%Y-%m-%d.org")
+ '(org-log-done 'time)
+ '(org-log-into-drawer t)
+ '(org-refile-allow-creating-parent-nodes 'confirm)
+ '(org-refile-targets
+   '(("next.org" :level . 0)
+     ("someday.org" :level . 0)
+     ("reading.org" :level . 1)
+     ("projects.org" :maxlevel . 1)))
+ '(org-refile-use-outline-path 'file)
+ '(org-return-follows-link t)
+ '(org-roam-directory "~/Documents/org/roam")
+ '(org-roam-tag-sources '(prop))
+ '(org-tag-alist
+   '(("@commission" . 101)
+     ("@maison" . 104)
+     ("@teluq" . 115)
+     (:newline)
+     ("WAITING" . 119)
+     ("HOLD" . 72)
+     ("CANCELLED" . 99)))
+ '(org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+     (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+ '(safe-local-variable-values
+   '((org-babel-load-languages
+      '((R . t)))
+     (bibtex-completion-bibliography . "~/Documents/org/roam/bibliography/references.bib")
+     (bibtex-completion-bibliography list "~/Documents/org/roam/bibliography/references.bib")
+     (bibtex-completion-bibliography quote
+                                     ("~/Documents/org/roam/bibliography/references.bib"))))
+ '(show-week-agenda-p t t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-link ((t (:inherit link :underline nil)))))
