@@ -58,6 +58,13 @@ keybindings = [ ("M-p", spawn "rofi -show run")
               , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 4%+ unmute")
               , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 10")
               , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 10")
+
+              -- Applications
+              , ("M-o b", spawn "chromium")
+              , ("M-o e", spawn "emacs")
+              , ("M-o f", spawn "dolphin")
+              , ("M-o l", spawn "libreoffice")
+              , ("M-o p", spawn "qpdfview")
               ]
 
 -- -----------------------------------------------------------------------------
@@ -71,15 +78,15 @@ xmobarEscape = concatMap doubleLts
 
 myWorkspaces :: [String]
 myWorkspaces = clickable . map xmobarEscape
-             $ [ "code"
-               , "shell"
-               , "web"
-               , "files"
-               , "graphics"
-               , "music"
-               , "office"
-               , "torrent"
-               , "misc"
+             $ [ "1"
+               , "2"
+               , "3"
+               , "4"
+               , "5"
+               , "6"
+               , "7"
+               , "8"
+               , "9"
                ]
   where
     clickable l = [ "<action=xdotool key super+" ++ show (n) ++ ">" ++ ws ++ "</action>" |

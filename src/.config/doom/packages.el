@@ -51,49 +51,80 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-;; Let company use child frame as its candidate menu.
-;;   https://github.com/tumashu/company-posframe
-(package! company-posframe)
-
-;; An extensible emacs dashboard.
-;;   https://github.com/emacs-dashboard/emacs-dashboard
-(package! dashboard)
-
-;; Fast, friendly searching with ripgrep and Emacs.
-;;   https://github.com/Wilfred/deadgrep
-(package! deadgrep)
-
-;; Collection of useful dired additions (dired-hacks).
-;;   https://github.com/Fuco1/dired-hacks#dired-narrow
-(package! dired-narrow)
-
-;; Kill & Mark Things Easily in Emacs.
-;;   https://github.com/leoliu/easy-kill
-(package! easy-kill)
-
-;; Future-proof your Emacs Lisp customizations!
-;;   https://github.com/raxod502/el-patch
-(package! el-patch
-  :recipe (:host github :repo "raxod502/el-patch" :branch "master"))
-
-(package! org-pdftools
-  :recipe (:host github :repo "fuxialexander/org-pdftools" :branch "master"))
-
-;; Language-specific refactoring in Emacs.
-;;   https://github.com/Wilfred/emacs-refactor
-(package! emr)
-
+;;
 ;; Make Emacs use the $PATH set up by the user's shell.
+;;
 ;;   https://github.com/purcell/exec-path-from-shell
+;;
 (package! exec-path-from-shell)
 
+(package! bibtex-completion
+  :recipe (:host github :repo "tmalsburg/helm-bibtex"))
+
+;;
 ;; Flycheck syntax checker using clang-tidy.
+;;
 ;;   https://github.com/ch1bo/flycheck-clang-tidy
+;;
 (package! flycheck-clang-tidy)
 
+;;
 ;; Colorize color names in buffers.
+;;
 ;;   http://elpa.gnu.org/packages/rainbow-mode.html
+;;  
 (package! rainbow-mode)
 
-;; https://github.com/jkitchin/org-ref
+;;
+;; citations, cross-references, indexes, glossaries and bibtex utilities for
+;; org-mode
+;;
+;;   https://github.com/jkitchin/org-ref
+;;
 (package! org-ref)
+
+;;
+;; Convenience functions to work with emacs org mode clocking.
+;;
+;;   https://github.com/dfeich/org-clock-convenience
+;;  
+(package! org-clock-convenience)
+
+;;
+;; Caldav sync for Emacs Orgmode
+;;
+;;   https://github.com/dengste/org-caldav
+;;  
+(package! org-caldav
+  :recipe (:host github :repo "grauschnabel/org-caldav"))
+
+;;
+;; https://orgmode.org/worg/org-contrib/
+;;
+(package! org-plus-contrib)
+
+;;
+;; org-roam-bibtex is a library which offers a tighter integration between
+;; org-roam, helm-bibtex, and org-ref. It allows users to access their
+;; bibliographical notes in org-roam-directory via helm-bibtex, ivy-bibtex, or
+;; by opening org-ref’s cite: links and running 3. Add notes. If the note does
+;; not exist, it is created.
+;;
+;;  https://github.com/org-roam/org-roam-bibtex
+;;
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+
+(unpin! org-roam
+        company-org-roam
+        bibtex-completion
+        helm-bibtex
+        ivy-bibtex)
+
+;;
+;; A Web Application to Visualize the Org-Roam Database.
+;;
+;;  https://github.com/org-roam/org-roam-server
+;; 
+(package! org-roam-server
+  :recipe (:host github :repo "org-roam/org-roam-server"))

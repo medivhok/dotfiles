@@ -1,52 +1,9 @@
 ;;; app/gtd/config.el -*- lexical-binding: t; -*-
 
-(setq medivhok/org-directory "~/Documents/org/")
-(setq medivhok/org-agenda-directory (concat medivhok/org-directory "agenda/"))
-(setq reftex-default-bibliography '("~/Documents/org/roam/bibliography/references.bib"))
-
-(defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
-  (unless pub-dir
-    (setq pub-dir "exports")
-    (unless (file-directory-p pub-dir)
-      (make-directory pub-dir)))
-  (apply orig-fun extension subtreep pub-dir nil))
-(advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
-
 ;; -----------------------------------------------------------------------------
 ;; org
 ;;
 (use-package! org
-  :mode ("\\.org\\'" . org-mode)
-
-  :custom
-  (org-directory medivhok/org-directory)
-  (org-agenda-files (list medivhok/org-agenda-directory))
-  (org-return-follows-link t)
-  (org-catch-invisible-edits 'show)
-  (org-log-done 'time)
-  (org-log-into-drawer t)
-  (org-refile-use-outline-path 'file)
-  (org-refile-allow-creating-parent-nodes 'confirm)
-
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
-
-  (org-tag-alist '(("@commission" . ?e)
-                   ("@maison" . ?h)
-                   ("@teluq" . ?s)
-                   (:newline)
-                   ("WAITING" . ?w)
-                   ("HOLD" . ?H)
-                   ("CANCELLED" . ?c)))
-
-  (org-refile-targets '(("next.org" :level . 0)
-                        ("someday.org" :level . 0)
-                        ("reading.org" :level . 1)
-                        ("projects.org" :maxlevel . 1)))
-
-  :custom-face
-  (org-link ((t (:inherit link :underline nil))))
-
   :config
   (defun medivhok/org-archive-done-tasks ()
     "Archive all done tasks."
@@ -195,68 +152,6 @@
           ("e" . org-clock-convenience-fill-gap-both)))
 
 ;; -----------------------------------------------------------------------------
-;; org-roam
-;;
-(use-package! org-roam
-  :after org
-
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-
-  :hook
-  (after-init . org-roam-mode)
-
-  :init
-  (map! :leader
-        :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-graph-exclude-matcher "private")
-
-  :custom
-  (org-roam-directory (concat medivhok/org-directory "roam"))
-  (org-roam-tag-sources '(prop))
-
-  :config
-  (require 'org-roam-protocol)
-  (setq org-roam-capture-templates
-        '(("d" "default" plain (function org-roam--capture-get-point)
-           "%?"
-           :file-name "${slug}"
-           :head "#+TITLE: ${title}\n"
-           :unnarrowed t)
-          ("m" "mathématique" plain (function org-roam--capture-get-point)
-           "%?"
-           :file-name "${slug}"
-           :head
-           "#+SETUPFILE: ./setup-files/math_setup.org\n#+TITLE: ${title}\n#+ROAM_TAGS: mathématique\n"
-           :unnarrowed t)
-          ("p" "private" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "private-${slug}"
-           :head "#+TITLE: ${title}\n"
-           :unnarrowed t)))
-  (setq org-roam-ref-capture-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "websites/${slug}"
-           :head "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n- source :: ${ref}"
-           :unnarrowed t))))
-
-;; -----------------------------------------------------------------------------
-;; company-org-roam
-;;
-(use-package company-org-roam
-  :when (featurep! :completion company)
-  :after org-roam
-  :config
-  (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
-
-;; -----------------------------------------------------------------------------
 ;; org-journal
 ;;
 (use-package! org-journal
@@ -267,11 +162,6 @@
   (org-journal-file-format "%Y-%m-%d.org")
   (org-journal-dir org-roam-directory)
   (org-journal-date-format "%A, %d %B %Y"))
-
-;; -----------------------------------------------------------------------------
-;; org-protocol
-;;
-(use-package! org-protocol)
 
 ;; -----------------------------------------------------------------------------
 ;; org-capture
@@ -329,3 +219,34 @@
                            "bibtex %b"
                            "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
                            "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")))
+
+;; -----------------------------------------------------------------------------
+;; ox-icalendar
+;;
+(use-package! ox-icalendar
+  :custom
+  (org-icalendar-timezone "America/Montreal")
+  (org-icalendar-store-UID t)
+  (org-icalendar-include-todo 'all)
+  (org-icalendar-use-scheduled '(event-if-todo-not-done event-if-not-todo todo-start))
+  (org-icalendar-use-deadline '(event-if-todo-not-done event-if-not-todo todo-due)))
+
+;; -----------------------------------------------------------------------------
+;; org-caldav setup
+;;
+;; site: https://github.com/dengste/org-caldav
+;; -----------------------------------------------------------------------------
+(use-package! org-caldav
+  :init
+  (setq org-caldav-sync-todo t)
+
+  :custom
+  (org-caldav-save-directory (concat medivhok/org-agenda-directory "caldav-sync/"))
+  (org-caldav-url "https://medivhok.hopto.org/remote.php/dav/calendars/medivhok")
+  (org-caldav-calendars
+   `((:calendar-id "projects"
+      :files (,medivhok/agenda-file-projects)
+      :inbox ,medivhok/agenda-file-inbox)
+     (:calendar-id "teluq"
+      :files (,medivhok/agenda-file-teluq)
+      :inbox ,medivhok/agenda-file-inbox))))

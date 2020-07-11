@@ -15,6 +15,7 @@ export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.local/share/oh-my-zsh"
 
+export HISTFILE="$XDG_CONFIG_HOME/zsh/.zsh_history"
 export EDITOR=vim
 
 export QT_QPA_PLATFORMTHEME=qt5ct

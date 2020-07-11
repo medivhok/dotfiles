@@ -100,6 +100,7 @@ plugins=(
     node
     vi-mode
     yarn
+    history-substring-search
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -136,4 +137,5 @@ if [[ -z $DISPLAY  ]] && [[ $(tty) = /dev/tty1 ]]; then
     exec startx
 fi
 
-echo "zshrc" >> /tmp/loading-order.txt
+bindkey '\e[A' history-beginning-search-backward
+bindkey '\e[B' history-beginning-search-forward
