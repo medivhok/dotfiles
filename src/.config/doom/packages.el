@@ -62,6 +62,15 @@
   :recipe (:host github :repo "tmalsburg/helm-bibtex"))
 
 ;;
+;; Log messages in elisp with information about where the log call is located
+;; in source.
+;;
+;;   https://github.com/jordonbiondo/call-log
+;;
+(package! call-log
+  :recipe (:host github :repo "jordonbiondo/call-log"))
+
+;;
 ;; Flycheck syntax checker using clang-tidy.
 ;;
 ;;   https://github.com/ch1bo/flycheck-clang-tidy
