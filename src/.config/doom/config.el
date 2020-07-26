@@ -10,54 +10,72 @@
       doom-theme 'doom-one
       display-line-numbers-type 'relative)
 
-;; Root directory of all my org files.
-(setq org-directory "~/org/")
-
-;; Directory of the org-agenda files.
-(setq medivhok/agenda-directory (concat org-directory "agenda/"))
-
-;; Directory of the org-roam files.
-(setq org-roam-directory (concat org-directory "roam/"))
-
-;; Directory of the bibtex-completion notes.
-(setq bibtex-completion-notes-path org-roam-directory)
-
-(setq medivhok/diary-file (concat medivhok/agenda-directory "diary.org")
-      medivhok/emails-file (concat medivhok/agenda-directory "emails.org")
-      medivhok/inbox-file (concat medivhok/agenda-directory "emails.org")
-      medivhok/next-file (concat medivhok/agenda-directory "next.org")
-      medivhok/projects-file (concat medivhok/agenda-directory "projects.org")
-      medivhok/reading-file (concat medivhok/agenda-directory "reading.org")
-      medivhok/reviews-file (concat medivhok/agenda-directory "reviews.org")
-      medivhok/review-template-file (concat medivhok/agenda-directory "templates/weekly_review.org")
-      medivhok/someday-file (concat medivhok/agenda-directory "someday.org")
-      medivhok/teluq-file (concat medivhok/agenda-directory "teluq.org"))
+;; Some global variables
+(setq org-directory "~/org/"
+      org-roam-directory (concat org-directory "roam/")
+      reftex-default-bibliography (list (concat org-directory "bibliography/zotero.bib")))
 
 ;; Display lambda as symbols
 (global-prettify-symbols-mode 1)
 
+;;
+;; Bibtex
+;;
+;; Search and manage bibliographies in Emacs.
+;;  https://github.com/tmalsburg/helm-bibtex
+(use-package! bibtex-completion
+  :config
+  (setq bibtex-completion-notes-path org-roam-directory
+        bibtex-completion-bibliography reftex-default-bibliography))
 
-;;
-;; 2. Emails
-;;
-(setq message-auto-save-directory "~/.mail/drafts/"
-      sendmail-program (executable-find "msmtp")
-      message-sendmail-envelope-from 'header
-      mail-envelope-from 'header
-      mail-specify-envelope-from t
-      message-kill-buffer-on-exit t
-      notmuch-always-prompt-for-sender t
-      notmuch-crypto-process-mime t
-      notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
-      notmuch-labeler-hide-known-labels t
-      notmuch-search-oldest-first nil
-      notmuch-archive-tags '("-inbox" "-unread")
-      notmuch-message-headers '("To" "Cc" "Subject" "Bcc")
-      notmuch-saved-searches '((:name "inbox" :query "tag:inbox")
-                               (:name "unread" :query "tag:inbox and tag:unread")
-                               (:name "teluq" :query "tag:inbox and tag:teluq")
-                               (:name "personal" :query "tag:inbox and tag:personal")
-                               (:name "drafts" :query "tag:draft")))
+(after! helm-bibtex
+  (map! :desc "helm-bibtex" "<f3>" #'helm-bibtex))
+
+(use-package! org-roam-bibtex
+  :after
+  (org-roam)
+
+  :hook
+  (org-roam-mode . org-roam-bibtex-mode)
+
+  :config
+  (setq orb-preformat-keywords '(("citekey" . "=key=")
+                                 "title"
+                                 "url"
+                                 "file"
+                                 "author-or-editor"
+                                 "keywords")
+        orb-templates `(("r" "ref" plain (function org-roam-capture--get-point)
+                         ""
+                         :file-name "${citekey}"
+                         :head
+                         ,(concat "#+TITLE: ${citekey}: ${title}\n"
+                                  "#+ROAM_KEY: ${ref}\n\n"
+                                  "- tags ::\n"
+                                  "- keywords :: ${keywords}\n\n"
+                                  "* Notes\n"
+                                  ":PROPERTIES:\n"
+                                  ":Custom_ID: ${citekey}\n"
+                                  ":URL: ${url}\n"
+                                  ":AUTHOR: ${author-or-editor}\n"
+                                  ":NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")\n"
+                                  ":END:\n\n")
+                         :unnarrowed t)
+
+                        ("w" "webpage" plain (function org-roam-capture--get-point)
+                         ""
+                         :file-name "${citekey}"
+                         :head
+                         ,(concat "#+TITLE: ${title}\n"
+                                  "#+ROAM_KEY: ${url}\n\n"
+                                  "- tags ::\n"
+                                  "- keywords :: ${keywords}\n\n"
+                                  "* Notes\n"
+                                  ":PROPERTIES:\n"
+                                  ":URL: ${url}\n"
+                                  ":END:\n\n")
+                         :unnarrowed t))))
+
 
 ;;
 ;; https://notmuchmail.org/notmuch-emacs/
@@ -70,6 +88,24 @@
   (setq +notmuch-sync-backend 'mbsync)
 
   :config
+  (setq message-auto-save-directory "~/.mail/drafts/"
+        sendmail-program (executable-find "msmtp")
+        message-sendmail-envelope-from 'header
+        mail-envelope-from 'header
+        mail-specify-envelope-from t
+        message-kill-buffer-on-exit t
+        notmuch-always-prompt-for-sender t
+        notmuch-crypto-process-mime t
+        notmuch-hello-sections '(notmuch-hello-insert-saved-searches)
+        notmuch-labeler-hide-known-labels t
+        notmuch-search-oldest-first nil
+        notmuch-archive-tags '("-inbox" "-unread")
+        notmuch-message-headers '("To" "Cc" "Subject" "Bcc")
+        notmuch-saved-searches '((:name "inbox" :query "tag:inbox")
+                                 (:name "unread" :query "tag:inbox and tag:unread")
+                                 (:name "teluq" :query "tag:inbox and tag:teluq")
+                                 (:name "personal" :query "tag:inbox and tag:personal")
+                                 (:name "drafts" :query "tag:draft")))
   (defun medivhok/notmuch-toggle-read ()
     "toggle read status of message"
     (interactive)
@@ -104,6 +140,9 @@
         :desc "URL at point" "C-<return>" #'browse-url-at-point))
 
 (use-package! ol-notmuch
+  :after
+  (notmuch org)
+
   :config
   (map!
    :map notmuch-show-mode-map
@@ -116,14 +155,15 @@
 
 
 ;;
-;; 3. Org
-;;
-
 ;; Org mode is for keeping notes, maintaining TODO lists, planning projects, and
 ;; authoring documents with a fast and effective plain-text system.
 ;;  https://orgmode.org
+;;
 (use-package! org
-  :init
+  :custom-face
+  (org-link ((t (:inherit link :underline nil))))
+
+  :config
   (setq org-return-follows-link t
         org-catch-invisible-edits 'show
         org-log-done 'time
@@ -142,10 +182,6 @@
                         ("HOLD" . ?H)
                         ("CANCELLED" . ?c)))
 
-  :custom-face
-  (org-link ((t (:inherit link :underline nil))))
-
-  :config
   (org-babel-do-load-languages
    'org-babel-load-languages '((emacs-lisp . t)
                                (R . t)))
@@ -251,9 +287,19 @@ when ‘j’ was pressed."
     (clog/msg "Updating efforts complete.")))
 
 
-;;
-;; 4. Agenda
-;;
+;; Directory of the org-agenda files.
+(setq medivhok/org-agenda-directory (concat org-directory "agenda/")
+
+      medivhok/emails-file (concat medivhok/org-agenda-directory "emails.org")
+      medivhok/inbox-file (concat medivhok/org-agenda-directory "inbox.org")
+      medivhok/next-file (concat medivhok/org-agenda-directory "next.org")
+      medivhok/projects-file (concat medivhok/org-agenda-directory "projects.org")
+      medivhok/reading-file (concat medivhok/org-agenda-directory "reading.org")
+      medivhok/reviews-file (concat medivhok/org-agenda-directory "reviews.org")
+      medivhok/review-template-file (concat medivhok/org-agenda-directory "templates/weekly_review.org")
+      medivhok/someday-file (concat medivhok/org-agenda-directory "someday.org")
+      medivhok/teluq-file (concat medivhok/org-agenda-directory "teluq.org"))
+
 (use-package! org-agenda
   :after
   (org)
@@ -261,11 +307,7 @@ when ‘j’ was pressed."
   :commands
   (org-agenda)
 
-  :custom
-  (org-agenda-skip-scheduled-if-done t)
-  (org-agenda-skip-deadline-if-done t)
-
-  :init
+  :config
   (defun medivhok/open-agenda ()
     "Opens my gtd agenda."
     (interactive)
@@ -273,11 +315,28 @@ when ‘j’ was pressed."
 
   (map! "<f1>" #'medivhok/open-agenda)
 
-  :config
+  ;; Some personnal variables.
+  (setq medivhok/agenda-directory (concat org-directory "agenda/")
+        medivhok/diary-file (concat medivhok/agenda-directory "diary.org")
+        medivhok/emails-file (concat medivhok/agenda-directory "emails.org")
+        medivhok/inbox-file (concat medivhok/agenda-directory "emails.org")
+        medivhok/next-file (concat medivhok/agenda-directory "next.org")
+        medivhok/projects-file (concat medivhok/agenda-directory "projects.org")
+        medivhok/reading-file (concat medivhok/agenda-directory "reading.org")
+        medivhok/reviews-file (concat medivhok/agenda-directory "reviews.org")
+        medivhok/review-template-file (concat medivhok/agenda-directory "templates/weekly_review.org")
+        medivhok/someday-file (concat medivhok/agenda-directory "someday.org")
+        medivhok/teluq-file (concat medivhok/agenda-directory "teluq.org"))
+
+
+  ;; org-agenda variables.
   (setq org-agenda-files (list medivhok/agenda-directory)
         org-agenda-diary-file medivhok/diary-file
         org-agenda-block-separator nil
         org-agenda-start-with-log-mode t
+
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
 
         org-refile-targets `((,medivhok/next-file :level . 0)
                              (,medivhok/someday-file :level . 0)
@@ -290,7 +349,7 @@ when ‘j’ was pressed."
                     ((org-agenda-span 'week)
                      (org-deadline-warning-days 14)))
             (todo "TODO"
-                  ((org-agenda-overriding-header "To Refile")
+                  ((org-agenda-overriding-header "Inbox")
                    (org-agenda-files (list medivhok/inbox-file))))
             (todo "TODO"
                   ((org-agenda-overriding-header "Emails")
@@ -310,6 +369,7 @@ when ‘j’ was pressed."
                   ((org-agenda-overriding-header "One-off Tasks")
                    (org-agenda-files (list medivhok/next-file))
                    (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
+
 
 (use-package! org-capture
   :commands
@@ -346,9 +406,13 @@ when ‘j’ was pressed."
   (map! "<f4>" #'medivhok/inbox-capture))
 
 
-;;
-;; 5. Roam
-;;
+(after! org-journal
+  (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-file-format "%Y-%m-%d.org"
+        org-journal-dir (concat org-directory "journal/")
+        org-journal-carryover-items nil))
+
+
 (use-package! org-roam
   :after (org)
 
@@ -358,13 +422,11 @@ when ‘j’ was pressed."
   :hook
   (after-init . org-roam-mode)
 
-  :init
+  :config
   (setq org-roam-title-sources '(title)
         org-roam-tag-sources '(prop)
         org-roam-graph-exclude-matcher '("setup"))
 
-
-  :config
   (setq org-roam-capture-templates
         `(("d" "default" plain (function org-roam--capture-get-point)
            "%?"
@@ -384,81 +446,8 @@ when ‘j’ was pressed."
            :head "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n- source :: ${ref}"
            :unnarrowed t))))
 
-(use-package! org-roam-server
-  :after
-  (org-roam)
 
-  :config
-  (org-roam-server-mode 1))
 
-(setq bibtex-completion-notes-path org-roam-directory
-      bibtex-completion-bibliography (list (concat org-directory "bibliography/zotero.bib"))
-      bibtex-completion-pdf-field "file"
-      reftex-default-bibliography bibtex-completion-bibliography)
-
-;; Search and manage bibliographies in Emacs.
-;;  https://github.com/tmalsburg/helm-bibtex
-(after! bibtex-completion
-  (map! :desc "helm-bibtex" "<f3>" #'helm-bibtex))
-
-  ;; (bibtex-completion-notes-template-multiple-files
-  ;;  (concat "#+TITLE: ${title}\n"
-  ;;          "#+ROAM_KEY: cite:${=key=}\n"
-  ;;          "* TODO Notes\n"
-  ;;          ":PROPERTIES:\n"
-  ;;          ":Custom_ID: ${=key=}\n"
-  ;;          ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
-  ;;          ":AUTHOR: ${author-abbrev}\n"
-  ;;          ":JOURNAL: ${journaltitle}\n"
-  ;;          ":DATE: ${date}\n"
-  ;;          ":YEAR: ${year}\n"
-  ;;          ":DOI: ${doi}\n"
-  ;;          ":URL: ${url}\n"
-  ;;          ":END:\n\n")))
-
-(setq orb-preformat-keywords '(("citekey" . "=key=")
-                               "title"
-                               "url"
-                               "file"
-                               ;;"author-or-editor"
-                               "keywords")
-      orb-templates `(("r" "ref" plain (function org-roam-capture--get-point)
-                       ""
-                       :file-name "${citekey}"
-                       :head
-                       ,(concat "#+TITLE: ${citekey}: ${title}\n"
-                               "#+ROAM_KEY: ${ref}\n\n"
-                               "- tags ::\n"
-                               "- keywords :: ${keywords}\n\n"
-                               "* Notes\n"
-                               ":PROPERTIES:\n"
-                               ":Custom_ID: ${citekey}\n"
-                               ":URL: ${url}\n"
-                               ":AUTHOR: ${author-or-editor}\n"
-                               ":NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")\n"
-                               ":END:\n\n")
-                       :unnarrowed t)
-
-                      ("w" "webpage" plain (function org-roam-capture--get-point)
-                       ""
-                       :file-name "${citekey}"
-                       :head
-                       ,(concat "#+TITLE: ${title}\n"
-                               "#+ROAM_KEY: ${url}\n\n"
-                               "- tags ::\n"
-                               "- keywords :: ${keywords}\n\n"
-                               "* Notes\n"
-                               ":PROPERTIES:\n"
-                               ":URL: ${url}\n"
-                               ":END:\n\n")
-                       :unnarrowed t)))
-
-(use-package! org-roam-bibtex
-  :after
-  (org-roam)
-
-  :hook
-  (org-roam-mode . org-roam-bibtex-mode))
 
 ;; citations, cross-references, indexes, glossaries and bibtex utilities for
 ;; org-mode
