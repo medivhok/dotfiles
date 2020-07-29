@@ -11,12 +11,20 @@
       display-line-numbers-type 'relative)
 
 ;; Some global variables
+(setq medivhok/org-directory "~/org/"
+      medivhok/roam-directory (concat medivhok/org-directory "roam/"))
+
 (setq org-directory "~/org/"
       org-roam-directory (concat org-directory "roam/")
       reftex-default-bibliography (list (concat org-directory "bibliography/zotero.bib")))
 
 ;; Display lambda as symbols
 (global-prettify-symbols-mode 1)
+
+(remove-hook 'text-mode-hook #'auto-fill-mode)
+(add-hook 'message-mode-hook #'word-wrap-mode)
+
+(load! "+org-noter")
 
 ;;
 ;; Bibtex
@@ -433,6 +441,16 @@ when ‘j’ was pressed."
            :file-name "${slug}"
            :head "#+TITLE: ${title}\n"
            :unnarrowed t)
+          ("b" "blog" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "${slug}"
+           :head "#+TITLE: ${title}\n#+DATE: %t\n#+SETUPFILE: ./blog-setup.org\n#+HUGO_TAGS:\n#+ROAM_TAGS: blog\n\n* ${title}\n"
+           :unnarrowed t)
+          ("s" "synapses" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "${slug}"
+           :head "#+TITLE: ${title}\n#+DATE: %t\n#+SETUPFILE: ./synapses-setup.org\n#+HUGO_TAGS:\n#+ROAM_TAGS:\n\n* ${title}\n"
+           :unnarrowed t)
           ("p" "private" plain (function org-roam-capture--get-point)
            "%?"
            :file-name "private-${slug}"
@@ -472,16 +490,6 @@ when ‘j’ was pressed."
                                      "  :END:\n\n")
         org-ref-notes-directory org-roam-directory
         org-ref-notes-function 'orb-edit-notes))
-
-(use-package! org-noter
-  :after
-  (org-pdftools)
-
-  :custom
-  ;;(org-noter-notes-window-location 'other-frame)
-  (org-noter-always-create-frame nil)
-  (org-noter-hide-other nil)
-  (org-noter-notes-search-path (list medivhok/roam-directory)))
 
 ;;
 ;; 6. Latex

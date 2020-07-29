@@ -29,7 +29,7 @@
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       ;;fill-column       ; a `fill-column' indicator
+       fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
        ;;indent-guides     ; highlighted indent columns
@@ -138,13 +138,15 @@
        ;;factor
        ledger            ; an accounting system in Emacs
        lua               ; one-based indices? one-based indices
-       markdown          ; writing docs for people to ignore
+       (markdown          ; writing docs for people to ignore
+        +grip)
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org                ; organize your plain life in plain text
         +journal
         +gnuplot
+        +hugo
         +noter
         +pandoc
         +roam)
