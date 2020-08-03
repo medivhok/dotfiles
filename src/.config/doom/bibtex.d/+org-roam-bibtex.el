@@ -23,7 +23,7 @@
                          ""
                          :file-name "${citekey}"
                          :head
-                         ,(concat "#+TITLE: ${citekey}: ${title}\n"
+                         ,(concat "#+TITLE: ${title}\n"
                                   "#+ROAM_KEY: ${ref}\n\n"
                                   "- tags ::\n"
                                   "- keywords :: ${keywords}\n\n"

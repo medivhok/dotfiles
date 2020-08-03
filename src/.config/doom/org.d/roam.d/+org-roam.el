@@ -13,7 +13,8 @@
   (setq org-roam-directory medivhok/roam-directory
         org-roam-title-sources '(title)
         org-roam-tag-sources '(prop)
-        org-roam-graph-exclude-matcher '("setup"))
+        org-roam-graph-exclude-matcher '("setup")
+        org-roam-index-file "index_file.org")
 
   (setq org-roam-capture-templates
         `(("d" "default" plain (function org-roam--capture-get-point)
