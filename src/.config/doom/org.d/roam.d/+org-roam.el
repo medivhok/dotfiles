@@ -11,8 +11,8 @@
 
   :config
   (setq org-roam-directory medivhok/roam-directory
-        org-roam-title-sources '(title)
-        org-roam-tag-sources '(prop)
+        org-roam-title-sources '(title alias)
+        org-roam-tag-sources '(first-directory prop)
         org-roam-graph-exclude-matcher '("setup")
         org-roam-index-file "index_file.org")
 

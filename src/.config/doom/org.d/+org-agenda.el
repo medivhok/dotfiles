@@ -16,6 +16,7 @@
   (setq org-agenda-files (list medivhok/agenda-directory)
         org-agenda-block-separator nil
         org-agenda-start-with-log-mode t
+        org-agenda-dim-blocked-tasks 'invisible
 
         org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t

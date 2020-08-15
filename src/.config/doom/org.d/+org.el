@@ -35,13 +35,13 @@
    'org-babel-load-languages '((emacs-lisp . t)
                                (R . t)))
 
-  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
-    (unless pub-dir
-      (setq pub-dir "exports")
-      (unless (file-directory-p pub-dir)
-        (make-directory pub-dir)))
-    (apply orig-fun extension subtreep pub-dir nil))
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
+  ;; (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+  ;;   (unless pub-dir
+  ;;     (setq pub-dir "exports")
+  ;;     (unless (file-directory-p pub-dir)
+  ;;       (make-directory pub-dir)))
+  ;;   (apply orig-fun extension subtreep pub-dir nil))
+  ;; (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
 
   ;; Recompute effort of a parent headline from the efforts of the children if
   ;; they sum to a higher value.

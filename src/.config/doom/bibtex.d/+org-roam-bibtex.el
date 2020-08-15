@@ -24,9 +24,8 @@
                          :file-name "${citekey}"
                          :head
                          ,(concat "#+TITLE: ${title}\n"
-                                  "#+ROAM_KEY: ${ref}\n\n"
-                                  "- tags ::\n"
-                                  "- keywords :: ${keywords}\n\n"
+                                  "#+ROAM_KEY: ${ref}\n"
+                                  "#+ROAM_TAGS: ${keywords}\n\n"
                                   "* Notes\n"
                                   ":PROPERTIES:\n"
                                   ":Custom_ID: ${citekey}\n"
