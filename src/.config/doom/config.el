@@ -15,9 +15,10 @@
 
       ;; Agenda directory and files.
       medivhok/agenda-directory (concat medivhok/root-directory "agenda/")
+      medivhok/org-agenda-gtd-file (concat medivhok/agenda-directory "gtd.org")
       medivhok/agenda-emails-file (concat medivhok/agenda-directory "emails.org")
       medivhok/agenda-inbox-file (concat medivhok/agenda-directory "inbox.org")
-      medivhok/agenda-next-file (concat medivhok/agenda-directory "next.org")
+      medivhok/agenda-tasks-file (concat medivhok/agenda-directory "taches.org")
       medivhok/agenda-projects-file (concat medivhok/agenda-directory "projects.org")
       medivhok/agenda-reading-file (concat medivhok/agenda-directory "reading.org")
       medivhok/agenda-reviews-file (concat medivhok/agenda-directory "reviews.org")

@@ -31,6 +31,9 @@
                                    ("HOLD" . ?H)
                                    ("CANCELLED" . ?c)))
 
+  (setq org-columns-default-format-for-agenda
+        "%category(ID) %item(Description) %tags(Tag) %todo(Statut){X/} %effort(Est. temps){:} %clocksum(Temps de fait){:} %deadline(Date limite)")
+
   (org-babel-do-load-languages
    'org-babel-load-languages '((emacs-lisp . t)
                                (R . t)))

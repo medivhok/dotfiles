@@ -7,26 +7,17 @@
   :config
   (setq org-capture-templates
         `(("i" "inbox" entry
-           (file ,medivhok/agenda-inbox-file)
+           (file+headline ,medivhok/org-agenda-gtd-file "Inbox")
            "* TODO %?")
 
           ("e" "email" entry
-           (file+headline ,medivhok/agenda-emails-file "Emails")
-           "* TODO [#A] Reply: %a :@home:@school:"
-           :immediate-finish t)
-
-          ("c" "org-protocol-capture" entry
-           (file ,medivhok/agenda-inbox-file)
-           "* TODO [[%:link][%:description]]\n\n %i"
+           (file+headline ,medivhok/org-agenda-gtd-file "Emails")
+           "* TODO [#A] Reply: %a"
            :immediate-finish t)
 
           ("w" "Weekly Review" entry
            (file+olp+datetree ,medivhok/agenda-reviews-file)
-           (file ,medivhok/agenda-review-template-file))
-
-          ("r" "Reading" todo
-           ""
-           ((org-agenda-files '(,medivhok/agenda-reading-file))))))
+           (file ,medivhok/agenda-review-template-file))))
 
   (defun medivhok/inbox-capture ()
     "Capture a task for the inbox"
