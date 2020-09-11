@@ -1,51 +1,48 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
-[submodule "src/.vim/pack/medivhok/start/vim-airline"]
-	path = src/.vim/pack/medivhok/start/vim-airline
+[submodule ".vim/pack/medivhok/start/vim-airline"]
+	path = .vim/pack/medivhok/start/vim-airline
 	url = https://github.com/vim-airline/vim-airline.git
-[submodule "src/.vim/pack/medivhok/start/gruvbox"]
-	path = src/.vim/pack/medivhok/start/gruvbox
+[submodule ".vim/pack/medivhok/start/gruvbox"]
+	path = .vim/pack/medivhok/start/gruvbox
 	url = https://github.com/morhetz/gruvbox.git
-[submodule "src/.vim/pack/medivhok/start/vim-json"]
-	path = src/.vim/pack/medivhok/start/vim-json
+[submodule ".vim/pack/medivhok/start/vim-json"]
+	path = .vim/pack/medivhok/start/vim-json
 	url = https://github.com/elzr/vim-json.git
-[submodule "src/.vim/pack/medivhok/start/fzf.vim"]
-	path = src/.vim/pack/medivhok/start/fzf.vim
+[submodule ".vim/pack/medivhok/start/fzf.vim"]
+	path = .vim/pack/medivhok/start/fzf.vim
 	url = https://github.com/junegunn/fzf.vim.git
-[submodule "src/.vim/pack/medivhok/start/vim-multiple-cursors"]
-	path = src/.vim/pack/medivhok/start/vim-multiple-cursors
+[submodule ".vim/pack/medivhok/start/vim-multiple-cursors"]
+	path = .vim/pack/medivhok/start/vim-multiple-cursors
 	url = https://github.com/terryma/vim-multiple-cursors.git
-[submodule "src/.vim/pack/medivhok/start/vim-eunuch"]
-	path = src/.vim/pack/medivhok/start/vim-eunuch
+[submodule ".vim/pack/medivhok/start/vim-eunuch"]
+	path = .vim/pack/medivhok/start/vim-eunuch
 	url = https://github.com/tpope/vim-eunuch.git
-[submodule "src/.vim/pack/medivhok/start/vim-surround"]
-	path = src/.vim/pack/medivhok/start/vim-surround
+[submodule ".vim/pack/medivhok/start/vim-surround"]
+	path = .vim/pack/medivhok/start/vim-surround
 	url = https://github.com/tpope/vim-surround.git
-[submodule "src/.vim/pack/medivhok/start/nerdtree"]
-	path = src/.vim/pack/medivhok/start/nerdtree
+[submodule ".vim/pack/medivhok/start/nerdtree"]
+	path = .vim/pack/medivhok/start/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
-[submodule "src/.vim/pack/medivhok/start/editorconfig-vim"]
-	path = src/.vim/pack/medivhok/start/editorconfig-vim
+[submodule ".vim/pack/medivhok/start/editorconfig-vim"]
+	path = .vim/pack/medivhok/start/editorconfig-vim
 	url = https://github.com/editorconfig/editorconfig-vim.git
-[submodule "src/.vim/pack/medivhok/start/emmet-vim"]
-	path = src/.vim/pack/medivhok/start/emmet-vim
+[submodule ".vim/pack/medivhok/start/emmet-vim"]
+	path = .vim/pack/medivhok/start/emmet-vim
 	url = https://github.com/mattn/emmet-vim.git
-[submodule "src/.vim/pack/medivhok/start/ale"]
-	path = src/.vim/pack/medivhok/start/ale
+[submodule ".vim/pack/medivhok/start/ale"]
+	path = .vim/pack/medivhok/start/ale
 	url = https://github.com/w0rp/ale.git
-[submodule "src/.vim/pack/medivhok/start/vim-gitgutter"]
-	path = src/.vim/pack/medivhok/start/vim-gitgutter
+[submodule ".vim/pack/medivhok/start/vim-gitgutter"]
+	path = .vim/pack/medivhok/start/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter.git
-[submodule "src/.local/share/oh-my-zsh"]
-	path = src/.local/share/oh-my-zsh
-	url = https://github.com/robbyrussell/oh-my-zsh.git
-[submodule "src/.vim/pack/medivhok/start/haskellmode-vim"]
-	path = src/.vim/pack/medivhok/start/haskellmode-vim
+[submodule ".vim/pack/medivhok/start/haskellmode-vim"]
+	path = .vim/pack/medivhok/start/haskellmode-vim
 	url = https://github.com/lukerandall/haskellmode-vim.git
-[submodule "src/.vim/pack/medivhok/start/vim-javascript"]
-	path = src/.vim/pack/medivhok/start/vim-javascript
+[submodule ".vim/pack/medivhok/start/vim-javascript"]
+	path = .vim/pack/medivhok/start/vim-javascript
 	url = https://github.com/pangloss/vim-javascript.git
-[submodule "src/.vim/pack/medivhok/start/nerdtree-git-plugin"]
-	path = src/.vim/pack/medivhok/start/nerdtree-git-plugin
+[submodule ".vim/pack/medivhok/start/nerdtree-git-plugin"]
+	path = .vim/pack/medivhok/start/nerdtree-git-plugin
 	url = https://github.com/Xuyuanp/nerdtree-git-plugin.git

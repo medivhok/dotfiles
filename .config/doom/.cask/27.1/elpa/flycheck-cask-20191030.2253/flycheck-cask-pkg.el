@@ -1,0 +1,2 @@
+;;; Generated package description from /home/medivhok/.dotfiles/src/.config/doom/.cask/27.1/elpa/flycheck-cask-20191030.2253/flycheck-cask.el  -*- no-byte-compile: t -*-
+(define-package "flycheck-cask" "20191030.2253" "Cask support in Flycheck" '((emacs "24.3") (flycheck "0.14") (dash "2.4.0")) :commit "3457ae553c4feaf8168008f063d78fdde8fb5f94" :keywords '("tools" "convenience") :authors '(("Sebastian Wiesner" . "swiesner@lunaryorn.com")) :maintainer '("Sebastian Wiesner" . "swiesner@lunaryorn.com") :url "https://github.com/flycheck/flycheck-cask")
