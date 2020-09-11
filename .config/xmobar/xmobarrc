@@ -1,20 +1,20 @@
 -- -*-Haskell-*-
 Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
        , bgColor      = "#383c4a"
-       , fgColor      = "#cccccc"
+       , fgColor      = "#4d515f"
        , position     = Top
        , lowerOnStart = True
        , hideOnStart  = False
        , allDesktops  = True
        , persistent    = True
        , iconRoot     = "/home/medivhok/.xmonad/xpm/"
-       , commands = [ Run Cpu ["-t","<icon=cpu.xpm/> <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
-                    , Run Memory ["-t", "<icon=memory.xpm/> <usedratio>%"] 10
+       , commands = [ Run Cpu ["-t","cpu <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t", "ram <usedratio>%"] 10
                     , Run Date "%a %b %d %R" "date" 10
-                    , Run DiskU [("/", "<icon=hdd.xpm/> <used>/<size>")] [] 3600
+                    , Run DiskU [("/", "hdd <used>/<size>")] [] 3600
                     , Run UnsafeStdinReader
                     ]
        , sepChar      = "%"
        , alignSep     = "}{"
-       , template = " <icon=haskell_20.xpm/> %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc> <fc=#d3869b>%memory%</fc> <fc=#83a598>%disku%</fc> <icon=clock.xpm/> <fc=#fe8019>%date%</fc> "
+       , template = " %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc>|<fc=#d3869b>%memory%</fc>|<fc=#83a598>%disku%</fc>|<fc=#fe8019>%date%</fc> "
        }
