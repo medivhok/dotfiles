@@ -13,21 +13,6 @@
 ;; Custom global variables
 (setq medivhok/root-directory "~/org/"
 
-      ;; Agenda directory and files.
-      medivhok/agenda-directory (concat medivhok/root-directory "agenda/")
-      medivhok/gtd-file (concat medivhok/agenda-directory "gtd.org")
-      medivhok/teluq-file (concat medivhok/agenda-directory "teluq.org")
-
-      medivhok/agenda-emails-file (concat medivhok/agenda-directory "emails.org")
-      medivhok/agenda-inbox-file (concat medivhok/agenda-directory "inbox.org")
-      medivhok/agenda-tasks-file (concat medivhok/agenda-directory "taches.org")
-      medivhok/agenda-projects-file (concat medivhok/agenda-directory "projects.org")
-      medivhok/agenda-reading-file (concat medivhok/agenda-directory "reading.org")
-      medivhok/agenda-reviews-file (concat medivhok/agenda-directory "reviews.org")
-      medivhok/agenda-review-template-file (concat medivhok/agenda-directory "templates/weekly_review.org")
-      medivhok/agenda-someday-file (concat medivhok/agenda-directory "someday.org")
-      medivhok/agenda-teluq-file (concat medivhok/agenda-directory "teluq.org")
-
       ;; Bibtex directory and files.
       medivhok/bibtex-directory (concat medivhok/root-directory "bibtex/")
       medivhok/bibtex-file (concat medivhok/bibtex-directory "zotero.bib")
@@ -42,11 +27,42 @@
 (remove-hook 'text-mode-hook #'auto-fill-mode)
 (add-hook 'message-mode-hook #'word-wrap-mode)
 
-(load! "bibtex.d/+config")
-(load! "latex.d/+config")
-(load! "mail.d/+config")
-(load! "org.d/+config")
-(load! "pdf.d/+config")
+;;
+;; Org mode is for keeping notes, maintaining TODO lists, planning projects, and
+;; authoring documents with a fast and effective plain-text system.
+;;
+;; https://orgmode.org
+;;
+(use-package! org
+  :custom-face
+  (org-link ((t (:inherit link :underline nil))))
+
+  :config
+  (setq org-directory "~/org/"
+        org-return-follows-link t
+        org-catch-invisible-edits 'show
+        org-log-done 'time
+        org-log-into-drawer t
+        org-refile-use-outline-path 'file
+        org-refile-allow-creating-parent-nodes 'confirm
+        org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+
+        org-format-latex-options (plist-put org-format-latex-options :scale 3.5)
+
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                            (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+
+        org-tag-alist-for-agenda '(("@commissions" . ?e)
+                                   ("@maison" . ?h)
+                                   ("@teluq" . ?s)
+                                   (:newline)
+                                   ("WAITING" . ?w)
+                                   ("HOLD" . ?H)
+                                   ("CANCELLED" . ?c)))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages '((emacs-lisp . t)
+                               (R . t))))
 
 ;;
 ;; Dictionnary setup
@@ -121,3 +137,17 @@
             (if (string= (buffer-name) "*Buttercup*")
                 (add-hook 'after-change-functions 'colorize-buttercup-buffer nil t))))
 
+(use-package! ox-latex
+  :custom
+  (org-latex-listings 'minted)
+  (org-latex-packages-alist '(("" "minted")))
+  (org-latex-minted-langs '((R "r")))
+  (org-latex-minted-options '(("style" "colorful")
+                              ("frame" "single")
+                              ("framesep" "8pt")
+                              ("xleftmargin" "16pt")))
+  (org-latex-inputenc-alist '(("utf8" . "utf8x")))
+  (org-latex-pdf-process '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                           "bibtex %b"
+                           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")))

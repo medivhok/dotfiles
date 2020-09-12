@@ -184,5 +184,9 @@
 
        :config
        ;;literate
-       (default +bindings +smartparens))
+       (default +bindings +smartparens)
 
+       :my
+       agenda
+       notes
+       budget)
