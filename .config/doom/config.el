@@ -8,18 +8,11 @@
       doom-font (font-spec :family "Hack Nerd Font Mono" :size 18)
       doom-variable-pitch-font (font-spec :family "Hack Nerd Font")
       doom-theme 'doom-one
-      display-line-numbers-type 'relative)
+      display-line-numbers-type 'relative
+      medivhok/root-directory "~/org/"
+      reftex-default-bibliography (list (concat medivhok/root-directory
+                                                "bibtex/zotero.bib")))
 
-;; Custom global variables
-(setq medivhok/root-directory "~/org/"
-
-      ;; Bibtex directory and files.
-      medivhok/bibtex-directory (concat medivhok/root-directory "bibtex/")
-      medivhok/bibtex-file (concat medivhok/bibtex-directory "zotero.bib")
-      reftex-default-bibliography (list medivhok/bibtex-file)
-
-      ;; Roam directory and files.
-      medivhok/roam-directory (concat medivhok/root-directory "roam/"))
 
 (load! "+agenda")
 (load! "+budget")
@@ -42,7 +35,7 @@
   (org-link ((t (:inherit link :underline nil))))
 
   :config
-  (setq org-directory "~/org/"
+  (setq org-directory medivhok/root-directory
         org-return-follows-link t
         org-catch-invisible-edits 'show
         org-log-done 'time
