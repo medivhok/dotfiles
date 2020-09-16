@@ -1,4 +1,4 @@
-;;; my/budget/config.el -*- lexical-binding: t; -*-
+;;; +budget.el -*- lexical-binding: t; -*-
 
 (setq medivhok/main-ledger-file "~/Documents/Budget/ledger/main.ledger")
 

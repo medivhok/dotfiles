@@ -1,4 +1,4 @@
-;;; my/agenda/config.el -*- lexical-binding: t; -*-
+;;; +agenda.el -*- lexical-binding: t; -*-
 
 (use-package! org-agenda
   :after

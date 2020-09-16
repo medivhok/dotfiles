@@ -1,4 +1,4 @@
-;;; my/notes/config.el -*- lexical-binding: t; -*-
+;;; +notes.el -*- lexical-binding: t; -*-
 
 (use-package! org-roam
   :after (org)
@@ -164,4 +164,3 @@
 
 (use-package! org-pdf-tools
   :hook (org-load . org-pdftools-setup-link))
-
