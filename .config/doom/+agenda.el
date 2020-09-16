@@ -5,9 +5,7 @@
   (org)
 
   :config
-  (setq medivhok/agenda-directory (concat org-directory "agenda/")
-        medivhok/gtd-file (concat medivhok/agenda-directory "gtd.org")
-        medivhok/teluq-file (concat medivhok/agenda-directory "teluq.org"))
+  (setq medivhok/gtd-file (concat medivhok/root-directory "agenda/gtd.org"))
 
   (defun medivhok/open-agenda ()
     "Opens my gtd agenda."
@@ -17,8 +15,7 @@
   (map! "<f1>" #'medivhok/open-agenda)
 
   ;; org-agenda variables.
-  (setq org-agenda-files (list medivhok/gtd-file
-                               medivhok/teluq-file)
+  (setq org-agenda-files (list medivhok/gtd-file)
         org-agenda-block-separator nil
         org-agenda-start-with-log-mode t
         org-agenda-dim-blocked-tasks 'invisible
@@ -32,11 +29,11 @@
                     ((org-agenda-span 'week)
                      (org-deadline-warning-days 14)))
             (tags-todo "@inbox"
-                  ((org-agenda-overriding-header "Inbox")))
+                       ((org-agenda-overriding-header "Inbox")))
             (tags-todo "@tâches"
-                  ((org-agenda-overriding-header "Tâches")))
+                       ((org-agenda-overriding-header "Tâches")))
             (tags-todo "@teluq"
-                  ((org-agenda-overriding-header "Teluq")))
+                       ((org-agenda-overriding-header "Teluq")))
             (tags-todo "@projets"
                        ((org-agenda-overriding-header "Projets")))))))
 
@@ -116,4 +113,5 @@
   :custom
   (org-refile-targets '((nil :tag . "@tâches")
                         (nil :tag . "@cours")
-                        (nil :tag . "@projet"))))
+                        (nil :tag . "@projet")
+                        (nil :tag . "@teluq"))))
