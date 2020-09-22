@@ -2,7 +2,12 @@
 #+STARTUP: overview
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
 
-This is my [[https://gnu.org/software/emacs/][Emacs]] configuration documentation.
+This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and documentation. The general rule of thumb for
+the structure (except for the /Table of Contents/) is :
+
+- Main Category
+  - Subcategory
+    - Package List
 
 * Table of Contents
 :PROPERTIES:
@@ -14,32 +19,62 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration documentatio
   - [[#startup-performance-profiling][Startup Performance Profiling]]
   - [[#keeping-the-configuration-directory-clean][Keeping the Configuration Directory Clean]]
   - [[#package-management][Package Management]]
-  - [[#evilification-evil][Evilification (evil)]]
+    - [[#straightel][straight.el]]
+    - [[#use-package][use-package]]
+  - [[#keybindings][Keybindings]]
+    - [[#evil][evil]]
+    - [[#evil-collection][evil-collection]]
+    - [[#which-key][which-key]]
+    - [[#general][general]]
+  - [[#minibuffer][Minibuffer]]
+    - [[#ivy][ivy]]
+    - [[#swiper][swiper]]
+    - [[#counsel][counsel]]
+    - [[#ivy-rich][ivy-rich]]
+    - [[#ivy-posframe][ivy-posframe]]
   - [[#global-variables-and-constants][Global Variables and Constants]]
+    - [[#getting-things-done-variables][Getting Things Done Variables]]
+    - [[#slip-boxe-variables][Slip Boxe Variables]]
+    - [[#bibliographic-notes-variables][Bibliographic Notes Variables]]
 - [[#user-interface][User Interface]]
-  - [[#alerts-and-warnings][Alerts and Warnings]]
   - [[#basic-customizations][Basic Customizations]]
-  - [[#dashboard--dashboard][Dashboard  (dashboard)]]
+  - [[#dashboard][Dashboard]]
   - [[#fonts-and-icons][Fonts and Icons]]
   - [[#frame][Frame]]
-  - [[#keybindings--general][Keybindings  (general)]]
-  - [[#menu-panel-which-key][Menu Panel (which-key)]]
-  - [[#minibuffer-ivy][Minibuffer (ivy)]]
   - [[#modeline-doom-modeline][Modeline (doom-modeline)]]
+  - [[#notifications][Notifications]]
   - [[#theme][Theme]]
 - [[#applications][Applications]]
-  - [[#org-mode-org-mode][Org Mode (org-mode)]]
+  - [[#org-mode][Org Mode]]
     - [[#helper-functions][Helper functions]]
     - [[#keybindings-evil-org][Keybindings (evil-org)]]
     - [[#addons][Addons]]
-  - [[#getting-things-done-org-agenda][Getting Things Done (org-agenda)]]
-  - [[#slip-box-org-roam][Slip Box (org-roam)]]
-  - [[#bibliography-bibtex-completion][Bibliography (bibtex-completion)]]
+  - [[#getting-things-done][Getting Things Done]]
+  - [[#slip-box][Slip Box]]
   - [[#pdf-reader][PDF Reader]]
-  - [[#emails-nutmuch][Emails (nutmuch)]]
+  - [[#emails][Emails]]
 - [[#development][Development]]
   - [[#generic-editing-configurations][Generic Editing Configurations]]
+    - [[#smartparens][smartparens]]
+    - [[#evil-nerd-commenter][evil-nerd-commenter]]
+    - [[#ws-butler][ws-butler]]
+    - [[#parinfer][parinfer]]
+    - [[#rainbow-delimiters][rainbow-delimiters]]
+  - [[#git][Git]]
+    - [[#magit][magit]]
+    - [[#evil-magit][evil-magit]]
+    - [[#git-gutter][git-gutter]]
+    - [[#git-link][git-link]]
+    - [[#magit-todos][magit-todos]]
+  - [[#project-management][Project Management]]
+    - [[#projectile][projectile]]
+    - [[#counsel-projectile][counsel-projectile]]
 - [[#tools][Tools]]
+  - [[#bibliography][Bibliography]]
+    - [[#bibtex-completion][bibtex-completion]]
+    - [[#ivy-bibtex][ivy-bibtex]]
+    - [[#org-ref][org-ref]]
+    - [[#org-roam-bibtex][org-roam-bibtex]]
   - [[#sqlite3-sqlite3][SQLite3 (sqlite3)]]
 :END:
 
@@ -95,8 +130,14 @@ so I move them all to another location.
 
 ** Package Management
 
-To install packages, [[https://github.com/raxod502/straight.el][straight.el]], the next-generation, purely functional
-package manager for the Emacs hacker is used.
+Packages need to be installed first (if not already installed), and loaded
+before we can use them.
+
+To install them, [[https://github.com/raxod502/straight.el][straight.el]], the next-generation, purely functional
+package manager for the Emacs hacker is used and to load them, [[https://github.com/jwiegley/use-package][use-package]] is
+used and integrated to straight.
+
+*** straight.el
 
 #+begin_src emacs-lisp
 (defvar bootstrap-version)
@@ -114,13 +155,15 @@ package manager for the Emacs hacker is used.
   (load bootstrap-file nil 'nomessage))
 #+end_src
 
-To load packages, [[https://github.com/jwiegley/use-package][use-package]] is used and integrated to straight.
+*** use-package
+
 #+begin_src emacs-lisp
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 #+end_src
 
-** Evilification (~evil~)
+** Keybindings
+*** evil
 
 #+begin_quote
 Now you see that evil will always triumph, because good is dumb. -- Dark Helmet
@@ -137,174 +180,39 @@ Now you see that evil will always triumph, because good is dumb. -- Dark Helmet
 
   :config
   (evil-mode 1))
+#+end_src
 
+*** evil-collection
+
+#+begin_src emacs-lisp
 (use-package evil-collection
   :after evil
 
+  :commands
+  (evil-collection-init)
+
   :custom
-  (evil-collection-outline-bind-tab-p nil)
+  (evil-collection-outline-bind-tab-p nil))
+#+end_src
+
+*** which-key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is great for getting
+an overview of what keybindings are available based on the prefix keys you
+entered.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :init
+  (which-key-mode)
+
+  :diminish
+  which-key-mode
 
   :config
-  (evil-collection-init))
+  (setq which-key-idle-delay 0.3))
 #+end_src
-
-** Global Variables and Constants
-
-#+begin_src emacs-lisp :noweb yes
-(defconst medivhok/root-directory "~/org/"
-  "The root directory for my 'workflow' files.")
-
-(defconst medivhok/agenda-directory
-  (file-name-as-directory
-   (expand-file-name "agenda" medivhok/root-directory))
-  "The directory of my agenda files.")
-
-(defconst medivhok/gtd-file
-  (expand-file-name "gtd.org" medivhok/agenda-directory)
-  "My 'getting things done' agenda file.")
-
-(defconst medivhok/roam-directory
-  (file-name-as-directory
-   (expand-file-name "roam" medivhok/root-directory))
-  "The directory of my roam files.")
-
-<<constants>>
-
-<<helper functions>>
-#+end_src
-
-* User Interface
-** Alerts and Warnings
-
-Don't warn for large files.
-
-#+begin_src emacs-lisp
-(setq large-file-warning-threshold nil)
-#+end_src
-
-Don't warn for following symlinked files.
-
-#+begin_src emacs-lisp
-(setq vc-follow-symlinks t)
-#+end_src
-
-Don't warn when advice is added for functions.
-
-#+begin_src emacs-lisp
-(setq ad-redefinition-action 'accept)
-#+end_src
-
-** Basic Customizations
-
-Do not show the startup screen.
-#+begin_src emacs-lisp
-(setq inhibit-startup-message t)
-(global-prettify-symbols-mode 1)
-#+end_src
-
-Disable the tool, menu and scroll bars.
-#+begin_src emacs-lisp
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-#+end_src
-
-Disable tooltips.
-#+begin_src emacs-lisp
-(tooltip-mode -1)
-#+end_src
-
-Give some breathing room.
-#+begin_src emacs-lisp
-(set-fringe-mode 10)
-#+end_src
-
-Set up the visible bell.
-#+begin_src emacs-lisp
-(setq visible-bell t)
-#+end_src
-
-Highlight current line.
-#+begin_src emacs-lisp
-(global-hl-line-mode t)
-#+end_src
-
-Improve scrolling.
-#+begin_src emacs-lisp
-;; One line at a time.
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-;; Don't accelerate scrolling.
-(setq mouse-wheel-progressive-speed nil)
-
-;; Scroll window under mouse.
-(setq mouse-wheel-follow-mouse 't)
-
-;; Keyboard scroll one line at a time.
-(setq scroll-step 1)
-#+end_src
-
-Line and column numbers.
-#+begin_src emacs-lisp
-(column-number-mode)
-(setq display-line-numbers-type 'relative)
-(global-display-line-numbers-mode t)
-#+end_src
-
-#+begin_src emacs-lisp
-(setq-default fill-column 80)
-#+end_src
-** Dashboard  (~dashboard~)
-
-#+begin_src emacs-lisp
-(use-package dashboard
-  :after evil
-
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-startup-banner 'logo
-        dashboard-items '((recents . 5)
-                          (agenda . 5))))
-#+end_src
-
-** Fonts and Icons
-
-The fonts.
-#+begin_src emacs-lisp
-(set-face-attribute 'default nil
-                    :font "Hack Nerd Font"
-                    :height 130)
-(set-face-attribute 'fixed-pitch nil
-                    :font "DroidSansMono Nerd Font"
-                    :height 120)
-(set-face-attribute 'variable-pitch nil
-                    :font "Hack Nerd Font"
-                    :height 130
-                    :weight 'regular)
-#+end_src
-
-Icons, icons everywhere.
-#+begin_src emacs-lisp
-(use-package all-the-icons)
-#+end_src
-
-** Frame
-
-Set the frame transparency.
-
-#+begin_src emacs-lisp
-(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
-(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
-#+end_src
-
-Maximize windows by default.
-
-#+begin_src emacs-lisp
-(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
-
-** Keybindings  (~general~)
+*** general
 
 [[https://github.com/noctuid/general.el][general.el]] is a fantastic library for defining prefixed keybindings, especially
 in conjunction with Evil modes.
@@ -371,25 +279,8 @@ in conjunction with Evil modes.
     "q" 'save-buffers-kill-terminal))
 #+end_src
 
-** Menu Panel (~which-key~)
-
-[[https://github.com/justbur/emacs-which-key][which-key]] is great for getting
-an overview of what keybindings are available based on the prefix keys you
-entered.
-
-#+begin_src emacs-lisp
-(use-package which-key
-  :init
-  (which-key-mode)
-
-  :diminish
-  which-key-mode
-
-  :config
-  (setq which-key-idle-delay 0.3))
-#+end_src
-
-** Minibuffer (~ivy~)
+** Minibuffer
+*** ivy
 #+begin_src emacs-lisp
 (use-package ivy
   :diminish
@@ -397,29 +288,205 @@ entered.
   (setq ivy-use-virtual-buffers t
         ivy-count-format "(%d/%d) ")
   (ivy-mode 1))
+#+end_src
 
+*** swiper
+#+begin_src emacs-lisp
 (use-package swiper
   :after ivy)
+#+end_src
 
+*** counsel
+#+begin_src emacs-lisp
 (use-package counsel
   :after swiper
   :diminish
   :config
   (counsel-mode 1))
+#+end_src
 
+*** ivy-rich
+#+begin_src emacs-lisp
 (use-package ivy-rich
   :after counsel
 
   :config
   (ivy-rich-mode 1))
+#+end_src
 
+*** ivy-posframe
+#+begin_src emacs-lisp
 (use-package ivy-posframe
   :after ivy
+
+  :diminish ivy-posframe-mode
 
   :config
   (setq ivy-posframe-display-functions-alist
         '((t . ivy-posframe-display-at-window-center)))
   (ivy-posframe-mode 1))
+#+end_src
+
+** Global Variables and Constants
+
+#+begin_src emacs-lisp :noweb yes
+(defconst medivhok/root-directory "~/org/"
+  "The root directory for my 'workflows' files.")
+#+end_src
+
+*** Getting Things Done Variables
+
+#+begin_src emacs-lisp :noweb yes
+(defconst medivhok/agenda-directory
+  (file-name-as-directory
+   (expand-file-name "agenda" medivhok/root-directory))
+  "The directory of my agenda files.")
+
+(defconst medivhok/gtd-file
+  (expand-file-name "gtd.org" medivhok/agenda-directory)
+  "My 'getting things done' agenda file.")
+#+end_src
+
+*** Slip Boxe Variables
+
+#+begin_src emacs-lisp :noweb yes
+(defconst medivhok/roam-directory
+  (file-name-as-directory
+   (expand-file-name "roam" medivhok/root-directory))
+  "The directory of my roam files.")
+
+(defconst medivhok/slip-box
+  (file-name-as-directory
+   (expand-file-name "slip-box" medivhok/roam-directory))
+  "The directory containing the notes of my slip-box")
+#+end_src
+
+*** Bibliographic Notes Variables
+
+#+begin_src emacs-lisp :noweb yes
+(defconst medivhok/pdf-root-directory
+  (file-name-as-directory
+   (expand-file-name "readings" medivhok/root-directory))
+  "The root directory of my PDF files.")
+
+(defconst medivhok/bibtex-file
+  (expand-file-name "zotero.bib" medivhok/pdf-root-directory)
+  "My bibtex file, generated by 'zotero'.")
+
+(defconst medivhok/bibliographic-notes-directory
+  (file-name-as-directory
+   (expand-file-name "biblio-box" medivhok/roam-directory))
+  "The directory of my bibliographic notes.")
+#+end_src
+
+* User Interface
+** Basic Customizations
+
+Do not show the startup screen.
+#+begin_src emacs-lisp
+(setq inhibit-startup-message t)
+(global-prettify-symbols-mode 1)
+#+end_src
+
+Disable the tool, menu and scroll bars.
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+#+end_src
+
+Disable tooltips.
+#+begin_src emacs-lisp
+(tooltip-mode -1)
+#+end_src
+
+Give some breathing room.
+#+begin_src emacs-lisp
+(set-fringe-mode 10)
+#+end_src
+
+Set up the visible bell.
+#+begin_src emacs-lisp
+(setq visible-bell t)
+#+end_src
+
+Highlight current line.
+#+begin_src emacs-lisp
+(global-hl-line-mode t)
+#+end_src
+
+Improve scrolling.
+#+begin_src emacs-lisp
+;; One line at a time.
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+;; Don't accelerate scrolling.
+(setq mouse-wheel-progressive-speed nil)
+
+;; Scroll window under mouse.
+(setq mouse-wheel-follow-mouse 't)
+
+;; Keyboard scroll one line at a time.
+(setq scroll-step 1)
+#+end_src
+
+Line and column numbers.
+#+begin_src emacs-lisp
+(column-number-mode)
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode t)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq-default fill-column 80)
+#+end_src
+** Dashboard
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'logo
+        dashboard-items '((recents . 5)
+                          (agenda . 5)))
+  (evil-collection-init 'dashboard))
+#+end_src
+
+** Fonts and Icons
+
+The fonts.
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :font "Hack Nerd Font"
+                    :height 130)
+(set-face-attribute 'fixed-pitch nil
+                    :font "DroidSansMono Nerd Font"
+                    :height 120)
+(set-face-attribute 'variable-pitch nil
+                    :font "Hack Nerd Font"
+                    :height 130
+                    :weight 'regular)
+#+end_src
+
+Icons, icons everywhere.
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+
+** Frame
+
+Set the frame transparency.
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+#+end_src
+
+Maximize windows by default.
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 
 ** Modeline (~doom-modeline~)
@@ -469,6 +536,26 @@ Configuration of the modeline.
   (doom-modeline-major-mode-icon nil))
 #+end_src
 
+** Notifications
+
+Don't warn for large files.
+
+#+begin_src emacs-lisp
+(setq large-file-warning-threshold nil)
+#+end_src
+
+Don't warn for following symlinked files.
+
+#+begin_src emacs-lisp
+(setq vc-follow-symlinks t)
+#+end_src
+
+Don't warn when advice is added for functions.
+
+#+begin_src emacs-lisp
+(setq ad-redefinition-action 'accept)
+#+end_src
+
 ** Theme
 
 We configure the theme.
@@ -487,7 +574,68 @@ We configure the theme.
 #+end_src
 
 * Applications
-** Org Mode (~org-mode~)
+** Org Mode
+
+Packages :
+- [[https://orgmode.org/][org]]
+
+#+begin_src emacs-lisp
+(use-package org
+  :straight org-plus-contrib
+
+  :hook
+  (org-mode . medivhok/org-mode-setup)
+
+  :custom-face
+  (org-link ((t (:inherit link :underline nil))))
+
+  :config
+  (setq org-catch-invisible-edits 'show
+        org-cycle-separator-lines 2
+        org-edit-src-content-indentation 0
+        org-ellipsis " ▾"
+        org-hide-block-startup nil
+        org-hide-emphasis-markers t
+        org-log-done 'time
+        org-log-into-drawer t
+        org-outline-path-complete-in-steps nil
+        org-return-follows-link t
+        org-src-fontify-natively t
+        org-src-preserve-indentation nil
+        org-src-tab-acts-natively t
+        org-startup-folded t)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (ledger . t)))
+
+  ;; Replace list hyphen with dot.
+  (require 'org-indent)
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+#+end_src
+
+
 *** Helper functions
 
 Automatically /tangle/ on save. Handy tip from [[https://leanpub.com/lit-config/read#leanpub-auto-configuring-emacs-and--org-mode-for-literate-programming][this book]] on literate programming.
@@ -581,127 +729,89 @@ any header with a property named TOC.
   (org-mode . org-make-toc-mode))
 #+end_src
 
-** Getting Things Done (~org-agenda~)
+** Getting Things Done
 
 The environment of the /GTD/ workflow is done with ~org-agenda~, which is part of
 the [[https://orgmode.org][Org Mode]] ecosystem.
 
+Packages :
+- ~org-agenda~
+- ~org-capture~
+- ~org-refile~
+
 #+begin_src emacs-lisp
-(use-package org
-  :hook
-  (org-mode . medivhok/org-mode-setup)
+(use-package org-agenda
+  :straight org-plus-contrib
+
+  :commands (org-agenda)
 
   :bind
-  (("<f1>" . (lambda () (interactive) (org-agenda nil " ")))
-   ("<f4>" . (lambda () (interactive) (org-capture nil "i"))))
-
-  :custom-face
-  (org-link ((t (:inherit link :underline nil))))
+  (("<f1>" . (lambda () (interactive) (org-agenda nil " "))))
 
   :config
-  (setq org-catch-invisible-edits 'show
-        org-cycle-separator-lines 2
-        org-edit-src-content-indentation 0
-        org-ellipsis " ▾"
-        org-hide-block-startup nil
-        org-hide-emphasis-markers t
-        org-log-done 'time
-        org-log-into-drawer t
-        org-outline-path-complete-in-steps nil
-        org-return-follows-link t
-        org-src-fontify-natively t
-        org-src-preserve-indentation nil
-        org-src-tab-acts-natively t
-        org-startup-folded t)
+  (setq org-agenda-block-separator nil
+        org-agenda-dim-blocked-tasks 'invisible
+        org-agenda-files (list medivhok/gtd-file)
+        org-agenda-skip-deadline-if-done t
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-start-with-log-mode t
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (ledger . t)))
-
-  ;; Replace list hyphen with dot.
-  (require 'org-indent)
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-#+end_src
-
-~org-refile~
-
-#+begin_src emacs-lisp
-(require 'org-refile)
-
-(setq org-refile-allow-creating-parent-nodes 'confirm
-      org-refile-use-outline-path 'file
-      org-refile-targets '((nil :tag . "@tâches")
-                           (nil :tag . "@cours")
-                           (nil :tag . "@projet")
-                           (nil :tag . "@teluq")))
-#+end_src
-
-~org-agenda~
-
-#+begin_src emacs-lisp
-(require 'org-agenda)
-
-(setq org-agenda-block-separator nil
-      org-agenda-dim-blocked-tasks 'invisible
-      org-agenda-files (list medivhok/gtd-file)
-      org-agenda-skip-deadline-if-done t
-      org-agenda-skip-scheduled-if-done t
-      org-agenda-start-with-log-mode t
-
-      org-agenda-custom-commands
-      `((" " "GTD Agenda"
-       ((agenda ""
-                ((org-agenda-span 'week)
-                 (org-deadline-warning-days 14)))
-        (tags-todo "@inbox"
-                   ((org-agenda-overriding-header "Inbox")))
-        (tags-todo "@tâches"
-                   ((org-agenda-overriding-header "Tâches")))
-        (tags-todo "@teluq"
-                   ((org-agenda-overriding-header "Teluq")))
-        (tags-todo "@projets"
-                   ((org-agenda-overriding-header "Projets")))))))
+        org-agenda-custom-commands
+        `((" " "GTD Agenda"
+           ((agenda ""
+                    ((org-agenda-span 'week)
+                     (org-deadline-warning-days 14)))
+            (tags-todo "@inbox"
+                       ((org-agenda-overriding-header "Inbox")))
+            (tags-todo "@tâches"
+                       ((org-agenda-overriding-header "Tâches")))
+            (tags-todo "@teluq"
+                       ((org-agenda-overriding-header "Teluq")))
+            (tags-todo "@projets"
+                       ((org-agenda-overriding-header "Projets"))))))))
 #+end_src
 
 ~org-capture~
 
 #+begin_src emacs-lisp
-(require 'org-capture)
-(setq org-capture-templates
-      `(("i" "inbox" entry
-         (file+headline ,medivhok/gtd-file "Inbox")
-         "* TODO [#C] %?\n:PROPERTIES:\n:Effort: 1\n:END:\n")
+(use-package org-capture
+  :straight org-plus-contrib
 
-        ("e" "email" entry
-         (file+headline ,medivhok/gtd-file "Emails")
-         "* TODO [#A] Reply: %a"
-         :immediate-finish t))))
+  :commands (org-capture)
+  :bind
+  (("<f4>" . (lambda () (interactive) (org-capture nil "i"))))
+
+  :config
+  (setq org-capture-templates
+        `(("i" "inbox" entry
+           (file+headline ,medivhok/gtd-file "Inbox")
+           "* TODO [#C] %?\n:PROPERTIES:\n:Effort: 1\n:END:\n")
+
+          ("e" "email" entry
+           (file+headline ,medivhok/gtd-file "Emails")
+           "* TODO [#A] Reply: %a"
+           :immediate-finish t)))))
 #+end_src
 
-** Slip Box (~org-roam~)
+~org-refile~
 
-[[https://orgroam.com][Org Roam]]
+#+begin_src emacs-lisp
+(use-package org-refile
+  :straight org-plus-contrib
+
+  :config
+  (setq org-refile-allow-creating-parent-nodes 'confirm
+        org-refile-use-outline-path 'file
+        org-refile-targets '((nil :tag . "@tâches")
+                             (nil :tag . "@cours")
+                             (nil :tag . "@projet")
+                             (nil :tag . "@teluq"))))
+#+end_src
+** Slip Box
+
+Packages :
+- [[https://github.com/org-roam/org-roam][org-roam]]
+- [[https://github.com/org-roam/org-roam-bibtex/][org-roam-bibtex]]
 
 #+begin_src emacs-lisp
 (use-package org-roam
@@ -726,16 +836,6 @@ the [[https://orgmode.org][Org Mode]] ecosystem.
 
   :init
   (setq org-roam-directory medivhok/roam-directory)
-
-  (defconst medivhok/biblio-box-directory
-    (file-name-as-directory
-     (expand-file-name "biblio-box" medivhok/roam-directory))
-    "The directory of my bibliographic notes.")
-
-  (defconst medivhok/slip-box-directory
-    (file-name-as-directory
-     (expand-file-name "slip-box" medivhok/roam-directory))
-    "The directory containing my note cards.")
 
   (defconst medivhok/roam-templates-directory
     (file-name-as-directory
@@ -773,27 +873,8 @@ the [[https://orgmode.org][Org Mode]] ecosystem.
            :unnarrowed t))))
 #+end_src
 
-** Bibliography (~bibtex-completion~)
-#+begin_src emacs-lisp
-(use-package bibtex-completion
-  :defer t
-
-  :custom
-  (bibtex-completion-additional-search-fields '(keywords))
-  (bibtex-completion-bibliography '("~/org/readings/zotero.bib"))
-  (bibtex-completion-cite-default-as-initial-input t)
-  (bibtex-completion-notes-path "~/org/roam/")
-  (bibtex-completion-pdf-field "file"))
-
-(use-package ivy-bibtex
-  :commands
-  (ivy-bibtex)
-
-  :bind
-  ("<f3>" . ivy-bibtex))
-#+end_src
 ** PDF Reader
-** Emails (~nutmuch~)
+** Emails
 * Development
 ** Generic Editing Configurations
 Default to an indentation size of 2 spaces.
@@ -807,12 +888,23 @@ Use spaces instead of tabs for indentation.
 (setq-default indent-tabs-mode nil)
 #+end_src
 
+*** smartparens
+
+#+begin_src emacs-lisp
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode))
+#+end_src
+
+*** evil-nerd-commenter
+
 Commenting lines.
 #+begin_src emacs-lisp
 (use-package evil-nerd-commenter
   :bind
   ("M-/" . evilnc-comment-or-uncomment-lines))
 #+end_src
+
+*** ws-butler
 
 Automatically clean whitespace.
 #+begin_src emacs-lisp
@@ -821,6 +913,8 @@ Automatically clean whitespace.
   ((text-mode . ws-butler-mode)
    (prog-mode . ws-butler-mode)))
 #+end_src
+
+*** parinfer
 
 Use Parinfer for Lispy languages.
 #+begin_src emacs-lisp
@@ -839,8 +933,195 @@ Use Parinfer for Lispy languages.
         smart-yank)))  ; Yank behavior depend on mode.
 #+end_src
 
+*** rainbow-delimiters
+
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Git
+*** magit
+
+#+begin_src emacs-lisp
+(use-package magit
+  :commands
+  (magit-status magit-get-current-branch)
+
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-execpt-diff-v1))
+#+end_src
+
+*** evil-magit
+
+#+begin_src emacs-lisp
+(use-package evil-magit
+  :after magit)
+#+end_src
+
+*** git-gutter
+
+#+begin_src emacs-lisp
+(use-package git-gutter
+  :diminish
+
+  :hook
+  ((text-mode . git-gutter-mode)
+   (prog-mode . git-gutter-mode))
+
+  :config
+  (setq git-gutter:update-interval 2))
+#+end_src
+
+*** git-link
+
+#+begin_src emacs-lisp
+(use-package git-link
+  :commands git-link
+
+  :config
+  (setq git-link-open-in-browser t))
+#+end_src
+
+*** magit-todos
+
+#+begin_src emacs-lisp
+(use-package magit-todos
+  :after magit)
+#+end_src
+
+** Project Management
+*** projectile
+
+#+begin_src emacs-lisp
+(use-package projectile
+  :diminish projectile-mode
+
+  :config
+  (projectile-mode))
+#+end_src
+
+*** counsel-projectile
+
+#+begin_src emacs-lisp
+(use-package counsel-projectile
+  :after projectile)
+#+end_src
+
 * Tools
+** Bibliography
+
+Packages :
+- [[https://github.com/tmalsburg/helm-bibtex/][bibtex-completion]]
+- [[https://github.com/tmalsburg/helm-bibtex/][ivy-bibtex]]
+- [[https://github.com/jkitchin/org-ref/][org-ref]]
+- [[https://github.com/org-roam/org-roam-bibtex/][org-roam-bibtex]]
+
+*** bibtex-completion
+
+#+begin_src emacs-lisp
+(use-package bibtex-completion
+  :custom
+  (bibtex-completion-additional-search-fields '(keywords))
+  (bibtex-completion-bibliography (list medivhok/bibtex-file))
+  (bibtex-completion-cite-default-as-initial-input t)
+  (bibtex-completion-notes-path medivhok/bibliographic-notes-directory)
+  (bibtex-completion-pdf-field "file"))
+#+end_src
+
+*** ivy-bibtex
+
+#+begin_src emacs-lisp
+(use-package ivy-bibtex
+  :after bibtex-completion
+
+  :commands
+  (ivy-bibtex)
+
+  :bind
+  ("<f3>" . ivy-bibtex))
+#+end_src
+
+*** org-ref
+
+#+begin_src emacs-lisp
+(use-package org-ref
+  :after
+  (org ivy-bibtex)
+
+  :config
+  (setq org-ref-completion-library 'org-ref-ivy-cite
+        org-ref-get-pdf-filename-function 'org-ref-get-filename-helm-bibtex
+        org-ref-default-bibliography bibtex-completion-bibliography
+        org-ref-note-title-format (concat "* TODO %y - %t\n"
+                                     "  :PROPERTIES:\n"
+                                     "  :Custom_ID: %k\n"
+                                     "  :NOTER_DOCUMENT: %F\n"
+                                     "  :ROAM_KEY: cite:%k\n"
+                                     "  :JOURNAL: %j\n"
+                                     "  :YEAR: %y\n"
+                                     "  :VOLUME: %v\n"
+                                     "  :PAGES: %p\n"
+                                     "  :DOI: %D\n"
+                                     "  :URL: %U\n"
+                                     "  :END:\n\n")
+        org-ref-notes-directory medivhok/bibliographic-notes-directory))
+#+end_src
+
+*** org-roam-bibtex
+
+#+begin_src emacs-lisp
+(use-package org-roam-bibtex
+  :after
+  (org-roam ivy-bibtex)
+
+  :straight
+  (org-roam-bibtex :host github :repo "org-roam/org-roam-bibtex")
+
+  :hook
+  (org-roam-mode . org-roam-bibtex-mode)
+
+  :config
+  (setq org-ref-notes-function 'orb-edit-notes
+        orb-preformat-keywords '(("citekey" . "=key=")
+                                 "title"
+                                 "url"
+                                 "file"
+                                 "author-or-editor"
+                                 "keywords")
+        orb-templates `(("r" "ref" plain (function org-roam-capture--get-point)
+                         ""
+                         :file-name "${citekey}"
+                         :head
+                         ,(concat "#+TITLE: ${title}\n"
+                                  "#+ROAM_KEY: ${ref}\n"
+                                  "#+ROAM_TAGS: ${keywords}\n\n"
+                                  "* Notes\n"
+                                  ":PROPERTIES:\n"
+                                  ":Custom_ID: ${citekey}\n"
+                                  ":URL: ${url}\n"
+                                  ":AUTHOR: ${author-or-editor}\n"
+                                  ":NOTER_DOCUMENT: %(orb-process-file-field \"${citekey}\")\n"
+                                  ":END:\n\n")
+                         :unnarrowed t)
+
+                        ("w" "webpage" plain (function org-roam-capture--get-point)
+                         ""
+                         :file-name "${citekey}"
+                         :head
+                         ,(concat "#+TITLE: ${title}\n"
+                                  "#+ROAM_KEY: ${url}\n\n"
+                                  "* Notes\n"
+                                  ":PROPERTIES:\n"
+                                  ":Custom_ID: ${citekey}\n"
+                                  ":URL: ${url}\n"
+                                  ":END:\n\n")
+                         :unnarrowed t))))
+#+end_src
+
 ** SQLite3 (~sqlite3~)
 #+begin_src emacs-lisp
 (use-package sqlite3)
 #+end_src
+
