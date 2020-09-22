@@ -1,0 +1,846 @@
+#+TITLE: My Emacs Configuration
+#+STARTUP: overview
+#+PROPERTY: header-args:emacs-lisp :tangle init.el
+
+This is my [[https://gnu.org/software/emacs/][Emacs]] configuration documentation.
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :depth 3 :ignore (this)
+:END:
+:CONTENTS:
+- [[#bootstrapping][Bootstrapping]]
+  - [[#configuration-file-header][Configuration File Header]]
+  - [[#startup-performance-profiling][Startup Performance Profiling]]
+  - [[#keeping-the-configuration-directory-clean][Keeping the Configuration Directory Clean]]
+  - [[#package-management][Package Management]]
+  - [[#evilification-evil][Evilification (evil)]]
+  - [[#global-variables-and-constants][Global Variables and Constants]]
+- [[#user-interface][User Interface]]
+  - [[#alerts-and-warnings][Alerts and Warnings]]
+  - [[#basic-customizations][Basic Customizations]]
+  - [[#dashboard--dashboard][Dashboard  (dashboard)]]
+  - [[#fonts-and-icons][Fonts and Icons]]
+  - [[#frame][Frame]]
+  - [[#keybindings--general][Keybindings  (general)]]
+  - [[#menu-panel-which-key][Menu Panel (which-key)]]
+  - [[#minibuffer-ivy][Minibuffer (ivy)]]
+  - [[#modeline-doom-modeline][Modeline (doom-modeline)]]
+  - [[#theme][Theme]]
+- [[#applications][Applications]]
+  - [[#org-mode-org-mode][Org Mode (org-mode)]]
+    - [[#helper-functions][Helper functions]]
+    - [[#keybindings-evil-org][Keybindings (evil-org)]]
+    - [[#addons][Addons]]
+  - [[#getting-things-done-org-agenda][Getting Things Done (org-agenda)]]
+  - [[#slip-box-org-roam][Slip Box (org-roam)]]
+  - [[#bibliography-bibtex-completion][Bibliography (bibtex-completion)]]
+  - [[#pdf-reader][PDF Reader]]
+  - [[#emails-nutmuch][Emails (nutmuch)]]
+- [[#development][Development]]
+  - [[#generic-editing-configurations][Generic Editing Configurations]]
+- [[#tools][Tools]]
+  - [[#sqlite3-sqlite3][SQLite3 (sqlite3)]]
+:END:
+
+* Bootstrapping
+** Configuration File Header
+#+begin_src emacs-lisp
+;;; init.el --- My Emacs Config -*- lexical-binding: t; -*-
+#+end_src
+** Startup Performance Profiling
+
+Make startup faster by reducing the frequency of garbage collection and then use
+a hook to measure Emacs startup time.
+
+#+begin_src emacs-lisp
+;; The default is 800k (mesured in bytes).
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;; Profile emacs startup.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+#+end_src
+
+** Keeping the Configuration Directory Clean
+
+I don’t want a bunch of transient files showing up as untracked in the Git repo
+so I move them all to another location.
+
+#+begin_src emacs-lisp
+;; Keep the transient cruft out of the configuration directory.
+(setq user-emacs-directory "~/.cache/emacs/"
+      backup-directory-alist `(("." . ,(expand-file-name "backups"
+                                                         user-emacs-directory)))
+      url-history-file (expand-file-name "url/history" user-emacs-directory)
+      auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-"
+                                                   user-emacs-directory)
+      projectile-known-projects-file (expand-file-name
+                                      "projectile-bookmarks.eld"
+                                      user-emacs-directory))
+
+;; Keep customization settings in a temporary file (thanks Ambrevar!).
+(setq custom-file
+      (if (boundp 'server-socket-dir)
+          (expand-file-name "custom.el" server-socket-dir)
+        (expand-file-name (format "emacs-custom-%s.el" (user-uid))
+                          temporary-file-directory)))
+(load custom-file t)
+#+end_src
+
+** Package Management
+
+To install packages, [[https://github.com/raxod502/straight.el][straight.el]], the next-generation, purely functional
+package manager for the Emacs hacker is used.
+
+#+begin_src emacs-lisp
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el"
+                         user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+end_src
+
+To load packages, [[https://github.com/jwiegley/use-package][use-package]] is used and integrated to straight.
+#+begin_src emacs-lisp
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+#+end_src
+
+** Evilification (~evil~)
+
+#+begin_quote
+Now you see that evil will always triumph, because good is dumb. -- Dark Helmet
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package evil
+  :init
+  (setq evil-want-integration t
+        evil-want-keybinding nil
+        evil-want-C-u-scroll t
+        evil-want-C-i-jump nil
+        evil-respect-visual-line-mode t)
+
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+
+  :custom
+  (evil-collection-outline-bind-tab-p nil)
+
+  :config
+  (evil-collection-init))
+#+end_src
+
+** Global Variables and Constants
+
+#+begin_src emacs-lisp :noweb yes
+(defconst medivhok/root-directory "~/org/"
+  "The root directory for my 'workflow' files.")
+
+(defconst medivhok/agenda-directory
+  (file-name-as-directory
+   (expand-file-name "agenda" medivhok/root-directory))
+  "The directory of my agenda files.")
+
+(defconst medivhok/gtd-file
+  (expand-file-name "gtd.org" medivhok/agenda-directory)
+  "My 'getting things done' agenda file.")
+
+(defconst medivhok/roam-directory
+  (file-name-as-directory
+   (expand-file-name "roam" medivhok/root-directory))
+  "The directory of my roam files.")
+
+<<constants>>
+
+<<helper functions>>
+#+end_src
+
+* User Interface
+** Alerts and Warnings
+
+Don't warn for large files.
+
+#+begin_src emacs-lisp
+(setq large-file-warning-threshold nil)
+#+end_src
+
+Don't warn for following symlinked files.
+
+#+begin_src emacs-lisp
+(setq vc-follow-symlinks t)
+#+end_src
+
+Don't warn when advice is added for functions.
+
+#+begin_src emacs-lisp
+(setq ad-redefinition-action 'accept)
+#+end_src
+
+** Basic Customizations
+
+Do not show the startup screen.
+#+begin_src emacs-lisp
+(setq inhibit-startup-message t)
+(global-prettify-symbols-mode 1)
+#+end_src
+
+Disable the tool, menu and scroll bars.
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+#+end_src
+
+Disable tooltips.
+#+begin_src emacs-lisp
+(tooltip-mode -1)
+#+end_src
+
+Give some breathing room.
+#+begin_src emacs-lisp
+(set-fringe-mode 10)
+#+end_src
+
+Set up the visible bell.
+#+begin_src emacs-lisp
+(setq visible-bell t)
+#+end_src
+
+Highlight current line.
+#+begin_src emacs-lisp
+(global-hl-line-mode t)
+#+end_src
+
+Improve scrolling.
+#+begin_src emacs-lisp
+;; One line at a time.
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+;; Don't accelerate scrolling.
+(setq mouse-wheel-progressive-speed nil)
+
+;; Scroll window under mouse.
+(setq mouse-wheel-follow-mouse 't)
+
+;; Keyboard scroll one line at a time.
+(setq scroll-step 1)
+#+end_src
+
+Line and column numbers.
+#+begin_src emacs-lisp
+(column-number-mode)
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode t)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq-default fill-column 80)
+#+end_src
+** Dashboard  (~dashboard~)
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :after evil
+
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-startup-banner 'logo
+        dashboard-items '((recents . 5)
+                          (agenda . 5))))
+#+end_src
+
+** Fonts and Icons
+
+The fonts.
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :font "Hack Nerd Font"
+                    :height 130)
+(set-face-attribute 'fixed-pitch nil
+                    :font "DroidSansMono Nerd Font"
+                    :height 120)
+(set-face-attribute 'variable-pitch nil
+                    :font "Hack Nerd Font"
+                    :height 130
+                    :weight 'regular)
+#+end_src
+
+Icons, icons everywhere.
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+
+** Frame
+
+Set the frame transparency.
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'alpha '(90 . 90))
+(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+#+end_src
+
+Maximize windows by default.
+
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
+
+** Keybindings  (~general~)
+
+[[https://github.com/noctuid/general.el][general.el]] is a fantastic library for defining prefixed keybindings, especially
+in conjunction with Evil modes.
+
+#+begin_src emacs-lisp :noweb yes
+(use-package general
+  :after (evil which-key)
+
+  :config
+  (general-evil-setup t)
+
+  (general-create-definer medivhok/local-leader-def
+    :prefix "SPC m")
+
+  <<local-leader-bindings>>
+
+  (general-def 'normal
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC"
+    :prefix-map 'medivhok/leader-map
+    ":" 'execute-extended-command
+    "b" '(:ignore t :which-key "buffer")
+    "f" '(:ignore t :which-key "file")
+    "h" '(:ignore t :which-key "help")
+    "n" '(:ignore t :which-key "notes")
+    "w" '(:ignore t :which-key "window")
+    "q" '(:ignore t :which-key "quit"))
+
+  (general-def 'medivhok/leader-map
+    :prefix "b"
+    :prefix-map 'medivhok/buffer-map
+    "b" 'switch-to-buffer
+    "k" 'kill-buffer
+    "q" 'kill-current-buffer)
+
+  (general-def 'medivhok/leader-map
+    :prefix "n"
+    :prefix-map 'medivhok/notes-map)
+
+  (general-def 'medivhok/leader-map
+    :prefix "f"
+    :prefix-map 'medivhok/file-map
+    "f" 'find-file
+    "r" 'counsel-recentf)
+
+  (general-def 'medivhok/leader-map
+    :prefix "h"
+    :prefix-map 'medivhok/help-map
+    "a" 'apropos-command
+    "b" 'describe-bindings
+    "f" 'describe-function
+    "s" 'counsel-describe-symbol
+    "v" 'describe-variable)
+
+  (general-def 'medivhok/leader-map
+    :prefix "w"
+    :prefix-map 'medivhok/window-map
+    "q" 'delete-window
+    "s" 'split-window-below)
+
+  (general-def 'medivhok/leader-map
+    :prefix "q"
+    :prefix-map 'medivhok/quit-map
+    "q" 'save-buffers-kill-terminal))
+#+end_src
+
+** Menu Panel (~which-key~)
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is great for getting
+an overview of what keybindings are available based on the prefix keys you
+entered.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :init
+  (which-key-mode)
+
+  :diminish
+  which-key-mode
+
+  :config
+  (setq which-key-idle-delay 0.3))
+#+end_src
+
+** Minibuffer (~ivy~)
+#+begin_src emacs-lisp
+(use-package ivy
+  :diminish
+  :config
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) ")
+  (ivy-mode 1))
+
+(use-package swiper
+  :after ivy)
+
+(use-package counsel
+  :after swiper
+  :diminish
+  :config
+  (counsel-mode 1))
+
+(use-package ivy-rich
+  :after counsel
+
+  :config
+  (ivy-rich-mode 1))
+
+(use-package ivy-posframe
+  :after ivy
+
+  :config
+  (setq ivy-posframe-display-functions-alist
+        '((t . ivy-posframe-display-at-window-center)))
+  (ivy-posframe-mode 1))
+#+end_src
+
+** Modeline (~doom-modeline~)
+
+The basic.
+#+begin_src emacs-lisp
+(setq display-time-format "%l:%M %p %b %y"
+      display-time-default-load-average nil)
+#+end_src
+
+The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky
+minor modes from the modelines.
+#+begin_src emacs-lisp
+(use-package diminish)
+#+end_src
+
+Configuration of the modeline.
+
+#+begin_src emacs-lisp
+(use-package minions
+  :hook
+  (doom-modeline-mode . minions-mode)
+
+  :custom
+  (minions-mode-line-lighter ""))
+
+(use-package doom-modeline
+  :after eshell
+
+  :hook
+  (after-init . doom-modeline-init)
+
+  :custom-face
+  (mode-line ((t (:height 0.85))))
+  (mode-line-inactive ((t (:height 0.85))))
+
+  :custom
+  (doom-modeline-height 15)
+  (doom-modeline-bar-width 6)
+  (doom-modeline-lsp t)
+  (doom-modeline-github nil)
+  (doom-modeline-mu4e nil)
+  (doom-modeline-irc nil)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-persp-name nil)
+  (doom-modeline-buffer-file-name-style 'truncate-except-project)
+  (doom-modeline-major-mode-icon nil))
+#+end_src
+
+** Theme
+
+We configure the theme.
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+	doom-themes-enable-italic t)
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+#+end_src
+
+* Applications
+** Org Mode (~org-mode~)
+*** Helper functions
+
+Automatically /tangle/ on save. Handy tip from [[https://leanpub.com/lit-config/read#leanpub-auto-configuring-emacs-and--org-mode-for-literate-programming][this book]] on literate programming.
+We will add this function to the ~after-save-hook~ of /org/ files in the next
+function.
+
+#+begin_src emacs-lisp
+(defun medivhok/org-babel-tangle-dont-ask ()
+  (let ((org-confirm-babel-evaluate nil))
+    (org-babel-tangle)))
+#+end_src
+
+Customizations to apply to each ~org-mode~ buffers. This function was added to
+the ~org-mode-hook~.
+
+#+begin_src emacs-lisp
+(defun medivhok/org-mode-setup ()
+  "Turn on indentation and auto-fill mode for Org files."
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil)
+  (diminish org-indent-mode)
+
+  ;; Automatically tangle on save.
+  (add-hook 'after-save-hook
+            #'medivhok/org-babel-tangle-dont-ask
+            'run-at-end
+            'only-in-org-mode))
+#+end_src
+
+*** Keybindings (~evil-org~)
+#+begin_src emacs-lisp
+(use-package evil-org
+  :after org
+
+  :hook
+  ((org-mode . evil-org-mode)
+   (org-agenda-mode . evil-org-mode)
+   (evil-org-mode . (lambda ()
+                      (evil-org-set-key-theme '(navigation
+                                                todo
+                                                insert
+                                                textobjects
+                                                additional)))))
+
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref local-leader-bindings
+(medivhok/local-leader-def
+ :states 'normal
+ :keymaps 'org-mode-map
+ nil '(:ignore t :which-key "org")
+  "i"  '(:ignore t :which-key "insert")
+  "il" '(org-insert-link :which-key "insert link")
+
+  "n"  '(org-toggle-narrow-to-subtree :which-key "toggle narrow")
+
+  "s"  '(dw/counsel-rg-org-files :which-key "search notes")
+
+  "a"  '(org-agenda :which-key "status")
+  "c"  '(org-capture t :which-key "capture")
+  "x"  '(org-export-dispatch t :which-key "export"))
+#+end_src
+
+*** Addons
+**** Bullets (~org-bullets~)
+Use bullet characters instead of asterisks, plus set the header font sizes to
+something more palatable.
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :hook
+  (org-mode . org-bullets-mode)
+
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+#+end_src
+
+**** Table of Contents Updater (~org-make-toc~)
+It’s nice to have a table of contents section for long literate configuration
+files (like this one!) so I use [[https://github.com/alphapapa/org-make-toc][org-make-toc]] to automatically update the ToC in
+any header with a property named TOC.
+
+#+begin_src emacs-lisp
+(use-package org-make-toc
+  :hook
+  (org-mode . org-make-toc-mode))
+#+end_src
+
+** Getting Things Done (~org-agenda~)
+
+The environment of the /GTD/ workflow is done with ~org-agenda~, which is part of
+the [[https://orgmode.org][Org Mode]] ecosystem.
+
+#+begin_src emacs-lisp
+(use-package org
+  :hook
+  (org-mode . medivhok/org-mode-setup)
+
+  :bind
+  (("<f1>" . (lambda () (interactive) (org-agenda nil " ")))
+   ("<f4>" . (lambda () (interactive) (org-capture nil "i"))))
+
+  :custom-face
+  (org-link ((t (:inherit link :underline nil))))
+
+  :config
+  (setq org-catch-invisible-edits 'show
+        org-cycle-separator-lines 2
+        org-edit-src-content-indentation 0
+        org-ellipsis " ▾"
+        org-hide-block-startup nil
+        org-hide-emphasis-markers t
+        org-log-done 'time
+        org-log-into-drawer t
+        org-outline-path-complete-in-steps nil
+        org-return-follows-link t
+        org-src-fontify-natively t
+        org-src-preserve-indentation nil
+        org-src-tab-acts-natively t
+        org-startup-folded t)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (ledger . t)))
+
+  ;; Replace list hyphen with dot.
+  (require 'org-indent)
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+#+end_src
+
+~org-refile~
+
+#+begin_src emacs-lisp
+(require 'org-refile)
+
+(setq org-refile-allow-creating-parent-nodes 'confirm
+      org-refile-use-outline-path 'file
+      org-refile-targets '((nil :tag . "@tâches")
+                           (nil :tag . "@cours")
+                           (nil :tag . "@projet")
+                           (nil :tag . "@teluq")))
+#+end_src
+
+~org-agenda~
+
+#+begin_src emacs-lisp
+(require 'org-agenda)
+
+(setq org-agenda-block-separator nil
+      org-agenda-dim-blocked-tasks 'invisible
+      org-agenda-files (list medivhok/gtd-file)
+      org-agenda-skip-deadline-if-done t
+      org-agenda-skip-scheduled-if-done t
+      org-agenda-start-with-log-mode t
+
+      org-agenda-custom-commands
+      `((" " "GTD Agenda"
+       ((agenda ""
+                ((org-agenda-span 'week)
+                 (org-deadline-warning-days 14)))
+        (tags-todo "@inbox"
+                   ((org-agenda-overriding-header "Inbox")))
+        (tags-todo "@tâches"
+                   ((org-agenda-overriding-header "Tâches")))
+        (tags-todo "@teluq"
+                   ((org-agenda-overriding-header "Teluq")))
+        (tags-todo "@projets"
+                   ((org-agenda-overriding-header "Projets")))))))
+#+end_src
+
+~org-capture~
+
+#+begin_src emacs-lisp
+(require 'org-capture)
+(setq org-capture-templates
+      `(("i" "inbox" entry
+         (file+headline ,medivhok/gtd-file "Inbox")
+         "* TODO [#C] %?\n:PROPERTIES:\n:Effort: 1\n:END:\n")
+
+        ("e" "email" entry
+         (file+headline ,medivhok/gtd-file "Emails")
+         "* TODO [#A] Reply: %a"
+         :immediate-finish t))))
+#+end_src
+
+** Slip Box (~org-roam~)
+
+[[https://orgroam.com][Org Roam]]
+
+#+begin_src emacs-lisp
+(use-package org-roam
+  :after org-capture
+
+  :straight
+  (org-roam :host github :repo "org-roam/org-roam")
+
+  :commands
+  (org-roam-buffer-toggle-display
+   org-roam-capture
+   org-roam-find-file
+   org-roam-graph
+   org-roam-insert)
+
+  :bind
+  (:map medivhok/notes-map
+        ("f" . org-roam-find-file)
+        ("g" . org-roam-graph)
+        ("i" . org-roam-insert)
+        ("r" . org-roam-buffer-toggle-display))
+
+  :init
+  (setq org-roam-directory medivhok/roam-directory)
+
+  (defconst medivhok/biblio-box-directory
+    (file-name-as-directory
+     (expand-file-name "biblio-box" medivhok/roam-directory))
+    "The directory of my bibliographic notes.")
+
+  (defconst medivhok/slip-box-directory
+    (file-name-as-directory
+     (expand-file-name "slip-box" medivhok/roam-directory))
+    "The directory containing my note cards.")
+
+  (defconst medivhok/roam-templates-directory
+    (file-name-as-directory
+     (expand-file-name "templates" medivhok/roam-directory))
+    "The directory containing the templates for my notes.")
+
+  :config
+  (setq org-roam-graph-exclude-matcher '("setup")
+        org-roam-index-file "index_file.org"
+        org-roam-tag-sources '(prop)
+        org-roam-title-sources '(title alias))
+
+  (setq org-roam-capture-templates
+        `(("c" "slip-box card" plain
+           (function org-roam--capture-get-point)
+           (file ,(expand-file-name "slip-box-card.org"
+                                    medivhok/roam-templates-directory))
+           :file-name "slip-box/${slug}"
+           :head ""
+           :unnarrowed t)
+
+          ("b" "bibliographic notes" plain
+           (function org-roam--capture-get-point)
+           (file ,(expand-file-name "biblio-box-entry.org"
+                                    medivhok/roam-templates-directory))
+           :file-name "biblio-box/${slug}"
+           :head ""
+           :unnarrowed t)))
+
+  (setq org-roam-ref-capture-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "websites/${slug}"
+           :head "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n- source :: ${ref}"
+           :unnarrowed t))))
+#+end_src
+
+** Bibliography (~bibtex-completion~)
+#+begin_src emacs-lisp
+(use-package bibtex-completion
+  :defer t
+
+  :custom
+  (bibtex-completion-additional-search-fields '(keywords))
+  (bibtex-completion-bibliography '("~/org/readings/zotero.bib"))
+  (bibtex-completion-cite-default-as-initial-input t)
+  (bibtex-completion-notes-path "~/org/roam/")
+  (bibtex-completion-pdf-field "file"))
+
+(use-package ivy-bibtex
+  :commands
+  (ivy-bibtex)
+
+  :bind
+  ("<f3>" . ivy-bibtex))
+#+end_src
+** PDF Reader
+** Emails (~nutmuch~)
+* Development
+** Generic Editing Configurations
+Default to an indentation size of 2 spaces.
+#+begin_src emacs-lisp
+(setq-default tab-width 2)
+(setq-default evil-shift-with tab-width)
+#+end_src
+
+Use spaces instead of tabs for indentation.
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+Commenting lines.
+#+begin_src emacs-lisp
+(use-package evil-nerd-commenter
+  :bind
+  ("M-/" . evilnc-comment-or-uncomment-lines))
+#+end_src
+
+Automatically clean whitespace.
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :hook
+  ((text-mode . ws-butler-mode)
+   (prog-mode . ws-butler-mode)))
+#+end_src
+
+Use Parinfer for Lispy languages.
+#+begin_src emacs-lisp
+(use-package parinfer
+  :hook ((clojure-mode . parinfer-mode)
+         (emacs-lisp-mode . parinfer-mode)
+         (common-lisp-mode . parinfer-mode)
+         (scheme-mode . parinfer-mode)
+         (lisp-mode . parinfer-mode))
+  :config
+  (setq parinfer-extensions
+      '(defaults       ; should be included.
+        pretty-parens  ; different paren styles for different modes.
+        evil           ; If you use Evil.
+        smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+        smart-yank)))  ; Yank behavior depend on mode.
+#+end_src
+
+* Tools
+** SQLite3 (~sqlite3~)
+#+begin_src emacs-lisp
+(use-package sqlite3)
+#+end_src
