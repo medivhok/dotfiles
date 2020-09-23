@@ -14,7 +14,7 @@
     "link": {
       "~/.config/alacritty": ".config/alacritty",
       "~/.config/compton.conf": ".config/compton.conf",
-      "~/.config/doom": ".config/doom",
+      "~/.config/emacs": ".config/emacs",
       "~/.config/goa-1.0": ".config/goa-1.0",
       "~/.config/gtk-2.0": ".config/gtk-2.0",
       "~/.config/gtk-3.0": ".config/gtk-3.0",
