@@ -48,6 +48,8 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+(use-package diminish)
+
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -250,6 +252,9 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 
+(setq display-time-format "%l:%M %p %b %y"
+      display-time-default-load-average nil)
+
 (setq-default fill-column 80)
 
 (use-package dashboard
@@ -279,39 +284,36 @@
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-(setq display-time-format "%l:%M %p %b %y"
-      display-time-default-load-average nil)
+(use-package doom-modeline
+  :hook
+  (window-setup . doom-modeline-mode)
 
-(use-package diminish)
+  ;; :custom-face
+  ;; (mode-line ((t (:height 0.85))))
+  ;; (mode-line-inactive ((t (:height 0.85))))
+
+  :init
+  (setq doom-modeline-bar-width 6
+        doom-modeline-buffer-file-name-style 'auto
+        doom-modeline-buffer-state-icon t
+        doom-modeline-github nil
+        doom-modeline-height 15
+        doom-modeline-icon (display-graphic-p)
+        doom-modeline-irc nil
+        doom-modeline-lsp t
+        doom-modeline-major-mode-icon t
+        doom-modeline-major-mode-color-icon t
+        doom-modeline-minor-modes t
+        doom-modeline-mu4e nil
+        doom-modeline-persp-name nil
+        doom-modeline-project-detection 'projectile))
 
 (use-package minions
-  :hook
-  (doom-modeline-mode . minions-mode)
+  :init
+  (setq minions-mode-line-lighter " ")
 
-  :custom
-  (minions-mode-line-lighter ""))
-
-(use-package doom-modeline
-  :after eshell
-
-  :hook
-  (after-init . doom-modeline-init)
-
-  :custom-face
-  (mode-line ((t (:height 0.85))))
-  (mode-line-inactive ((t (:height 0.85))))
-
-  :custom
-  (doom-modeline-height 15)
-  (doom-modeline-bar-width 6)
-  (doom-modeline-lsp t)
-  (doom-modeline-github nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-irc nil)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-buffer-file-name-style 'truncate-except-project)
-  (doom-modeline-major-mode-icon nil))
+  :config
+  (minions-mode 1))
 
 (setq large-file-warning-threshold nil)
 

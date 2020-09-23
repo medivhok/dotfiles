@@ -21,6 +21,7 @@ the structure (except for the /Table of Contents/) is :
   - [[#package-management][Package Management]]
     - [[#straightel][straight.el]]
     - [[#use-package][use-package]]
+    - [[#diminish][diminish]]
   - [[#keybindings][Keybindings]]
     - [[#evil][evil]]
     - [[#evil-collection][evil-collection]]
@@ -41,7 +42,9 @@ the structure (except for the /Table of Contents/) is :
   - [[#dashboard][Dashboard]]
   - [[#fonts-and-icons][Fonts and Icons]]
   - [[#frame][Frame]]
-  - [[#modeline-doom-modeline][Modeline (doom-modeline)]]
+  - [[#modeline][Modeline]]
+    - [[#doom-modeline][doom-modeline]]
+    - [[#minions][minions]]
   - [[#notifications][Notifications]]
   - [[#theme][Theme]]
 - [[#applications][Applications]]
@@ -160,6 +163,14 @@ used and integrated to straight.
 #+begin_src emacs-lisp
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
+#+end_src
+
+*** diminish
+
+The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky
+minor modes from the modelines.
+#+begin_src emacs-lisp
+(use-package diminish)
 #+end_src
 
 ** Keybindings
@@ -437,6 +448,12 @@ Line and column numbers.
 (global-display-line-numbers-mode t)
 #+end_src
 
+The basic.
+#+begin_src emacs-lisp
+(setq display-time-format "%l:%M %p %b %y"
+      display-time-default-load-average nil)
+#+end_src
+
 #+begin_src emacs-lisp
 (setq-default fill-column 80)
 #+end_src
@@ -489,51 +506,46 @@ Maximize windows by default.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 
-** Modeline (~doom-modeline~)
+** Modeline
+*** doom-modeline
 
-The basic.
 #+begin_src emacs-lisp
-(setq display-time-format "%l:%M %p %b %y"
-      display-time-default-load-average nil)
+(use-package doom-modeline
+  :hook
+  (window-setup . doom-modeline-mode)
+
+  ;; :custom-face
+  ;; (mode-line ((t (:height 0.85))))
+  ;; (mode-line-inactive ((t (:height 0.85))))
+
+  :init
+  (setq doom-modeline-bar-width 6
+        doom-modeline-buffer-file-name-style 'auto
+        doom-modeline-buffer-state-icon t
+        doom-modeline-github nil
+        doom-modeline-height 15
+        doom-modeline-icon (display-graphic-p)
+        doom-modeline-irc nil
+        doom-modeline-lsp t
+        doom-modeline-major-mode-icon t
+        doom-modeline-major-mode-color-icon t
+        doom-modeline-minor-modes t
+        doom-modeline-mu4e nil
+        doom-modeline-persp-name nil
+        doom-modeline-project-detection 'projectile))
 #+end_src
 
-The [[https://github.com/myrjola/diminish.el][diminish]] package hides pesky
-minor modes from the modelines.
-#+begin_src emacs-lisp
-(use-package diminish)
-#+end_src
+*** minions
 
 Configuration of the modeline.
 
 #+begin_src emacs-lisp
 (use-package minions
-  :hook
-  (doom-modeline-mode . minions-mode)
+  :init
+  (setq minions-mode-line-lighter " ")
 
-  :custom
-  (minions-mode-line-lighter ""))
-
-(use-package doom-modeline
-  :after eshell
-
-  :hook
-  (after-init . doom-modeline-init)
-
-  :custom-face
-  (mode-line ((t (:height 0.85))))
-  (mode-line-inactive ((t (:height 0.85))))
-
-  :custom
-  (doom-modeline-height 15)
-  (doom-modeline-bar-width 6)
-  (doom-modeline-lsp t)
-  (doom-modeline-github nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-irc nil)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-buffer-file-name-style 'truncate-except-project)
-  (doom-modeline-major-mode-icon nil))
+  :config
+  (minions-mode 1))
 #+end_src
 
 ** Notifications
