@@ -1,0 +1,24 @@
+
+
+;; The ~:preface~ section snippet.
+
+
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : emacscfg-usepkg-preface
+# name : [emacs config] use-package ':preface' section
+# --
+**** Preface (~:preface~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--preface
+:END:
+
+#+begin_quote
+NOTE: This code is executed right away.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][:preface]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:preface
+#+end_src

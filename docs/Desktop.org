@@ -1,3 +1,41 @@
+#+TITLE: My Desktop Configurations
+#+STARTUP: overview
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :depth 2 :ignore (this)
+:END:
+:CONTENTS:
+- [[#system-settings][System Settings]]
+  - [[#fonts--theme][Fonts & Theme]]
+- [[#window-manager][Window Manager]]
+  - [[#xmonad][Xmonad]]
+  - [[#xmobar][Xmobar]]
+  - [[#emacs-x-window-manager][Emacs X Window Manager]]
+:END:
+
+
+* System Settings
+** Fonts & Theme
+
+#+begin_src conf :tangle .config/xsettingsd/xsettings.conf
+Net/ThemeName "Arc-Dark"
+Net/IconThemeName "Arc"
+Gtk/FontName "Roboto 12"
+Gtk/MonospacedFontName "Hack 10"
+Xft/Antialias 1
+Xft/Hinting 0
+Xft/HintStyle "hintnone"
+#+end_src
+
+* Window Manager
+:PROPERTIES:
+:Custom_ID: window-manager
+:END:
+** Xmonad
+
+~.xmonad/xmonad.hs~
+#+begin_src haskell :tangle .xmonad/xmonad.hs
 import XMonad
 import XMonad.Config.Desktop
 
@@ -171,3 +209,138 @@ updateXMobars [] _ = return ()
 updateXMobars (x:xs) dataString = do
     hPutStrLn x dataString
     updateXMobars xs dataString
+#+end_src
+
+** Xmobar
+
+~.config/xmobar/xmobarrc~
+#+begin_src haskell :tangle .config/xmobar/xmobarrc
+-- -*-Haskell-*-
+Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
+       , bgColor      = "#383c4a"
+       , fgColor      = "#4d515f"
+       , position     = Top
+       , lowerOnStart = True
+       , hideOnStart  = False
+       , allDesktops  = True
+       , persistent    = True
+       , iconRoot     = "/home/medivhok/.xmonad/xpm/"
+       , commands = [ Run Cpu ["-t","cpu <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t", "ram <usedratio>%"] 10
+                    , Run Date "%a %b %d %R" "date" 10
+                    , Run DiskU [("/", "hdd <used>/<size>")] [] 3600
+                    , Run UnsafeStdinReader
+                    ]
+       , sepChar      = "%"
+       , alignSep     = "}{"
+       , template = " %UnsafeStdinReader% }{ <fc=#b8bb26>%cpu%</fc>|<fc=#d3869b>%memory%</fc>|<fc=#83a598>%disku%</fc>|<fc=#fe8019>%date%</fc> "
+       }
+#+end_src
+
+~.config/xmobar/xmobarrc_with_battery~
+#+begin_src haskell :tangle .config/xmobar/xmobarrc_with_battery
+-- -*-Haskell-*-
+Config { font = "xft:Hack Nerd Font:size=16:antialias=true:hinting=true"
+       , bgColor      = "#383c4a"
+       , fgColor      = "#cccccc"
+       , position     = Top
+       , lowerOnStart = True
+       , hideOnStart  = False
+       , allDesktops  = True
+       , persistent    = True
+       , iconRoot     = "/home/medivhok/.xmonad/xpm/"
+       , commands = [ Run Cpu ["-t","<icon=cpu.xpm/> cpu <total>%","-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Battery [
+                        "-t", "<leftipat> <icon=battery.xpm/> <left>",
+                        "--",
+                        "-P",
+                        "--on-icon-pattern", "<icon=ac_on.xpm/>",
+                        "--idle-icon-pattern", "<icon=ac_idle.xpm/>"
+                    ] 600
+                    , Run Memory ["-t", "<icon=memory.xpm/> <usedratio>%"] 10
+                    , Run Date "%a %b %_d %R" "date" 10
+                    , Run DiskU [("/", "<icon=hdd.xpm/> <used>/<size>")] [] 3600
+                    , Run UnsafeStdinReader
+                    ]
+       , sepChar      = "%"
+       , alignSep     = "}{"
+       , template = " <icon=haskell_20.xpm/> %UnsafeStdinReader% }{ <fc=#b8bb26>%battery%</fc> <fc=#b8bb26>%cpu%</fc> <fc=#d3869b>%memory%</fc> <fc=#83a598>%disku%</fc> <icon=clock.xpm/> <fc=#fe8019>%date%</fc> "
+       }
+#+end_src
+
+** Emacs X Window Manager
+:PROPERTIES:
+:Custom_ID: window-manager--exwm
+:END:
+
+[[.config/emacs/exwm.el][.config/emacs/exwm.el]]
+#+begin_src emacs-lisp :tangle .config/emacs/exwm.el
+;;; exwm.el --- My exwm configurations -*- lexical-binding: t; -*-
+
+;; Author: Jean Gregory Verret <gregory.verret@gmail.com>
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This is my exwm configuration.
+
+;;; Code:
+#+end_src
+
+#+begin_src emacs-lisp :tangle .config/emacs/exwm.el :noweb no-export
+(use-package exwm
+  :init
+  (setq mouse-autoselect-window nil
+        focus-follow-mouse t
+        exwm-workspace-warp-cursor t)
+  :config
+  <<exwm-randr>>
+  (exwm-randr-enable)
+
+  <<exwm-systemtray>>
+  (exwm-systemtray-enable)
+
+  (exwm-enable))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no :noweb-ref exwm-randr
+(use-package exwm-randr
+  :after
+  (exwm)
+
+  :commands
+  (exwm-randr-enable))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no :noweb-ref exwm-systemtray
+(use-package exwm-systemtray
+  :after
+  (exwm)
+
+  :commands
+  (exwm-systemtray-enable))
+#+end_src
+
+#+begin_src conf :tangle .local/share/xsessions/emacs.desktop
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Emacs
+Comment=exwm
+Exec=emacs --with-exwm
+Icon=emacs
+Terminal=false
+StartupNotify=false
+Categories=Application;
+#+end_src

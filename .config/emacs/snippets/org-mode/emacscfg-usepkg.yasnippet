@@ -1,0 +1,34 @@
+;; Some Snippets
+
+;; Here's some snippets (see [[#use-package--yasnippet][yasnippet]]) to help in writting the
+;; configuration file with consistency.
+
+;; First, a snippet of a package installation, configuration and loading,
+;; using ~use-package~. The ~use-package~ declaration should be under a third
+;; level header of the name of the package, with the sections definition
+;; (e.g. ~:init~, ~:hook~) under fourth level headers, with the last header
+;; being the closing paren.
+
+
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : emacscfg-usepkg
+# name : [emacs config] use-package definition
+# --
+*** ~$1~
+:PROPERTIES:
+:Custom_ID: use-package--$1
+:END:
+
+#+begin_quote
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package $1
+#+end_src
+
+**** Closing Paren
+
+#+begin_src emacs-lisp
+  )
+#+end_src

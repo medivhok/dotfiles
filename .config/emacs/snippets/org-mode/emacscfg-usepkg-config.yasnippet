@@ -1,0 +1,25 @@
+
+
+;; The ~:config~ section snippet.
+
+;; [[.config/emacs/snippets/org-mode/emacscfg-usepkg-config.yasnippet][.config/emacs/snippets/org-mode/emacscfg-usepkg-config.yasnippet]]
+
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : emacscfg-usepkg-config
+# name : [emacs config] use-package ':config' section
+# --
+**** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:config
+#+end_src

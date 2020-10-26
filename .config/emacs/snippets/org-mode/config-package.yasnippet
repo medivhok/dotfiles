@@ -1,0 +1,144 @@
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : config-package
+# name : Applications Config Package Subtree
+# --
+*** ~$1~
+:PROPERTIES:
+:Custom_ID: use-package--$1
+:END:
+
+#+begin_quote
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package $1
+#+end_src
+
+**** Preface (~:preface~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--preface
+:END:
+
+#+begin_quote
+NOTE: This code is executed right away.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][:preface]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:preface
+#+end_src
+
+**** Get Package From... (~:straight~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--straight
+:END:
+
+We start the [[https://github.com/raxod502/straight.el#integration-with-use-package][:straight]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:straight
+#+end_src
+
+**** Load Package After... (~:after~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--after
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#loading-packages-in-sequence][:after]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:after
+#+end_src
+
+**** Hooks (~:hook~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--hook
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#hooks][:hook]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:hook
+#+end_src
+
+**** Commands This Package Provides (~:commands~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--commands
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#key-binding][:commands]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:commands
+#+end_src
+
+**** Custom Variables (~:custom~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--custom
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#customizing-variables][:custom]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:custom
+#+end_src
+
+**** Custom Faces (~:custom-face~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--custom-face
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#customizing-faces][:custom-face]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:custom-face
+#+end_src
+
+**** Keybindings (~:general~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--general
+:END:
+
+We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:general
+#+end_src
+
+**** Initializations (~:init~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--init
+:END:
+
+#+begin_quote
+NOTE: This code is executed BEFORE the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:init
+#+end_src
+
+**** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:config
+#+end_src
+
+**** Closing Paren
+
+#+begin_src emacs-lisp
+  )
+#+end_src

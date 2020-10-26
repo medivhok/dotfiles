@@ -1,0 +1,20 @@
+
+
+;; The ~:straight~ section snippet. This section is provided by the installation of the [[#packages-installation--straight][straight]] package.
+
+
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : emacscfg-usepkg-straight
+# name : [emacs config] use-package ':straight' section
+# --
+**** Get Package From... (~:straight~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--straight
+:END:
+
+We start the [[https://github.com/raxod502/straight.el#integration-with-use-package][:straight]] section of the [[#use-package--$1][use-package]].
+
+#+begin_src emacs-lisp
+:straight
+#+end_src

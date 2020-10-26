@@ -32,4 +32,7 @@ PATH="$HOME/.cask/bin:$PATH"
 # cabal, npm and yarn executables
 PATH=$HOME/.dotnet/tools:$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$HOME/.local/bin:$PATH
 
+# Ruby gems
+PATH=$HOME/.gem/ruby/2.7.0/bin:$PATH
+
 export PATH

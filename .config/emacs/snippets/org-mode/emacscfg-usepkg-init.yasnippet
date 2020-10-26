@@ -1,0 +1,25 @@
+
+
+;; The ~:init~ section snippet.
+
+;; [[.config/emacs/snippets/org-mode/emacscfg-usepkg-init.yasnippet][.config/emacs/snippets/org-mode/emacscfg-usepkg-init.yasnippet]]
+
+# -*- mode: snippet -*-
+# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
+# key : emacscfg-usepkg-init
+# name : [emacs config] use-package ':init' section
+# --
+**** Initializations (~:init~)
+:PROPERTIES:
+:Custom_ID: use-package--$1--init
+:END:
+
+#+begin_quote
+NOTE: This code is executed BEFORE the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--$1][use-package]] definition.
+
+#+begin_src emacs-lisp
+:init
+#+end_src
