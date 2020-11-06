@@ -1,6 +1,6 @@
 #+TITLE: My Emacs Configuration
 #+STARTUP: overview
-#+PROPERTY: header-args:emacs-lisp :tangle ../.config/emacs/init.el :comments org
+#+PROPERTY: header-args:emacs-lisp :tangle init.el
 
 This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and documentation.
 
@@ -32,10 +32,6 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and document
     - [[#counsel][counsel]]
     - [[#ivy-rich][ivy-rich]]
     - [[#ivy-posframe][ivy-posframe]]
-  - [[#code-completions][Code Completions]]
-    - [[#company][company]]
-    - [[#company-dict][company-dict]]
-    - [[#company-box][company-box]]
   - [[#fonts][Fonts]]
   - [[#dashboard][Dashboard]]
   - [[#frames][Frames]]
@@ -45,8 +41,13 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and document
   - [[#notifications][Notifications]]
   - [[#help-interface-helpful][Help Interface (helpful)]]
   - [[#theme][Theme]]
-- [[#utilities][Utilities]]
-  - [[#helm-completions][Helm Completions]]
+- [[#tools][Tools]]
+  - [[#bibliography][Bibliography]]
+    - [[#bibtex-completion][bibtex-completion]]
+  - [[#completions][Completions]]
+    - [[#company--co][Company & Co]]
+    - [[#helm--co][Helm & Co]]
+  - [[#pdf-reader][PDF Reader]]
 - [[#editing][Editing]]
   - [[#generic-editing-configurations][Generic Editing Configurations]]
     - [[#folding-hideshow][Folding (hideshow)]]
@@ -57,7 +58,6 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and document
     - [[#rainbow-delimiters][rainbow-delimiters]]
   - [[#snippets][Snippets]]
     - [[#yasnippet][yasnippet]]
-  - [[#code-completions][Code Completions]]
   - [[#git-magit][Git (magit)]]
     - [[#magit][magit]]
     - [[#evil-magit][evil-magit]]
@@ -68,19 +68,13 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and document
     - [[#projectile][projectile]]
     - [[#counsel-projectile][counsel-projectile]]
   - [[#syntax-checking-flycheck][Syntax Checking (flycheck)]]
-- [[#org-applications][Org Applications]]
-  - [[#org-mode][Org Mode]]
-  - [[#org-enhancements][Org Enhancements]]
+- [[#org-mode][Org Mode]]
+  - [[#some-org-enhancements][Some Org Enhancements]]
     - [[#org-evilification-evil-org][Org Evilification (evil-org)]]
     - [[#better-dots-org-bullets][Better Dots (org-bullets)]]
     - [[#table-of-contents-generator-org-make-toc][Table of Contents Generator (org-make-toc)]]
     - [[#opendocument-exporter-ox-odt][OpenDocument Exporter (ox-odt)]]
-  - [[#shared-constants][Shared Constants]]
-  - [[#documents-reader-pdf][Documents Reader (PDF)]]
-  - [[#emails-reader][Emails Reader]]
   - [[#getting-things-done-agenda][Getting Things Done (Agenda)]]
-    - [[#variables--constants][Variables & Constants]]
-    - [[#org-agenda][org-agenda]]
     - [[#org-capture][org-capture]]
     - [[#org-refile][org-refile]]
   - [[#taking-smart-notes-slip-box][Taking Smart Notes (Slip Box)]]
@@ -106,8 +100,8 @@ This is my [[https://gnu.org/software/emacs/][Emacs]] configuration and document
   - [[#yaml][YAML]]
   - [[#xml-nxml][XML (nxml)]]
 - [[#appendix][Appendix]]
-  - [[#some-snippets][Some Snippets]]
-  - [[#on-save][On Save]]
+  - [[#tests-configurations][Tests Configurations]]
+    - [[#the-cask-file][The Cask File]]
 :END:
 
 * From Nothing To Something  (Bootstraping)
@@ -366,9 +360,11 @@ is used instead."
 
 (general-create-definer medivhok:main-menu
   :prefix medivhok:leader-key
-  :non-normal-prefix medivhok:non-normal-leader-key)
+  :non-normal-prefix medivhok:non-normal-leader-key
+  :keymaps 'override)
 
-(medivhok:main-menu 'normal
+(medivhok:main-menu
+  :states 'normal
   ":" 'execute-extended-command
   "-" '(hydra-zoom/text-scale-decrease
         :which-key "text-scale-decrease")
@@ -380,7 +376,8 @@ is used instead."
 #+begin_src emacs-lisp
 (general-create-definer medivhok:local-mode-menu
   :prefix (medivhok/expand-menu-key "m")
-  :non-normal-prefix (medivhok/expand-menu-key "m" t))
+  :non-normal-prefix (medivhok/expand-menu-key "m" t)
+  :keymaps 'override)
 #+end_src
 
 ~medivhok:applications-menu~
@@ -388,6 +385,7 @@ is used instead."
 (general-create-definer medivhok:applications-menu
   :prefix (medivhok/expand-menu-key "a")
   :non-normal-prefix (medivhok/expand-menu-key "a" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "applications"))
 #+end_src
 
@@ -396,9 +394,11 @@ is used instead."
 (general-create-definer medivhok:buffer-menu
   :prefix (medivhok/expand-menu-key "b")
   :non-normal-prefix (medivhok/expand-menu-key "b" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "buffer"))
 
-(medivhok:buffer-menu 'normal
+(medivhok:buffer-menu
+  :states 'normal
   "b" 'switch-to-buffer
   "k" 'kill-buffer
   "d" 'kill-current-buffer)
@@ -409,9 +409,11 @@ is used instead."
 (general-create-definer medivhok:emacs-menu
   :prefix (medivhok/expand-menu-key "e")
   :non-normal-prefix (medivhok/expand-menu-key "e" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "emacs"))
 
-(medivhok:emacs-menu 'normal
+(medivhok:emacs-menu
+  :states 'normal
   "e" '((lambda ()
           (interactive)
           (find-file
@@ -431,9 +433,11 @@ is used instead."
 (general-create-definer medivhok:file-menu
   :prefix (medivhok/expand-menu-key "f")
   :non-normal-prefix (medivhok/expand-menu-key "f" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "file"))
 
-(medivhok:file-menu 'normal
+(medivhok:file-menu
+  :states 'normal
   "f" 'find-file
   "r" 'counsel-recentf)
 #+end_src
@@ -443,9 +447,11 @@ is used instead."
 (general-create-definer medivhok:help-menu
   :prefix (medivhok/expand-menu-key "h")
   :non-normal-prefix (medivhok/expand-menu-key "h" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "help"))
 
-(medivhok:help-menu 'normal
+(medivhok:help-menu
+  :states 'normal
   "a" 'apropos-command
   "b" 'describe-bindings
   "f" 'describe-function
@@ -460,6 +466,7 @@ is used instead."
 (general-create-definer medivhok:notes-menu
   :prefix (medivhok/expand-menu-key "n")
   :non-normal-prefix (medivhok/expand-menu-key "n" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "notes"))
 #+end_src
 
@@ -468,11 +475,14 @@ is used instead."
 (general-create-definer medivhok:window-menu
   :prefix (medivhok/expand-menu-key "w")
   :non-normal-prefix (medivhok/expand-menu-key "w" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "window"))
 
-(medivhok:window-menu 'normal
+(medivhok:window-menu
+  :states 'normal
   "q" 'delete-window
-  "s" 'split-window-below)
+  "s" 'split-window-below
+  "\\" 'split-window-right)
 #+end_src
 
 ~medivhok:quit-menu~
@@ -480,9 +490,11 @@ is used instead."
 (general-create-definer medivhok:quit-menu
   :prefix (medivhok/expand-menu-key "q")
   :non-normal-prefix (medivhok/expand-menu-key "q" t)
+  :keymaps 'override
   nil '(:ignore t :which-key "quit"))
 
-(medivhok:quit-menu 'normal
+(medivhok:quit-menu
+  :states 'normal
   "q" 'save-buffers-kill-terminal)
 #+end_src
 
@@ -657,276 +669,6 @@ its candidate menu. -- [[https://github.com/tumashu/ivy-posframe][ivy-posframe]]
 
   :config
   (ivy-posframe-mode 1))
-#+end_src
-
-** Code Completions
-*** ~company~
-:PROPERTIES:
-:Custom_ID: use-package--company
-:END:
-
-#+begin_quote
-Modular in-buffer completion framework for Emacs. -- [[https://github.com/company-mode/company-mode][company-mode]]
-#+end_quote
-
-#+begin_src emacs-lisp
-  (use-package company
-#+end_src
-
-**** Hooks (~:hook~)
-:PROPERTIES:
-:Custom_ID: use-package--company--hook
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#hooks][:hook]] section of our [[#use-package--company][use-package]] definition.
-
-#+begin_src emacs-lisp
-:hook
-(after-init . global-company-mode)
-#+end_src
-
-**** Commands This Package Provides (~:commands~)
-:PROPERTIES:
-:Custom_ID: use-package--company--commands
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#key-binding][:commands]] section of our [[#use-package--company][use-package]] definition.
-
-#+begin_src emacs-lisp
-:commands
-(company-complete-common
- company-manual-begin
- company-grab-line)
-#+end_src
-
-**** Configurations (~:config~)
-:PROPERTIES:
-:Custom_ID: use-package--company--config
-:END:
-
-#+begin_quote
-NOTE: This code is executed AFTER the package is loaded.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--company][use-package]].
-
-#+begin_src emacs-lisp
-:config
-(setq company-box-icons-all-the-icons
-      (let ((all-the-icons-scale-factor 0.8))
-        `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
-          (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
-          (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-          (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-          (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-          (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-          (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
-          (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-          (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
-          (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
-          (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
-          (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
-          (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
-          (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
-          (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
-          (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
-          (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
-          (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
-          (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
-          (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
-          (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
-          (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
-          (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
-          (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
-          (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
-          (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-          (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
-          (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-          (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
-          (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
-          (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
-
-(defun medivhok/company-backend-with-yas (backends)
-  "Add :with company-yasnippet to company BACKENDS.
-Taken from https://github.com/syl20bnr/spacemacs/pull/179."
-  (if (and (listp backends) (memq 'company-yasnippet backends))
-	    backends
-	  (append (if (consp backends)
-		            backends
-		          (list backends))
-		        '(:with company-yasnippet))))
-
-;; add yasnippet to all backends
-(setq company-backends
-      (mapcar #'medivhok/company-backend-with-yas company-backends))
-#+end_src
-
-**** Closing Paren
-
-#+begin_src emacs-lisp
-)
-#+end_src
-
-*** ~company-dict~
-:PROPERTIES:
-:Custom_ID: use-package--company-dict
-:END:
-
-#+begin_quote
-A port of ac-source-dictionary to company-mode, plus annotation and documentation support. -- [[https://github.com/hlissner/emacs-company-dict][company-dict]]
-#+end_quote
-
-#+begin_src emacs-lisp
-(use-package company-dict
-#+end_src
-
-**** Preface (~:preface~)
-:PROPERTIES:
-:Custom_ID: use-package--company-dict--preface
-:END:
-
-#+begin_quote
-NOTE: This code is executed right away.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][:preface]] section of the [[#use-package--company-dict][use-package]].
-
-#+begin_src emacs-lisp
-:preface
-#+end_src
-
-**** Load Package After... (~:after~)
-:PROPERTIES:
-:Custom_ID: use-package--company-dict--after
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#loading-packages-in-sequence][:after]] section of the [[#use-package--company-dict][use-package]].
-
-#+begin_src emacs-lisp
-:after company
-#+end_src
-
-**** Initializations (~:init~)
-:PROPERTIES:
-:Custom_ID: use-package--company-dict--init
-:END:
-
-#+begin_quote
-NOTE: This code is executed BEFORE the package is loaded.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--company-dict][use-package]] definition.
-
-#+begin_src emacs-lisp
-:init
-#+end_src
-
-**** Configurations (~:config~)
-:PROPERTIES:
-:Custom_ID: use-package--company-dict--config
-:END:
-
-#+begin_quote
-NOTE: This code is executed AFTER the package is loaded.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--company-dict][use-package]].
-
-#+begin_src emacs-lisp
-:config
-#+end_src
-
-**** Closing Paren
-
-#+begin_src emacs-lisp
-)
-#+end_src
-
-*** ~company-box~
-:PROPERTIES:
-:Custom_ID: use-package--company-box
-:END:
-
-#+begin_quote
-A company front-end with icons. -- [[https://github.com/sebastiencs/company-box][company-box]]
-#+end_quote
-
-#+begin_src emacs-lisp
-(use-package company-box
-#+end_src
-
-**** Preface (~:preface~)
-:PROPERTIES:
-:Custom_ID: use-package--company-box--preface
-:END:
-
-#+begin_quote
-NOTE: This code is executed right away.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][:preface]] section of the [[#use-package--company-box][use-package]].
-
-#+begin_src emacs-lisp
-:preface
-#+end_src
-
-**** Load Package After... (~:after~)
-:PROPERTIES:
-:Custom_ID: use-package--company-box--after
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#loading-packages-in-sequence][:after]] section of the [[#use-package--company-box][use-package]].
-
-#+begin_src emacs-lisp
-:after company
-#+end_src
-
-**** Hooks (~:hook~)
-:PROPERTIES:
-:Custom_ID: use-package--company-box--hook
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#hooks][:hook]] section of our [[#use-package--company-box][use-package]] definition.
-
-#+begin_src emacs-lisp
-:hook
-(company-mode . company-box-mode)
-#+end_src
-
-**** Initializations (~:init~)
-:PROPERTIES:
-:Custom_ID: use-package--company-box--init
-:END:
-
-#+begin_quote
-NOTE: This code is executed BEFORE the package is loaded.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--company-box][use-package]] definition.
-
-#+begin_src emacs-lisp
-:init
-#+end_src
-
-**** Configurations (~:config~)
-:PROPERTIES:
-:Custom_ID: use-package--company-box--config
-:END:
-
-#+begin_quote
-NOTE: This code is executed AFTER the package is loaded.
-#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--company-box][use-package]].
-
-#+begin_src emacs-lisp
-:config
-#+end_src
-
-**** Closing Paren
-
-#+begin_src emacs-lisp
-)
 #+end_src
 
 ** Fonts
@@ -1132,18 +874,140 @@ We configure the theme.
   (doom-themes-org-config))
 #+end_src
 
-* Utilities
-** Helm Completions
+* Tools
+** Bibliography
+*** ~bibtex-completion~
 
+#+begin_src emacs-lisp
+(use-package bibtex-completion
+  :defer t
+  :after org
+  :custom
+  (bibtex-completion-bibliography
+   (expand-file-name
+    "zotero.bib"
+    (file-name-as-directory
+     (expand-file-name "readings" org-directory))))
+  (bibtex-completion-pdf-field "File"))
+#+end_src
+
+** Completions
+*** Company & Co
+
+#+begin_quote
+Modular in-buffer completion framework for Emacs. -- [[https://github.com/company-mode/company-mode][company-mode]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company
+  :hook
+  (after-init . global-company-mode)
+
+  :config
+  (setq company-box-icons-all-the-icons
+        (let ((all-the-icons-scale-factor 0.8))
+          `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
+            (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
+            (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
+            (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+            (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
+            (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
+            (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
+            (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
+            (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
+            (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
+            (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
+            (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
+            (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
+            (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
+            (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
+            (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
+            (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
+            (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
+            (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
+            (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
+            (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
+            (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+            (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
+            (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
+            (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
+            (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
+
+  (defun medivhok/company-backend-with-yas (backends)
+    "Add :with company-yasnippet to company BACKENDS.
+Taken from https://github.com/syl20bnr/spacemacs/pull/179."
+    (if (and (listp backends) (memq 'company-yasnippet backends))
+	      backends
+	    (append (if (consp backends)
+		              backends
+		            (list backends))
+		          '(:with company-yasnippet))))
+
+  ;; add yasnippet to all backends
+  (setq company-backends
+        (mapcar #'medivhok/company-backend-with-yas company-backends)))
+#+end_src
+
+**** ~company-dict~
+
+#+begin_quote
+A port of ac-source-dictionary to company-mode, plus annotation and documentation support. -- [[https://github.com/hlissner/emacs-company-dict][company-dict]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company-dict
+  :after company)
+#+end_src
+
+**** ~company-box~
+
+#+begin_quote
+A company front-end with icons. -- [[https://github.com/sebastiencs/company-box][company-box]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company-box
+  :after company
+
+  :hook
+  (company-mode . company-box-mode))
+#+end_src
+
+*** Helm & Co
 #+begin_quote
 Emacs incremental completion and selection narrowing framework. -- [[https://github.com/emacs-helm/helm][helm]]
 #+end_quote
 
 #+begin_src emacs-lisp
 (use-package helm
-  :defer t
   :config
   (require 'helm-config))
+#+end_src
+
+** PDF Reader
+:PROPERTIES:
+:package_name: pdf-tools
+:package_url: https://github.com/politza/pdf-tools/
+:END:
+
+#+begin_quote
+Emacs support library for PDF files. -- [[https://github.com/politza/pdf-tools/][pdf-tools]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :defer t
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-loader-install)
+  (evil-collection-init 'pdf)
+  (evil-collection-pdf-setup))
 #+end_src
 
 * Editing
@@ -1286,7 +1150,6 @@ We start the [[https://github.com/jwiegley/use-package#getting-started][:config]
 (yas-global-mode 1)
 #+end_src
 
-** Code Completions
 ** Git (~magit~)
 *** magit
 
@@ -1358,8 +1221,7 @@ We start the [[https://github.com/jwiegley/use-package#getting-started][:config]
   :config (global-flycheck-mode))
 #+end_src
 
-* Org Applications
-** Org Mode
+* Org Mode
 :PROPERTIES:
 :package_name: org-mode
 :package_url: https://orgmode.org
@@ -1370,102 +1232,124 @@ Org mode is for keeping notes, maintaining TODO lists, planning projects, and
 authoring documents with a fast and effective plain-text system. -- [[https://orgmode.org/][org]]
 #+end_quote
 
-Automatically /tangle/ on save. Handy tip from [[https://leanpub.com/lit-config/read#leanpub-auto-configuring-emacs-and--org-mode-for-literate-programming][this book]] on literate programming.
-We will add this function to the ~after-save-hook~ of /org/ files in the next
-function.
-
-
-Customizations to apply to each ~org-mode~ buffers. This function was added to
-the ~org-mode-hook~.
-
 #+begin_src emacs-lisp
 (use-package org
-  :hook
-  (org-mode . (lambda ()
-                (org-indent-mode)
-                (variable-pitch-mode 1)
-                (auto-fill-mode 0)
-                (visual-line-mode 1)
-                (setq evil-auto-indent nil)
-
-                ;; Automatically tangle on save.
-                (add-hook 'after-save-hook
-                          #'medivhok/org-babel-tangle-dont-ask
-                          (lambda ()
-                            (let
-                                ((org-confirm-babel-evaluate nil))
-                              (org-babel-tangle)))
-                          'run-at-end
-                          'only-in-org-mode)))
-
-  :custom
-  (org-catch-invisible-edits 'show)
-  (org-cycle-separator-lines 2)
-  (org-directory "~/org/")
-  (org-edit-src-content-indentation 0)
-  (org-ellipsis " ▼")
-  (org-hide-block-startup nil)
-  (org-hide-emphasis-markers t)
-  (org-log-done 'time)
-  (org-log-into-drawer t)
-  (org-outline-path-complete-in-steps nil)
-  (org-return-follows-link t)
-  (org-src-fontify-natively t)
-  (org-src-preserve-indentation nil)
-  (org-src-tab-acts-natively t)
-  (org-src-window-setup 'current-window)
-  (org-startup-folded t)
-
-  :custom-face
-  (org-link ((t (:inherit link :underline nil))))
-
-  :general
-  (medivhok:local-mode-menu 'normal
-    org-mode-map
-    nil '(:ignore t :which-key "org")
-    "e" 'org-export-dispatch
-    "t" '(:ignore t :which-key "toggle")
-    "tl" 'org-toggle-link-display)
-
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (haskell . t)
-     (ledger . t)
-     (R . t)))
-
-  (add-hook 'org-src-mode-hook
-            (lambda ()
-              (when (eq major-mode 'emacs-lisp-mode)
-                (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))))
-
-  ;; Replace list hyphen with dot.
-  (require 'org-indent)
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 #+end_src
 
-** Org Enhancements
+In the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][preface]] section, we define two functions to :
+
+- tangle without asking for a confirmation; and
+- setup org buffers by configuring some variables.
+
+The second function is added to the ~org-mode-hook~ while the first function is
+added to the ~after-save-hook~ of each org buffer by the second function.
+
+#+begin_comment
+This /automatically tangle on save/ is a handy tip from [[https://leanpub.com/lit-config/read#leanpub-auto-configuring-emacs-and--org-mode-for-literate-programming][this book]] on literate
+programming.
+#+end_comment
+
+#+begin_src emacs-lisp
+:preface
+(defun medivhok/org-babel-tangle-dont-ask ()
+  "Disable confirmation before tangling."
+  (let ((org-confirm-babel-evaluate nil))
+    (org-babel-tangle)))
+
+(defun medivhok/org-buffer-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil)
+
+  (add-hook 'after-save-hook
+            #'medivhok/org-babel-tangle-dont-ask
+            'run-at-end
+            'only-in-org-mode))
+
+:hook
+(org-mode . medivhok/org-buffer-setup)
+
+:init
+(setq org-directory "~/org/")
+
+(defconst medivhok:agenda-directory
+  (file-name-as-directory
+   (expand-file-name "agenda" org-directory))
+  "The directory of my agenda files.")
+
+(setq org-agenda-files (list medivhok:agenda-directory))
+
+:custom
+(org-catch-invisible-edits 'show)
+(org-cycle-separator-lines 2)
+(org-edit-src-content-indentation 0)
+(org-ellipsis " ▼")
+(org-hide-block-startup nil)
+(org-hide-emphasis-markers t)
+(org-log-done 'time)
+(org-log-into-drawer t)
+(org-outline-path-complete-in-steps nil)
+(org-return-follows-link t)
+(org-src-fontify-natively t)
+(org-src-preserve-indentation nil)
+(org-src-tab-acts-natively t)
+(org-src-window-setup 'current-window)
+(org-startup-folded t)
+
+:custom-face
+(org-link ((t (:inherit link :underline nil))))
+
+:general
+(medivhok:local-mode-menu 'normal
+  org-mode-map
+  nil '(:ignore t :which-key "org")
+  "e" 'org-export-dispatch
+  "t" '(:ignore t :which-key "toggle")
+  "tl" 'org-toggle-link-display)
+
+:config
+(setq org-format-latex-options
+      (plist-put org-format-latex-options :scale 4.0))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (haskell . t)
+   (ledger . t)
+   (R . t)))
+
+(add-hook 'org-src-mode-hook
+          (lambda ()
+            (when (eq major-mode 'emacs-lisp-mode)
+              (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)))))
+
+;; Replace list hyphen with dot.
+(require 'org-indent)
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+(set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+#+end_src
+
+** Some Org Enhancements
 *** Org Evilification (~evil-org~)
 
 #+begin_quote
@@ -1621,62 +1505,10 @@ We start the [[https://github.com/jwiegley/use-package#hooks][:hook]] section of
                                  ("style:master-page-name" "OrgTitlePage"))))
 #+end_src
 
-** Shared Constants
-:PROPERTIES:
-:Custom_ID: applications-variables
-:END:
-
-Here we define variables and constants that can be used by all application
-contexts.
-
-#+begin_src emacs-lisp
-(defconst medivhok:app-directory
-  (file-name-as-directory "~/org/")
-  "The root directory of my applications files.")
-#+end_src
-
-** Documents Reader (PDF)
-
-#+begin_quote
-Emacs support library for PDF files. -- [[https://github.com/politza/pdf-tools/][pdf-tools]]
-#+end_quote
-
-#+begin_src emacs-lisp
-(use-package pdf-tools
-  :defer t
-  :config
-  (pdf-loader-install)
-  (evil-collection-init 'pdf))
-#+end_src
-
-** Emails Reader
 ** Getting Things Done (Agenda)
 :PROPERTIES:
 :Custom_ID: applications-agenda
-:END:
-
-*** Variables & Constants
-:PROPERTIES:
-:Custom_ID: applications-agenda-variables
-:END:
-
-Variables and constants that are gonna be used only by the /agenda application
-context/.
-
-#+begin_src emacs-lisp
-(defconst medivhok:agenda-directory
-  (file-name-as-directory
-   (expand-file-name "agenda" medivhok:app-directory))
-  "The directory of my agenda files.")
-
-(defconst medivhok:gtd-file
-  (expand-file-name "gtd.org" medivhok:agenda-directory)
-  "My 'getting things done' agenda file.")
-#+end_src
-
-*** ~org-agenda~
-:PROPERTIES:
-:Custom_ID: use-package--org-agenda
+:Package_Name: org-agenda
 :END:
 
 The environment of the /GTD/ workflow is done with ~org-agenda~, which is part of
@@ -1689,72 +1521,40 @@ the [[https://orgmode.org][Org Mode]] ecosystem.
   (org-agenda nil " "))
 #+end_src
 
-#+begin_quote
-#+end_quote
-
 #+begin_src emacs-lisp
 (use-package org-agenda
-#+end_src
+  :defer t
 
-**** Get Package From... (~:straight~)
-:PROPERTIES:
-:Custom_ID: use-package--org-agenda--straight
-:END:
+  :after (org)
 
-We start the [[https://github.com/raxod502/straight.el#integration-with-use-package][:straight]] section of the [[#use-package--org-agenda][use-package]].
+  :straight org
 
-#+begin_src emacs-lisp
-:straight org
-#+end_src
+  :init
+  (defconst medivhok:gtd-file
+    (expand-file-name "gtd.org" medivhok:agenda-directory)
+    "My 'getting things done' agenda file.")
 
-**** Commands This Package Provides (~:commands~)
-:PROPERTIES:
-:Custom_ID: use-package--org-agenda--commands
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#key-binding][:commands]] section of our [[#use-package--org-agenda][use-package]] definition.
-
-#+begin_src emacs-lisp
-:commands
-(org-agenda)
-#+end_src
-
-**** Custom Variables (~:custom~)
-:PROPERTIES:
-:Custom_ID: use-package--org-agenda--custom
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#customizing-variables][:custom]] section of our [[#use-package--org-agenda][use-package]] definition.
-
-#+begin_src emacs-lisp
-:custom
-(org-agenda-window-setup 'current-window)
-(org-agenda-block-separator nil)
-(org-agenda-dim-blocked-tasks 'invisible)
-(org-agenda-files (list medivhok:gtd-file))
-(org-agenda-skip-deadline-if-done t)
-(org-agenda-skip-scheduled-if-done t)
-(org-agenda-start-with-log-mode t)
-(org-agenda-custom-commands
- `((" "
-    "GTD Agenda"
-    ((agenda ""
-	     ((org-agenda-span 'week)
-	      (org-deadline-warning-days 14)))
-     (tags-todo "@inbox"
-		((org-agenda-overriding-header "Inbox")))
-     (tags-todo "@tâches"
-		((org-agenda-overriding-header "Tâches")))
-     (tags-todo "@teluq"
-		((org-agenda-overriding-header "Teluq")))
-     (tags-todo "@projets"
-		((org-agenda-overriding-header "Projets")))))))
-#+end_src
-
-**** Closing Paren
-
-#+begin_src emacs-lisp
-)
+  :custom
+  (org-agenda-window-setup 'current-window)
+  (org-agenda-block-separator nil)
+  (org-agenda-dim-blocked-tasks 'invisible)
+  (org-agenda-skip-deadline-if-done t)
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-start-with-log-mode t)
+  (org-agenda-custom-commands
+   `((" "
+      "GTD Agenda"
+      ((agenda ""
+	             ((org-agenda-span 'week)
+	              (org-deadline-warning-days 14)))
+       (tags-todo "@inbox"
+		              ((org-agenda-overriding-header "Inbox")))
+       (tags-todo "@tâches"
+		              ((org-agenda-overriding-header "Tâches")))
+       (tags-todo "@teluq"
+		              ((org-agenda-overriding-header "Teluq")))
+       (tags-todo "@projets"
+		              ((org-agenda-overriding-header "Projets"))))))))
 #+end_src
 
 *** ~org-capture~
@@ -1795,13 +1595,7 @@ We start the [[https://github.com/jwiegley/use-package#customizing-variables][:c
 #+end_src
 ** Taking Smart Notes (Slip Box)
 
-I use three slip boxes;
-
-- one for my note cards;
-- one for my annotated bibliography cards; and
-- one for my glossaries cards.
-
-To configure my boxes, I use an [[https://orgroam.com][org-roam]] ecosystem.
+To configure my box, I use an [[https://orgroam.com][org-roam]] ecosystem.
 
 *** The Notes And Glossaries Boxes
 :PROPERTIES:
@@ -1822,6 +1616,9 @@ Rudimentary Roam replica with Org-mode. -- [[https://github.com/org-roam/org-roa
 
   :hook
   (after-init . org-roam-mode)
+
+  :commands
+  (org-roam-db-query)
 
   :preface
   (setq org-roam-directory
@@ -1849,6 +1646,7 @@ Rudimentary Roam replica with Org-mode. -- [[https://github.com/org-roam/org-roa
     "The directory containing the card templates for my slip boxes.")
 
   :custom
+  (org-roam-completion-system 'helm)
   (org-roam-file-exclude-regexp "setupfiles\\|templates")
   (org-roam-index-file "index_file.org")
   (org-roam-tag-sources '(prop))
@@ -1881,7 +1679,8 @@ Rudimentary Roam replica with Org-mode. -- [[https://github.com/org-roam/org-roa
       :unnarrowed t)))
 
   :general
-  (medivhok:notes-menu 'normal
+  (medivhok:notes-menu
+    :states 'normal
     "b" '(:ignore t :which-key "annotated bibliography")
     "bf" 'medivhok/find-annotated-bibliography-card
     "f" 'medivhok/find-note-card
@@ -1894,25 +1693,52 @@ Rudimentary Roam replica with Org-mode. -- [[https://github.com/org-roam/org-roa
   :init
   (setq time-stamp-active t
         time-stamp-pattern "-10/^#\\+LAST_MODIFIED: <%Y-%02m-%02d %a %02H:%02M>$"
-        time-stamp-format "%Y-%02m-%02d %a %02H:%02M"))
+        time-stamp-format "%Y-%02m-%02d %a %02H:%02M")
+
+  (defun medivhok/sanitize-roam-tags (item &optional item-list)
+    (let ((current-list (or item-list (list))))
+      (if (stringp item)
+          (unless (member item current-list)
+            (push item current-list))
+        (dolist (current-item item)
+          (setq current-list (medivhok/sanitize-roam-tags current-item current-list))))
+      current-list))
+
+  (defun medivhok/get-roam-tags ()
+    "Return a list of the tags in my roam files."
+    (medivhok/sanitize-roam-tags (org-roam-db-query [:select tags :from tags])))
+
+  (defun medivhok/get-roam-tag-alist ()
+    (let ((tag-list (medivhok/get-roam-tags))
+          (tag-alist))
+      (dolist (tag tag-list tag-alist)
+        (push (cons tag nil) tag-alist))))
+
+  (defun medivhok/select-roam-tags ()
+    "Return a list of selected tags."
+    (let ((available-tag-list (medivhok/get-roam-tags))
+          (selected-tag-list)
+          (selected-tag)
+          (done-selection "[done]")
+          (finished nil))
+      (add-to-list 'available-tag-list done-selection)
+      (while (not finished)
+        (let ((selected-tag
+               (completing-read
+                (format "Tags %s: " (or selected-tag-list ""))
+                available-tag-list)))
+          (cond ((or (string= "" selected-tag)
+                     (string= done-selection selected-tag))
+                 (setq finished t))
+                ((not selected-tag)
+                 (message "Return is nil"))
+                (t
+                 (delete selected-tag available-tag-list)
+                 (add-to-list 'selected-tag-list selected-tag t)))))
+      selected-tag-list)))
 #+end_src
 
 *** The Annotated Bibliography Box
-
-**** ~bibtex-completion~
-
-#+begin_src emacs-lisp
-(use-package bibtex-completion
-  :defer t
-  :after org
-  :custom
-  (bibtex-completion-bibliography
-   (expand-file-name
-    "zotero.bib"
-    (file-name-as-directory
-     (expand-file-name "readings" org-directory))))
-  (bibtex-completion-pdf-field "File"))
-#+end_src
 
 **** ~ivy-bibtex~
 :PROPERTIES:
@@ -2020,7 +1846,7 @@ Connector between Org-roam, BibTeX-completion, and Org-ref. -- [[https://github.
 #+begin_src emacs-lisp
 (defconst medivhok:slip-boxes-directory
   (file-name-as-directory
-   (expand-file-name "slip-boxes" medivhok:app-directory))
+   (expand-file-name "slip-boxes" org-directory))
   "The directory containing my slip boxes.")
 
 (defconst medivhok:notes-directory
@@ -2045,7 +1871,7 @@ Connector between Org-roam, BibTeX-completion, and Org-ref. -- [[https://github.
 
 (defconst medivhok:pdf-root-directory
   (file-name-as-directory
-   (expand-file-name "readings" medivhok:app-directory))
+   (expand-file-name "readings" org-directory))
   "The root directory of my PDF files.")
 
 (defconst medivhok:bibtex-file
@@ -2377,6 +2203,30 @@ Major mode for editing JSON files with emacs.
 #+end_src
 
 ** LaTeX
+
+#+begin_src emacs-lisp
+(use-package auctex
+  :defer t)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-auctex
+  :defer t
+  :after company)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-reftex
+  :defer t
+  :after company)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-math
+  :defer t
+  :after company)
+#+end_src
+
 ** YAML
 
 #+begin_src emacs-lisp
@@ -2409,282 +2259,19 @@ Major mode for editing JSON files with emacs.
                 nil)))
 #+end_src
 
+
 * Appendix
-** Some Snippets
+** Tests Configurations
+*** The Cask File
 
-Here's some snippets (see [[#use-package--yasnippet][yasnippet]]) to help in writting the
-configuration file with consistency.
+The ~Cask~ file will fetch the dependencies for our tests like [[https://github.com/jorgenschaefer/emacs-buttercup][buttercup]].
 
-First, a snippet of a package installation, configuration and loading,
-using ~use-package~. The ~use-package~ declaration should be under a third
-level header of the name of the package, with the sections definition
-(e.g. ~:init~, ~:hook~) under fourth level headers, with the last header
-being the closing paren.
+#+name: cask-file
+#+begin_src emacs-lisp :tangle Cask :noweb yes :comment org
+(source gnu)
+(source melpa-stable)
 
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg
-# name : [emacs config] use-package definition
-# --
-,*** ~$1~
-:PROPERTIES:
-:Custom_ID: use-package--$1
-:END:
-
-,#+begin_quote
-,#+end_quote
-
-,#+begin_src emacs-lisp
-(use-package $1
-,#+end_src
-
-,**** Closing Paren
-
-,#+begin_src emacs-lisp
-  )
-,#+end_src
+(development
+ <<tests:dependencies>>
+ (depends-on "buttercup"))
 #+end_src
-
-The ~:preface~ section snippet.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-preface.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-preface
-# name : [emacs config] use-package ':preface' section
-# --
-,**** Preface (~:preface~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--preface
-:END:
-
-,#+begin_quote
-NOTE: This code is executed right away.
-,#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#add-preface-occurring-before-everything-except-disabled][:preface]] section of the [[#use-package--$1][use-package]].
-
-,#+begin_src emacs-lisp
-:preface
-,#+end_src
-#+end_src
-
-The ~:straight~ section snippet. This section is provided by the installation of the [[#packages-installation--straight][straight]] package.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-straight.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-straight
-# name : [emacs config] use-package ':straight' section
-# --
-,**** Get Package From... (~:straight~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--straight
-:END:
-
-We start the [[https://github.com/raxod502/straight.el#integration-with-use-package][:straight]] section of the [[#use-package--$1][use-package]].
-
-,#+begin_src emacs-lisp
-:straight
-,#+end_src
-#+end_src
-
-The ~:after~ section snippet.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-after.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-after
-# name : [emacs config] use-package ':after' section
-# --
-,**** Load Package After... (~:after~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--after
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#loading-packages-in-sequence][:after]] section of the [[#use-package--$1][use-package]].
-
-,#+begin_src emacs-lisp
-:after
-,#+end_src
-#+end_src
-
-The ~:hook~ section snippet.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-hook.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-hook
-# name : [emacs config] use-package ':hook' section
-# --
-,**** Hooks (~:hook~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--hook
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#hooks][:hook]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:hook
-,#+end_src
-#+end_src
-
-The ~:commands~ section snippet.
-
-[[.config/emacs/snippets/org-mode/emacscfg-usepkg-commands.yasnippet][.config/emacs/snippets/org-mode/emacscfg-usepkg-commands.yasnippet]]
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-commands.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-commands
-# name : [emacs config] use-package ':commands' section
-# --
-,**** Commands This Package Provides (~:commands~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--commands
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#key-binding][:commands]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:commands
-,#+end_src
-#+end_src
-
-The ~:custom~ section snippet.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-custom.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-custom
-# name : [emacs config] use-package ':custom' section
-# --
-,**** Custom Variables (~:custom~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--custom
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#customizing-variables][:custom]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:custom
-,#+end_src
-#+end_src
-
-The ~:custom-face~ section snippet.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-custom-face.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-custom-face
-# name : [emacs config] use-package ':custom-face' section
-# --
-,**** Custom Faces (~:custom-face~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--custom-face
-:END:
-
-We start the [[https://github.com/jwiegley/use-package#customizing-faces][:custom-face]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:custom-face
-,#+end_src
-#+end_src
-
-The ~:general~ section snippet. This section is provided by the installation of the [[#use-package--general][general.el]] package.
-
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-general.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-general
-# name : [emacs config] use-package ':general' section
-# --
-,**** Keybindings (~:general~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--general
-:END:
-
-We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:general
-,#+end_src
-#+end_src
-
-The ~:init~ section snippet.
-
-[[.config/emacs/snippets/org-mode/emacscfg-usepkg-init.yasnippet][.config/emacs/snippets/org-mode/emacscfg-usepkg-init.yasnippet]]
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-init.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-init
-# name : [emacs config] use-package ':init' section
-# --
-,**** Initializations (~:init~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--init
-:END:
-
-,#+begin_quote
-NOTE: This code is executed BEFORE the package is loaded.
-,#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--$1][use-package]] definition.
-
-,#+begin_src emacs-lisp
-:init
-,#+end_src
-#+end_src
-
-The ~:config~ section snippet.
-
-[[.config/emacs/snippets/org-mode/emacscfg-usepkg-config.yasnippet][.config/emacs/snippets/org-mode/emacscfg-usepkg-config.yasnippet]]
-#+begin_src emacs-lisp :tangle ../.config/emacs/snippets/org-mode/emacscfg-usepkg-config.yasnippet
-# -*- mode: snippet -*-
-# contributor : Jean Gregory Verret <gregory.verret@gmail.com>
-# key : emacscfg-usepkg-config
-# name : [emacs config] use-package ':config' section
-# --
-,**** Configurations (~:config~)
-:PROPERTIES:
-:Custom_ID: use-package--$1--config
-:END:
-
-,#+begin_quote
-NOTE: This code is executed AFTER the package is loaded.
-,#+end_quote
-
-We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--$1][use-package]].
-
-,#+begin_src emacs-lisp
-:config
-,#+end_src
-#+end_src
-
-** On Save
-
-#+begin_src emacs-lisp :tangle no
-(require 'org-element)
-
-(defun medivhok/get-package-info (headline)
-  (let ((package-name (org-element-property :PACKAGE_NAME hl))
-        (package-url (org-element-property :PACKAGE_URL hl)))
-    (when package-name
-      (if package-url
-          (list package-name package-url)
-        package-name))))
-
-(defun medivhok/get-package-info-list ()
-  (let ((parsed-tree (org-element-parse-buffer 'headline))
-        (package-info-list))
-    (org-element-map parsed-tree 'headline
-      (lambda (hl)
-        (let ((package-info (medivhok/get-package-info hl)))
-          (when package-info
-            (push package-info package-info-list)))))))
-
-(message "List : %s" (medivhok/get-package-info-list))
-#+end_src
-
-#+RESULTS:
-: List : (((org-mode https://orgmode.org)) ((org-roam https://orgroam.com) (org-mode https://orgmode.org)))

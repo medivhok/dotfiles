@@ -1,0 +1,171 @@
+#+TITLE: Slip Box Helpers
+#+STARTUP: overview
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :depth 2 :ignore (this)
+:END:
+:CONTENTS:
+- [[#the-helpers][The Helpers]]
+  - [[#medivhokroam-assert-tag][medivhok/roam-assert-tag]]
+  - [[#medivhokroam-plain-tag-p][medivhok/roam-plain-tag-p]]
+  - [[#medivhokroam-arroba-tag-p][medivhok/roam-arroba-tag-p]]
+  - [[#medivhokroam-plain-tag][medivhok/roam-plain-tag]]
+  - [[#medivhokroam-arroba-tag][medivhok/roam-arroba-tag]]
+- [[#appendix][Appendix]]
+  - [[#the-slip-box-helpers-file][The Slip Box Helpers File]]
+  - [[#the-tests-file][The Tests File]]
+:END:
+
+* The Helpers
+** medivhok/roam-assert-tag
+
+#+begin_src emacs-lisp :noweb-ref code:slip-box-helpers
+(defun medivhok/roam-assert-tag (tag)
+  "Throw is TAG is not a valid tag.
+A valid tag has the following properties :
+- is a string;
+- is non-empty; and
+- cannot be '@'."
+  (unless (and (stringp tag)
+               (not (string= "" tag))
+               (not (string= "@" tag)))
+    (signal 'wrong-type-argument '(tag)))
+  t)
+#+end_src
+
+*** Tests
+
+#+begin_src emacs-lisp :noweb-ref tests:slip-box-helpers
+(describe "medivhok/roam-assert-tag"
+  (it "should return t if TAG is a valid tag"
+    (expect (medivhok/roam-assert-tag "test") :to-be t)
+    (expect (medivhok/roam-assert-tag "@test") :to-be t))
+
+  (it "should throw if TAG is not a valid tag"
+    (expect (medivhok/roam-assert-tag nil) :to-throw 'wrong-type-argument)))
+#+end_src
+
+** medivhok/roam-plain-tag-p
+
+#+begin_src emacs-lisp :noweb-ref code:slip-box-helpers
+(defun medivhok/roam-plain-tag-p (tag)
+  "Predicate for plain tag.
+Return t if TAG is a non-empty string and does not start with '@',
+otherwise nil is returned."
+  (medivhok/roam-assert-tag tag)
+  (not (string= "@" (substring tag 0 1))))
+#+end_src
+
+*** Tests
+
+#+begin_src emacs-lisp :noweb-ref tests:slip-box-helpers
+(describe "medivhok/roam-plain-tag-p"
+  (it "should return t if tag does not start with '@'"
+    (expect (medivhok/roam-plain-tag-p "test") :to-be t))
+
+  (it "should return nil if tag starts with '@'"
+    (expect (medivhok/roam-plain-tag-p "@test") :to-be nil))
+
+  (it "should throw for an invalid tag"
+    (expect (medivhok/roam-plain-tag-p nil) :to-throw 'wrong-type-argument)))
+#+end_src
+
+** medivhok/roam-arroba-tag-p
+
+#+begin_src emacs-lisp :noweb-ref code:slip-box-helpers
+(defun medivhok/roam-arroba-tag-p (tag)
+  "Predicate for arroba tag.
+Return t if TAG is a non-empty string starting with '@' followed by at
+least one character, otherwise nil is returned."
+  (medivhok/roam-assert-tag tag)
+  (and (> (length tag) 1)
+       (string= "@" (substring tag 0 1))))
+#+end_src
+
+*** Tests
+
+#+begin_src emacs-lisp :noweb-ref tests:slip-box-helpers
+(describe "medivhok/roam-arroba-tag-p"
+  (it "should return t if tag starts with '@' followed by at least one character"
+    (expect (medivhok/roam-arroba-tag-p "@test") :to-be t))
+
+  (it "should return nil if tag does not start with '@'"
+    (expect (medivhok/roam-arroba-tag-p "test") :to-be nil))
+
+  (it "should throw with an invalid tag"
+    (expect (medivhok/roam-arroba-tag-p "@") :to-throw 'wrong-type-argument)))
+#+end_src
+
+** medivhok/roam-plain-tag
+
+#+begin_src emacs-lisp :noweb-ref code:slip-box-helpers
+(defun medivhok/roam-plain-tag (tag)
+  ""
+  (if (medivhok/roam-arroba-tag-p tag)
+      (substring tag 1)
+    tag))
+#+end_src
+
+*** Tests
+
+#+begin_src emacs-lisp :noweb-ref tests:slip-box-helpers
+(describe "medivhok/roam-plain-tag"
+  (it "should return the 'plain' version of the tag"
+    (expect (medivhok/roam-plain-tag "@test") :to-equal "test")
+    (expect (medivhok/roam-plain-tag "test") :to-equal "test"))
+
+  (it "should throw for an invalid tag"
+    (expect (medivhok/roam-plain-tag nil) :to-throw 'wrong-type-argument)))
+#+end_src
+
+** medivhok/roam-arroba-tag
+
+#+begin_src emacs-lisp :noweb-ref code:slip-box-helpers
+(defun medivhok/roam-arroba-tag (tag)
+  ""
+  (if (medivhok/roam-plain-tag-p tag)
+      (concat "@" tag)
+    tag))
+#+end_src
+
+*** Tests
+
+#+begin_src emacs-lisp :noweb-ref tests:slip-box-helpers
+(describe "medivhok/roam-arroba-tag"
+  (it "should return the arroba version of the tag"
+    (expect (medivhok/roam-arroba-tag "test") :to-equal "@test")
+    (expect (medivhok/roam-arroba-tag "@test") :to-equal "@test"))
+
+  (it "should throw for an invalid tag"
+    (expect (medivhok/roam-arroba-tag nil) :to-throw 'wrong-type-argument)))
+#+end_src
+
+* Appendix
+:PROPERTIES:
+:header-args: :noweb no-export :noweb-sep "\n\n"
+:END:
+** The Slip Box Helpers File
+
+This is the source file.
+
+#+begin_src emacs-lisp :tangle slip-box-helpers.el
+;;; slip-box-helpers.el --- slip box helper functions -*- lexical-binding: t; -*-
+
+;;; code:
+<<code:slip-box-helpers>>
+
+(provide 'slip-box-helpers)
+;; slip-box-helpers.el ends here
+#+end_src
+
+** The Tests File
+
+#+begin_src emacs-lisp :tangle tests/test-slip-box-helpers.el
+(require 'slip-box-helpers)
+
+(describe "slip-box-helpers"
+
+<<tests:slip-box-helpers>>
+)
+#+end_src
