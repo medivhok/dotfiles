@@ -1,0 +1,70 @@
+#+TITLE: EXWM
+#+STARTUP: overview
+#+PROPERTY: header-args:emacs-lisp :tangle init.el :mkdirp yes
+#+OPTIONS: H:2 toc:nil
+#+EXPORT_FILE_NAME: index
+
+#+TOC: headlines:2
+
+* Table of Contents  :noexport:
+:PROPERTIES:
+:TOC:      :include all :depth 2 :ignore (this)
+:END:
+:CONTENTS:
+- [[#main][Main]]
+:END:
+
+* Main
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:exwm-enabled
+  (and (eq window-system 'x)
+       (seq-contains command-line-args "--use-exwm")))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package exwm
+  :if medivhok:exwm-enabled
+  :init
+  (setq exwm-layout-show-all-buffers t
+        exwm-workspace-number 5
+        exwm-workspace-show-all-buffers t
+        exwm-workspace-warp-cursor t
+        focus-follows-mouse t
+        mouse-autoselect-window nil)
+
+  :config
+  (add-hook 'exwm-update-class-hook
+            (lambda ()
+              (exwm-workspace-rename-buffer exwm-class-name)))
+
+  (require 'exwm-randr)
+  (setq exwm-randr-workspace-output-plist '(0 "HDMI-0" 1 "DP-1"))
+  (exwm-randr-enable)
+
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+
+  (setq exwm-input-global-keys
+        `(([?\s-r] . exwm-reset)
+          ([?\s-w] . exwm-worspace-switch)
+          ([?\s-p] . counsel-linux-app)
+          ,@(mapcar (lambda (i)
+                      `(,(kbd (format "s-%d" i)) .
+                        (lambda ()
+                          (interactive)
+                          (exwm-workspace-switch-create ,i))))
+                    (number-sequence 0 9))))
+
+  (exwm-enable))
+#+END_SRC
+
+#+BEGIN_SRC sh :tangle EXWM.desktop
+[Desktop Entry]
+Name=EXWM
+Comment=Emacs Window Manager
+Exec=emacs -mm --debug-init
+Type=Application
+x-LightDM-DesktopName=exwm
+DesktopNames=exwm
+#+END_SRC

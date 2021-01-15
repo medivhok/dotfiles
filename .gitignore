@@ -4,3 +4,4 @@
 tmp/
 **/.zsh_history
 **/.zcompdump*
+**/*.sync-conflict-*

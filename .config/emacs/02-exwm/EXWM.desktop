@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=EXWM
+Comment=Emacs Window Manager
+Exec=emacs -mm --debug-init
+Type=Application
+x-LightDM-DesktopName=exwm
+DesktopNames=exwm

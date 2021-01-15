@@ -1,0 +1,114 @@
+#+TITLE: My Emacs Configuration
+#+STARTUP: overview
+#+OPTIONS: H:3 toc:nil
+#+PROPERTY: header-args:emacs-lisp :tangle init.el :mkdirp yes
+#+EXPORT_FILE_NAME: index
+
+Here begins my [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html][init file]], the first one that will be loaded to
+initialize [[https://https://www.gnu.org/software/emacs/][Emacs]]. The configurations are split in five modules :
+
+| Module    | Description                                        |
+|-----------+----------------------------------------------------|
+| exwm      | Emacs X Window Manager (when used)                 |
+| ui        | The user interface configurations                  |
+| app       | Applications configurations                        |
+| ides      | Integrated development environments configurations |
+
+So let's start our configuration journey...
+
+#+TOC: headlines:2
+* Table of Contents                                                :noexport:
+:PROPERTIES:
+:TOC:      :include all :depth 2 :ignore (this)
+:END:
+:CONTENTS:
+- [[#00---configuration-definitions][00 - Configuration Definitions]]
+- [[#01---boostrapping-emacs][01 - Boostrapping Emacs]]
+- [[#02---emacs-x-window-manager][02 - Emacs X Window Manager]]
+- [[#03---the-user-interface][03 - The User Interface]]
+- [[#04---applications][04 - Applications]]
+- [[#05---integrated-development-environments][05 - Integrated Development Environments]]
+:END:
+
+* 00 - Configuration Definitions
+
+Since the /bootstrap module/ will change the value of the /user-emacs-directory/,
+I save its current value into a variable.
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:config-directory
+          (file-name-as-directory user-emacs-directory)
+    "The root directory containing the configuration files.")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defconst medivhok:module-init-file-name "init.el"
+    "The name of the configuration file of a module to be loaded.")
+#+END_SRC
+
+* 01 - Boostrapping Emacs
+
+We create a variable to hold the name of the /bootstrap module/ directory.
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:bootstrap-module-directory
+  (file-name-as-directory
+   (expand-file-name "01-bootstrap" medivhok:config-directory))
+  "The directory containing the bootstrap module configuration files.")
+#+END_SRC
+
+And we load the bootstrap module.
+
+#+BEGIN_SRC emacs-lisp
+(load-file (expand-file-name medivhok:module-init-file-name
+                             medivhok:bootstrap-module-directory))
+#+END_SRC
+
+* 02 - Emacs X Window Manager
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:exwm-module-directory
+  (file-name-as-directory
+   (expand-file-name "02-exwm" medivhok:config-directory))
+  "The exwm module configurations directory.")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;;(load-file (expand-file-name module-init-file-name
+;;                             medivhok:exwm-module-directory))
+#+END_SRC
+
+* 03 - The User Interface
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:ui-module-directory
+  (file-name-as-directory
+   (expand-file-name "03-ui" medivhok:config-directory)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(load-file (expand-file-name medivhok:module-init-file-name medivhok:ui-module-directory))
+#+END_SRC
+
+* 04 - Applications
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:app-module-directory
+  (file-name-as-directory (expand-file-name "04-applications" medivhok:config-directory)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(load-file (expand-file-name medivhok:module-init-file-name medivhok:app-module-directory))
+#+END_SRC
+
+* 05 - Integrated Development Environments
+
+#+BEGIN_SRC emacs-lisp
+(defconst medivhok:ides-module-directory
+ (file-name-as-directory (expand-file-name "05-ides" medivhok:config-directory)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(load-file (expand-file-name medivhok:module-init-file-name medivhok:ides-module-directory))
+#+END_SRC
+

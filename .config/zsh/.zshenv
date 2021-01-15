@@ -35,4 +35,8 @@ PATH=$HOME/.dotnet/tools:$HOME/.cabal/bin:$HOME/.yarn/bin:$HOME/.npm/bin:$HOME/.
 # Ruby gems
 PATH=$HOME/.gem/ruby/2.7.0/bin:$PATH
 
+# dotnet
+DOTNET_ROOT=/opt/dotnet
+PATH=$PATH:$DOTNET_ROOT
+
 export PATH

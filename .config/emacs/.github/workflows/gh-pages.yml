@@ -1,0 +1,24 @@
+name: Build and publish to pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: build
+        uses: docker://iquiw/alpine-emacs
+        if: github.event.deleted == false
+        with:
+          args: ./builddocs.sh
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3.7.3
+        if: success()
+        with:
+          personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          publish_dir: ./public

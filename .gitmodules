@@ -46,6 +46,3 @@
 [submodule ".vim/pack/medivhok/start/nerdtree-git-plugin"]
 	path = .vim/pack/medivhok/start/nerdtree-git-plugin
 	url = https://github.com/Xuyuanp/nerdtree-git-plugin.git
-[submodule ".config/emacs"]
-	path = .config/emacs
-	url = https://github.com/medivhok/my-emacs-config.git

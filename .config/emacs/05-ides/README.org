@@ -1,0 +1,726 @@
+#+TITLE: IDEs
+#+STARTUP: overview
+#+PROPERTY: header-args:emacs-lisp :tangle init.el :mkdirp yes
+#+OPTIONS: H:2 toc:nil
+#+EXPORT_FILE_NAME: index
+
+#+TOC: headlines:2
+
+* Table of Contents  :noexport:
+:PROPERTIES:
+:TOC:      :include all :depth 2 :ignore (this)
+:END:
+:CONTENTS:
+- [[#tools][Tools]]
+  - [[#completions][Completions]]
+  - [[#lsp-mode][LSP Mode]]
+  - [[#pdf-reader][PDF Reader]]
+- [[#generic-editing-configurations][Generic Editing Configurations]]
+  - [[#folding-hideshow][Folding (hideshow)]]
+  - [[#parens--co-smartparens][Parens & Co. (smartparens)]]
+  - [[#evil-nerd-commenter][evil-nerd-commenter]]
+  - [[#ws-butler][ws-butler]]
+  - [[#parinfer][parinfer]]
+  - [[#rainbow-delimiters][rainbow-delimiters]]
+- [[#snippets][Snippets]]
+  - [[#yasnippet][yasnippet]]
+- [[#git-magit][Git (magit)]]
+  - [[#magit][magit]]
+  - [[#evil-magit][evil-magit]]
+  - [[#git-gutter][git-gutter]]
+  - [[#git-link][git-link]]
+  - [[#magit-todos][magit-todos]]
+- [[#project-management-projectile][Project Management (projectile)]]
+  - [[#projectile][projectile]]
+  - [[#counsel-projectile][counsel-projectile]]
+- [[#syntax-checking-flycheck][Syntax Checking (flycheck)]]
+- [[#languages][Languages]]
+  - [[#css][CSS]]
+  - [[#elisp][Elisp]]
+  - [[#haskell][Haskell]]
+  - [[#json-json-mode][Json (json-mode)]]
+  - [[#latex][LaTeX]]
+  - [[#yaml][YAML]]
+  - [[#xml-nxml][XML (nxml)]]
+:END:
+
+* Tools
+** Completions
+*** Company & Co
+
+#+begin_quote
+Modular in-buffer completion framework for Emacs. -- [[https://github.com/company-mode/company-mode][company-mode]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company
+  :hook
+  (after-init . global-company-mode)
+
+  :config
+  (setq company-box-icons-all-the-icons
+        (let ((all-the-icons-scale-factor 0.8))
+          `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
+            (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
+            (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
+            (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+            (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
+            (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
+            (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
+            (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
+            (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
+            (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
+            (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
+            (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
+            (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
+            (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
+            (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
+            (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
+            (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
+            (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
+            (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
+            (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
+            (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
+            (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+            (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
+            (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+            (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
+            (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
+            (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
+
+  (defun medivhok/company-backend-with-yas (backends)
+    "Add :with company-yasnippet to company BACKENDS.
+Taken from https://github.com/syl20bnr/spacemacs/pull/179."
+    (if (and (listp backends) (memq 'company-yasnippet backends))
+	      backends
+	    (append (if (consp backends)
+		              backends
+		            (list backends))
+		          '(:with company-yasnippet))))
+
+  ;; add yasnippet to all backends
+  (setq company-backends
+        (mapcar #'medivhok/company-backend-with-yas company-backends)))
+#+end_src
+
+**** ~company-dict~
+
+#+begin_quote
+A port of ac-source-dictionary to company-mode, plus annotation and documentation support. -- [[https://github.com/hlissner/emacs-company-dict][company-dict]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company-dict
+  :after company)
+#+end_src
+
+**** ~company-box~
+
+#+begin_quote
+A company front-end with icons. -- [[https://github.com/sebastiencs/company-box][company-box]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package company-box
+  :after company
+
+  :hook
+  (company-mode . company-box-mode))
+#+end_src
+
+*** Helm & Co
+#+begin_quote
+Emacs incremental completion and selection narrowing framework. -- [[https://github.com/emacs-helm/helm][helm]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package helm
+  :config
+  (require 'helm-config))
+#+end_src
+
+**** helm-lsp
+
+#+begin_src emacs-lisp
+(use-package helm-lsp
+  :after
+  (helm lsp-mode))
+#+end_src
+
+** LSP Mode
+
+#+begin_quote
+Emacs client/library for the Language Server Protocol. -- [[https://github.com/emacs-lsp/lsp-mode/][lsp-mode]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :defer t
+  :after which-key
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration))
+#+end_src
+
+** PDF Reader
+:PROPERTIES:
+:package_name: pdf-tools
+:package_url: https://github.com/politza/pdf-tools/
+:END:
+
+#+begin_quote
+Emacs support library for PDF files. -- [[https://github.com/politza/pdf-tools/][pdf-tools]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :defer t
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-loader-install)
+  (evil-collection-init 'pdf)
+  (evil-collection-pdf-setup))
+#+end_src
+
+* Generic Editing Configurations
+Default to an indentation size of 2 spaces.
+#+begin_src emacs-lisp
+(setq-default tab-width 2)
+(setq-default evil-shift-with tab-width)
+(global-auto-revert-mode t)
+#+end_src
+
+Use spaces instead of tabs for indentation.
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+** Folding (~hideshow~)
+#+begin_src emacs-lisp
+(use-package hideshow)
+#+end_src
+
+** Parens & Co. (~smartparens~)
+
+#+begin_quote
+Minor mode for Emacs that deals with parens pairs and tries to be smart about it.
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package smartparens
+  :hook
+  (prog-mode . smartparens-mode)
+  (prog-mode . smartparens-strict-mode)
+
+  :config
+  (require 'smartparens-config))
+#+end_src
+
+** evil-nerd-commenter
+
+Commenting lines.
+#+begin_src emacs-lisp
+(use-package evil-nerd-commenter
+  :bind
+  ("M-/" . evilnc-comment-or-uncomment-lines))
+#+end_src
+
+** ws-butler
+
+Automatically clean whitespace.
+#+begin_src emacs-lisp
+(use-package ws-butler
+  :hook
+  ((text-mode . ws-butler-mode)
+   (prog-mode . ws-butler-mode)))
+#+end_src
+
+** parinfer
+
+Use Parinfer for Lispy languages.
+#+begin_src emacs-lisp
+(use-package parinfer
+  :hook ((clojure-mode . parinfer-mode)
+         (emacs-lisp-mode . parinfer-mode)
+         (common-lisp-mode . parinfer-mode)
+         (scheme-mode . parinfer-mode)
+         (lisp-mode . parinfer-mode))
+  :config
+  (setq parinfer-extensions
+      '(defaults       ; should be included.
+        pretty-parens  ; different paren styles for different modes.
+        evil           ; If you use Evil.
+        smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+        smart-yank)))  ; Yank behavior depend on mode.
+#+end_src
+
+** rainbow-delimiters
+
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+* Snippets
+** ~yasnippet~
+:PROPERTIES:
+:Custom_ID: use-package--yasnippet
+:END:
+
+#+begin_quote
+A template system for Emacs. -- [[https://github.com/joaotavora/yasnippet][yasnippet]]
+#+end_quote
+
+#+begin_src emacs-lisp :noweb no-export
+(use-package yasnippet
+  <<use-package:yasnippet>>
+  )
+  #+end_src
+
+*** Custom Variables (~:custom~)
+:PROPERTIES:
+:Custom_ID: use-package--yasnippet--custom
+:END:
+
+We start the [[https://github.com/jwiegley/use-package#customizing-variables][:custom]] section of our [[#use-package--yasnippet][use-package]] definition.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref use-package:yasnippet
+:custom
+(yas-snippet-dirs
+   (list
+    (file-name-as-directory
+     (expand-file-name "snippets"
+                       (file-name-directory user-init-file)))))
+#+end_src
+
+*** Keybindings (~:general~)
+:PROPERTIES:
+:Custom_ID: use-package--yasnippet--general
+:END:
+
+We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--yasnippet][use-package]] definition.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref use-package:yasnippet
+:general
+#+end_src
+
+*** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--yasnippet--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--yasnippet][use-package]].
+
+#+begin_src emacs-lisp :tangle no :noweb-ref use-package:yasnippet
+:config
+(yas-global-mode 1)
+#+end_src
+
+* Git (~magit~)
+** magit
+
+#+begin_src emacs-lisp
+(use-package magit
+  :commands
+  (magit-status magit-get-current-branch)
+
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-execpt-diff-v1))
+#+end_src
+
+** evil-magit
+
+#+begin_src emacs-lisp
+(use-package evil-magit
+  :after magit)
+#+end_src
+
+** git-gutter
+
+#+begin_src emacs-lisp
+(use-package git-gutter
+  :hook
+  ((text-mode . git-gutter-mode)
+   (prog-mode . git-gutter-mode))
+
+  :config
+  (setq git-gutter:update-interval 2))
+#+end_src
+
+** git-link
+
+#+begin_src emacs-lisp
+(use-package git-link
+  :commands git-link
+
+  :config
+  (setq git-link-open-in-browser t))
+#+end_src
+
+** magit-todos
+
+#+begin_src emacs-lisp
+(use-package magit-todos
+  :after magit)
+#+end_src
+
+* Project Management (~projectile~)
+** projectile
+
+#+begin_src emacs-lisp
+(use-package projectile
+  :config
+  (projectile-mode))
+#+end_src
+
+** counsel-projectile
+
+#+begin_src emacs-lisp
+(use-package counsel-projectile
+  :after projectile)
+#+end_src
+
+* Syntax Checking (~flycheck~)
+
+#+begin_src emacs-lisp
+(use-package flycheck
+  :config (global-flycheck-mode))
+#+end_src
+
+* Languages
+** CSS
+
+#+begin_src emacs-lisp
+(use-package css-mode
+  :defer t
+
+  :after
+  (flycheck)
+
+  :init
+  (setq flycheck-css-csslint-executable "~/.yarn/bin/csslint"))
+#+end_src
+
+** Elisp
+*** ~cask~
+
+#+begin_quote
+Project management tool for Emacs. -- [[https://github.com/cask/cask][cask]]
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package cask)
+#+end_src
+
+*** ~cask-mode~
+
+#+begin_src emacs-lisp
+(use-package cask-mode
+  :defer t)
+#+end_src
+
+*** ~buttercup~
+
+#+begin_src emacs-lisp
+(use-package buttercup
+  :defer t)
+#+end_src
+
+** Haskell
+*** ~haskell-mode~
+:PROPERTIES:
+:Custom_ID: use-package--haskell-mode
+:END:
+
+#+begin_quote
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package haskell-mode
+#+end_src
+
+**** Keybindings (~:general~)
+:PROPERTIES:
+:Custom_ID: use-package--haskell-mode--general
+:END:
+
+We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--haskell-mode][use-package]] definition.
+
+#+begin_src emacs-lisp
+:general
+#+end_src
+
+**** Initializations (~:init~)
+:PROPERTIES:
+:Custom_ID: use-package--haskell-mode--init
+:END:
+
+#+begin_quote
+NOTE: This code is executed BEFORE the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--haskell-mode][use-package]] definition.
+
+#+begin_src emacs-lisp
+:init
+#+end_src
+
+**** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--haskell-mode--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--haskell-mode][use-package]].
+
+#+begin_src emacs-lisp
+:config
+#+end_src
+
+**** Closing Paren
+
+#+begin_src emacs-lisp
+)
+#+end_src
+*** ~dante~
+:PROPERTIES:
+:Custom_ID: use-package--dante
+:END:
+
+#+begin_quote
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package dante
+#+end_src
+
+**** Keybindings (~:general~)
+:PROPERTIES:
+:Custom_ID: use-package--dante--general
+:END:
+
+We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--dante][use-package]] definition.
+
+#+begin_src emacs-lisp
+:general
+#+end_src
+
+**** Initializations (~:init~)
+:PROPERTIES:
+:Custom_ID: use-package--dante--init
+:END:
+
+#+begin_quote
+NOTE: This code is executed BEFORE the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--dante][use-package]] definition.
+
+#+begin_src emacs-lisp
+:init
+#+end_src
+
+**** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--dante--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--dante][use-package]].
+
+#+begin_src emacs-lisp
+:config
+#+end_src
+
+**** Closing Paren
+
+#+begin_src emacs-lisp
+)
+#+end_src
+
+*** ~attrap~
+:PROPERTIES:
+:Custom_ID: use-package--attrap
+:END:
+
+#+begin_quote
+#+end_quote
+
+#+begin_src emacs-lisp
+(use-package attrap
+#+end_src
+
+**** Keybindings (~:general~)
+:PROPERTIES:
+:Custom_ID: use-package--attrap--general
+:END:
+
+We start the [[https://github.com/noctuid/general.el#general-keyword][:general]] section of our [[#use-package--attrap][use-package]] definition.
+
+#+begin_src emacs-lisp
+:general
+#+end_src
+
+**** Initializations (~:init~)
+:PROPERTIES:
+:Custom_ID: use-package--attrap--init
+:END:
+
+#+begin_quote
+NOTE: This code is executed BEFORE the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:init]] section of our [[#use-package--attrap][use-package]] definition.
+
+#+begin_src emacs-lisp
+:init
+#+end_src
+
+**** Configurations (~:config~)
+:PROPERTIES:
+:Custom_ID: use-package--attrap--config
+:END:
+
+#+begin_quote
+NOTE: This code is executed AFTER the package is loaded.
+#+end_quote
+
+We start the [[https://github.com/jwiegley/use-package#getting-started][:config]] section of the [[#use-package--attrap][use-package]].
+
+#+begin_src emacs-lisp
+:config
+#+end_src
+
+**** Closing Paren
+
+#+begin_src emacs-lisp
+)
+#+end_src
+** Json (~json-mode~)
+
+#+begin_quote
+Major mode for editing JSON files with emacs.
+#+end_quote
+
+[[https://github.com/joshwnj/json-mode][json-mode]]
+
+#+begin_src emacs-lisp
+(use-package json-mode
+  :custom
+  (json-reformat:indent-width 2)
+
+  :general
+  (medivhok/local-leader-def 'normal
+    json-mode-map
+    nil '(:ignore t :which-key "json")
+    "d" 'json-decrement-number-at-point
+    "f" 'json-mode-beautify
+    "i" 'json-increment-number-at-point
+    "k" 'json-nullify-sexp
+    "p" 'json-mode-show-path
+    "P" 'json-mode-kill-path
+    "t" 'json-toggle-boolean))
+#+end_src
+
+** LaTeX
+
+#+begin_src emacs-lisp
+(use-package auctex
+  :defer t
+  :custom
+  (TeX-engine 'luatex))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-auctex
+  :defer t
+  :after company)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-reftex
+  :defer t
+  :after company)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-math
+  :defer t
+  :after company)
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+(use-package ox-latex
+  :defer t
+  :after org
+  :straight org
+  :config
+  (setq org-latex-caption-above nil
+        org-latex-compiler "lualatex"
+        org-latex-listings 'minted
+        org-latex-minted-options
+        '(("frame" "none")
+          ("baselinestretch" "1.2")
+          ("style" "emacs")
+          ("breaklines"))
+        org-latex-packages-alist
+        '(("" "fontspec" t ("lualatex"))
+          ("AUTO" "babel" t ("pdflatex" "lualatex"))
+          ("" "booktabs" t)
+          ("" "fancyhdr" t)
+          ("framemethod=tikz" "mdframed")
+          ("" "minted")
+          ("" "xcolor"))
+        org-latex-pdf-process
+        '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (add-to-list 'org-latex-minted-langs '(R "r")))
+#+END_SRC
+
+** YAML
+
+#+begin_src emacs-lisp
+(use-package yaml-mode
+  :mode "\\.ya?ml\\'")
+#+end_src
+
+** XML (~nxml~)
+#+begin_src emacs-lisp
+(use-package nxml-mode
+  :straight nxml
+
+  :hook
+  (nxml-mode . hs-minor-mode)
+
+  :general
+  (normal nxml-mode-map "TAB" 'hs-toggle-hiding)
+  (medivhok/local-leader-def 'normal
+    nxml-mode-map
+    nil '(:ignore t :which-key "xml")
+    "t" 'hs-toggle-hiding)
+
+  :config
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+                "<!--\\|<[^/>]*[^/]>"
+                "-->\\|</[^/>]*[^/]>"
+                "<!--"
+                nxml-forward-element
+                nil)))
+#+end_src

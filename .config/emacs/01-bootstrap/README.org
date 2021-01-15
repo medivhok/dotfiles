@@ -1,0 +1,100 @@
+#+TITLE: Bootstrapping Emacs
+#+STARTUP: overview
+#+OPTIONS: H:3 toc:nil
+#+PROPERTY: header-args:emacs-lisp :tangle init.el
+#+EXPORT_FILE_NAME: index
+
+* Profiling
+
+Make startup faster by reducing the frequency of garbage collection and then
+use a hook to measure Emacs startup time. The default is 800k (mesured in
+bytes).
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold (* 50 1000 1000))
+#+END_SRC
+
+Profile emacs startup.
+#+BEGIN_SRC emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+#+END_SRC
+
+* Cache Configuration
+
+To keep our configuration directory clean, we are gonna use another directory
+for our cache. I don’t want a bunch of transient files showing up as untracked
+in the Git repository. But first, we save the root directory containing the
+configuration files.
+
+#+BEGIN_SRC emacs-lisp
+(setq user-emacs-directory "~/.cache/emacs/"
+      backup-directory-alist `(("." . ,(expand-file-name "backups"
+      user-emacs-directory)))
+        url-history-file (expand-file-name "url/history" user-emacs-directory)
+        auto-save-list-file-prefix (expand-file-name "auto-save-list/.saves-"
+                                                     user-emacs-directory)
+        projectile-known-projects-file (expand-file-name
+                                        "projectile-bookmarks.eld"
+                                        user-emacs-directory))
+
+;; Keep customization settings in a temporary file (thanks Ambrevar!).
+(setq custom-file
+        (if (boundp 'server-socket-dir)
+            (expand-file-name "custom.el" server-socket-dir)
+          (expand-file-name (format "emacs-custom-%s.el" (user-uid))
+                            temporary-file-directory)))
+(load custom-file t)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Jean Gregory Verret"
+      user-mail-address "gregory.verret@gmail.com")
+#+END_SRC
+
+* Packages Management
+
+And finally, we need to be able to download, install and load
+packages. For the download and the installation, [[https://github.com/raxod502/straight.el][straight.el]]
+will be used, and for the loading, [[https://github.com/jwiegley/use-package][use-package]] is gonna be the
+choosen one.
+
+** ~straight.el~
+
+Packages need to be installed first (if not already installed), and loaded
+before we can use them.
+
+To install them, [[https://github.com/raxod502/straight.el][straight.el]], the next-generation, purely functional
+package manager for the Emacs hacker is used and to load them, [[https://github.com/jwiegley/use-package][use-package]] is
+used and integrated to straight.
+
+#+BEGIN_SRC emacs-lisp
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el"
+                         user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+END_SRC
+
+** ~use-package~
+
+Using straight, we can now download, install and load /use-package/.
+
+#+BEGIN_SRC emacs-lisp
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+(setq use-package-verbose t)
+#+END_SRC
