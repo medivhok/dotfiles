@@ -5,7 +5,7 @@
 - [[src/.config/xmobar][xmobar]]
 
 *** Editors
-- [[src/.config/doom][Emacs]]
+- [[.config/emacs][Emacs]]
 - [[src/.vim/][Vim]]
 
 *** Graphics
